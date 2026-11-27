@@ -14,7 +14,7 @@ Feedback: <FB-IDs>. Attribution: <AT-ID> (<confirmed / confidence>).
 
 | Stage | File | Item | Now says |
 |-------|------|------|----------|
-| <actors> | <actors/actors.md> | <ACT-003> | <summary> |
+| <actors> | <03-actors.md> | <ACT-003> | <summary> |
 
 <n> item(s) in <n> stage(s).
 

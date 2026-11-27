@@ -8,7 +8,7 @@ description: "Use whenever you write an output item into a product (a problem, a
 
 Every item you write gets a stable ID and one trace line, so feedback on it can be walked back to the step where it went wrong. You declare the trace yourself, as you write, because you know what you used. Nobody can reconstruct it reliably afterwards.
 
-Format: `schemas/trace.schema.json`. File: `<product>/.po/trace.jsonl`, append-only. Tool: `scripts/traces.py`.
+Format: `schemas/trace.schema.json`. File: `<product>/.po/traces.jsonl`, append-only. Tool: `scripts/traces.py`.
 
 ## When to use
 
@@ -16,19 +16,20 @@ Every time you add, rewrite, split, merge or remove an item in a product file. P
 
 ## Item IDs
 
-An ID is the item type's three-letter prefix, a hyphen and a number of at least three digits: `ACT-007`. Numbers run per product and prefix from 001. Get the next one with `python3 scripts/traces.py next-id <type> --product <slug>`.
+An ID is the prefix the stage template uses, a hyphen and a number of at least three digits: `ACT-007`, `REQ-012`. Numbers run per product and prefix from 001. Get the next one with `python3 scripts/traces.py next-id <type or prefix> --product <slug>`.
 
 | Stage | Type: prefix |
 |-------|--------------|
-| Idea | problem: PRB, outcome: OUT, metric: MET, canvas-box: CNV, opportunity: OPP, risk: RSK |
-| Audience | segment: SEG, job: JOB, persona: PER, interview-question: INQ |
-| Actors | actor: ACT, stakeholder: STK |
-| Systems | system: SYS, interface: INT, event: EVT, term: TRM |
-| Scope | scope-item: SCP, non-goal: NGL, story: STY, release: REL |
-| Workshops | session: WSH, agenda-item: AGD, workshop-output: WSO |
-| Presentations | slide: SLD, faq: FAQ, narrative-section: NAR |
-| FSD | requirement: REQ, quality-requirement: NFR, acceptance-criterion: ACC, fsd-section: SEC |
-| Any | other: ITM |
+| Idea | idea-item: IDEA |
+| Audience | audience-item: AUD |
+| Actors | actor: ACT |
+| Systems | system: SYS |
+| Scope | scope-item: SCP |
+| Workshops | workshop-item: WKS |
+| Presentations | presentation-item: PRS |
+| FSD | fsd-section: FSD, story: US, requirement: REQ, quality-requirement: NFR, acceptance-criterion: AC |
+| Handoff gate | handoff-item: HND |
+| Any stage | decision: DEC (Decision Sheet rows), parked-item: PARK |
 
 The list lives in `x-item-types` in the schema; a new type is a schema change.
 
@@ -36,7 +37,7 @@ Put the ID at the start of the item, where a reader and a pull request comment c
 
 - list item: `- REQ-012 The system shall ...`
 - table: first column, `| ACT-003 | Admin | ... |`
-- heading: `### SLD-004 Why now`
+- heading: `### PRS-004 Why now`
 
 Mentioning another item's ID elsewhere is fine and encouraged (`(from ACT-003)`). Every ID that appears in a product file must have a trace.
 
@@ -51,27 +52,27 @@ IDs never change and are never reused:
 
 Do:
 - Write the item into the file first, then append its trace line straight away, before you move to the next file.
-- Name in `upstream` the items you actually used to write this one, and only those.
-- Name in `relied_on` the register IDs of the user answers, decisions and assumptions it rests on.
-- Pick the evidence tag honestly. Stated needs a register answer or a source. Inferred needs upstream items. Assumed needs a register assumption (declare one). Simulated is for simulated users and personas. Validated needs a source naming the real person or data.
+- Name in `upstream_ids` the items you actually used to write this one, and only those.
+- Name in `register_refs` the register IDs of the user answers, decisions and assumptions it rests on.
+- Pick `evidence_tag` honestly, as skill `evidence-tags` defines the tags, and list `sources` where there are any. Stated needs a register answer or a source. Inferred needs upstream items. Assumed needs a register assumption (declare one). Simulated is for simulated users and personas. Validated needs a source naming the real person or data.
 - Give `step` as the number and short name of the step you were on, from your agent's or skill's Steps list, for example `2-actor-sweep`.
 - Run `python3 scripts/traces.py check --product <slug>` before you hand off, and fix every error.
 
 Don't:
 - Backfill traces at the end of the run from memory.
-- Copy one item's upstream list onto the next item without checking it.
+- Copy one item's `upstream_ids` onto the next item without checking it.
 - Cite a whole stage or file as upstream; cite items.
 - Tag something Stated because it sounds like something the user would say.
-- Write an item with no upstream and nothing relied on. That is a question for the register, not an item.
+- Write an item with empty `upstream_ids` and empty `register_refs`. That is a question for the register, not an item.
 
 ## Steps
 
 1. Take the run ID and product from your brief. If the brief has no run ID, ask `po` through the register; do not make one up.
-2. Once per run, get versions: `python3 scripts/traces.py versions --skills <skills you load> --templates <templates you use>`. Use its `aidev_po`, `skills` and `templates` values in every line.
+2. Once per run, get versions: `python3 scripts/traces.py versions --skills <skills you load> --templates <templates you use>`. Use its `aidev_po`, `skill_versions` and `template_versions` values in every line.
 3. For each item: get the ID (`next-id`), write the item into the file, then declare its trace:
 
    ```
-   python3 scripts/traces.py add trace --product <slug> --json '{"event": "write", "item_id": "ACT-003", "item_type": "actor", "run": "<run>", "stage": "actors", "agent": "actors-producer", "role": "producer", "step": "2-actor-sweep", "file": "actors/actors.md", "summary": "Admin: manages users; archives booking records.", "upstream": ["ACT-001"], "relied_on": ["r-20261202091000-0002"], "evidence": {"tag": "Stated"}, "skills": {"trace-records": "b11bf9d"}, "templates": {}, "aidev_po": "b11bf9d"}'
+   python3 scripts/traces.py add trace --product <slug> --json '{"event": "write", "item_id": "ACT-003", "item_type": "actor", "run": "<run>", "stage": "actors", "agent": "actors-producer", "role": "producer", "step": "2-actor-sweep", "file": "03-actors.md", "summary": "Admin: manages users; archives booking records.", "upstream_ids": ["ACT-001"], "register_refs": ["r-20261202091000-0002"], "evidence_tag": "Stated", "skill_versions": {"trace-records": "b11bf9d"}, "template_versions": {"03-actors.md": "b11bf9d"}, "aidev_po": "b11bf9d"}'
    ```
 
    Several lines at once: JSON Lines on stdin. `add` fills in `ts` and `rev`, checks the lines, and appends nothing if they add an error.

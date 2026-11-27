@@ -26,7 +26,7 @@
         "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
         "agent": { "type": "string", "minLength": 1 },
         "step": { "type": "string", "minLength": 1 },
-        "item_id": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }
+        "item_id": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" }
       }
     },
     "correction": {
@@ -41,11 +41,11 @@
     },
     "invalidated": {
       "type": "array",
-      "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" },
+      "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" },
       "uniqueItems": true,
       "description": "Items to rebuild: the origin item and everything downstream of it, from scripts/traces.py downstream."
     },
-    "kept": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true, "description": "Downstream items the user chose to keep as they are." },
+    "kept": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" }, "uniqueItems": true, "description": "Downstream items the user chose to keep as they are." },
     "reopened_stages": {
       "type": "array",
       "items": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
@@ -53,9 +53,9 @@
       "description": "Stages whose gate must be approved again because they hold invalidated items."
     },
     "run": { "type": "string", "pattern": "^run-[0-9]{14}-[0-9a-f]{4}$", "description": "The run ID the rebuild writes under." },
-    "rebuilt": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
-    "removed": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
-    "added": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
+    "rebuilt": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" }, "uniqueItems": true },
+    "removed": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" }, "uniqueItems": true },
+    "added": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" }, "uniqueItems": true },
     "user_ok": { "type": "string", "format": "date-time", "description": "When the user approved the plan." },
     "commit": { "type": ["string", "null"], "description": "Products repo commit, only after the user's OK." },
     "note": { "type": "string" }

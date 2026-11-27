@@ -25,4 +25,4 @@ Without a tag, `po` proposes a severity and category and asks you to confirm.
 
 `wrong-or-invented`, `missing`, `misunderstood-intent`, `wrong-scope-or-priority`, `unclear-or-untestable`, `inconsistent`, `wrong-for-audience`, `process`, `not-sure`.
 
-Comment on the line with the item ID (`REQ-012`, `ACT-003`, `SLD-004`) or the line you mean inside that item. To flag something missing, comment where it should be.
+Comment on the line with the item ID (`REQ-012`, `ACT-003`, `PRS-004`) or the line you mean inside that item. To flag something missing, comment where it should be.

@@ -12,7 +12,7 @@ What `po` does so that any feedback can be traced back to where it went wrong an
 
 | File | Holds | Schema |
 |------|-------|--------|
-| `<product>/.po/trace.jsonl` | Item writes, reviews and removals | trace (`schemas/trace.schema.json`) |
+| `<product>/.po/traces.jsonl` | Item writes, reviews and removals | trace (`schemas/trace.schema.json`) |
 | `<product>/.po/feedback.jsonl` | Feedback | feedback (`schemas/feedback.schema.json`) |
 | `<product>/.po/attributions.jsonl` | Tracer findings | attribution (`schemas/attribution.schema.json`) |
 | `<product>/.po/reruns.jsonl` | Reruns | rerun (`schemas/rerun.schema.json`) |

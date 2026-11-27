@@ -82,7 +82,7 @@
         "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
         "agent": { "type": "string", "minLength": 1 },
         "step": { "type": "string", "minLength": 1 },
-        "item_id": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" },
+        "item_id": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" },
         "rev": { "type": "integer", "minimum": 1 }
       }
     }

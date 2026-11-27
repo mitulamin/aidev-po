@@ -5,7 +5,7 @@ JSON Schema (draft 2020-12) for the files agents write into a product folder. Co
 | Schema | Status | File | What |
 |--------|--------|------|------|
 | [register.schema.json](register.schema.json) | draft | `<product>/.po/register.jsonl` | The shared register: open questions, assumptions, decisions, and feedback and attribution entries. |
-| [trace.schema.json](trace.schema.json) | draft | `<product>/.po/trace.jsonl` | Where each output item came from: write, review and remove lines. |
+| [trace.schema.json](trace.schema.json) | draft | `<product>/.po/traces.jsonl` | Where each output item came from: write, review and remove lines. |
 | [feedback.schema.json](feedback.schema.json) | draft | `<product>/.po/feedback.jsonl` | User feedback on an output: severity P0 to P3, nine categories. |
 | [attribution.schema.json](attribution.schema.json) | draft | `<product>/.po/attributions.jsonl` | The tracer's finding: origin, carriers, cause, confidence, alternatives. |
 | [rerun.schema.json](rerun.schema.json) | draft | `<product>/.po/reruns.jsonl` | One `/po-rerun-from`: plan, OK, rebuild, commit. |
@@ -18,7 +18,7 @@ All `.jsonl` files are JSON Lines, UTF-8 and append-only: never edit or delete a
 
 | ID | Format | Example | Numbered |
 |----|--------|---------|----------|
-| Output item | `<3-letter type prefix>-<3+ digits>` | `ACT-007` | per product and prefix; prefixes in `x-item-types` in the trace schema |
+| Output item | `<type prefix, 2 to 4 letters>-<3+ digits>` | `ACT-007`, `REQ-012` | per product and prefix; the prefixes the stage templates use, listed in `x-item-types` in the trace schema |
 | Run | `run-<yyyymmddhhmmss>-<4 hex>` | `run-20261202090000-b2b2` | `scripts/traces.py new-run` |
 | Register entry | `r-<yyyymmddhhmmss>-<4 hex>` | `r-20261202091000-0002` | as in ai-sdlc-loop |
 | Feedback, attribution, rerun | `FB-`, `AT-`, `RR-` + 3+ digits | `FB-001` | per product |

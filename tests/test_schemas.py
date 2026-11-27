@@ -10,7 +10,7 @@ except ImportError:
     jsonschema = None
 
 FILES = {
-    "trace.jsonl": "trace.schema.json",
+    "traces.jsonl": "trace.schema.json",
     "feedback.jsonl": "feedback.schema.json",
     "attributions.jsonl": "attribution.schema.json",
     "reruns.jsonl": "rerun.schema.json",
@@ -58,10 +58,10 @@ class Rejects(unittest.TestCase):
 
     def test_trace_needs_evidence_tag_and_good_id(self):
         v = validator("trace.schema.json")
-        line = self.first("trace.jsonl")
-        self.assertFalse(v.is_valid(dict(line, evidence={"tag": "Guessed"})))
-        self.assertFalse(v.is_valid(dict(line, item_id="PRB-1")))
-        self.assertFalse(v.is_valid({k: x for k, x in line.items() if k != "upstream"}))
+        line = self.first("traces.jsonl")
+        self.assertFalse(v.is_valid(dict(line, evidence_tag="Guessed")))
+        self.assertFalse(v.is_valid(dict(line, item_id="IDEA-1")))
+        self.assertFalse(v.is_valid({k: x for k, x in line.items() if k != "upstream_ids"}))
 
     def test_attribution_causes(self):
         v = validator("attribution.schema.json")

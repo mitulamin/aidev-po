@@ -19,11 +19,11 @@ Usage:
 Standard library only; if the jsonschema package is installed, every line is also checked
 against its schema in schemas/. Files (all JSON Lines, append-only, one object per line):
 
-  <product>/.po/trace.jsonl          trace.schema.json        write, review and remove lines
+  <product>/.po/traces.jsonl         trace.schema.json        write, review and remove lines
   <product>/.po/feedback.jsonl       feedback.schema.json     latest line per id wins
   <product>/.po/attributions.jsonl   attribution.schema.json  latest line per id wins
   <product>/.po/reruns.jsonl         rerun.schema.json        latest line per id wins
-  <product>/.po/register.jsonl       register.schema.json     read for relied_on links
+  <product>/.po/register.jsonl       register.schema.json     read for register_refs links
   <products repo>/.po/ledger.jsonl   ledger.schema.json       latest line per id wins
 
 `add` reads one JSON object, a JSON array, or JSON Lines from --json or stdin. It fills in ts,
@@ -45,7 +45,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS = ROOT / "schemas"
 PO = ".po"
 FILES = {
-    "trace": "trace.jsonl",
+    "trace": "traces.jsonl",
     "feedback": "feedback.jsonl",
     "attribution": "attributions.jsonl",
     "rerun": "reruns.jsonl",
@@ -63,8 +63,8 @@ SCHEMA_FILES = {
 RECORD_PREFIX = {"feedback": "FB", "attribution": "AT", "rerun": "RR", "ledger": "LE"}
 ITEM_TYPES = json.loads((SCHEMAS / "trace.schema.json").read_text(encoding="utf-8"))["x-item-types"]
 PREFIXES = {prefix: name for name, prefix in ITEM_TYPES.items()}
-ITEM_ID = re.compile(r"^([A-Z]{3})-([0-9]{3,})$")
-ID_IN_TEXT = re.compile(r"(?<![A-Za-z0-9-])([A-Z]{3}-[0-9]{3,})(?![A-Za-z0-9-])")
+ITEM_ID = re.compile(r"^([A-Z]{2,4})-([0-9]{3,})$")
+ID_IN_TEXT = re.compile(r"(?<![A-Za-z0-9-])([A-Z]{2,4}-[0-9]{3,})(?![A-Za-z0-9-])")
 RECORD_ID = re.compile(r"^(FB|AT|RR|LE)-([0-9]{3,})$")
 STAGES = ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"]
 LOW_CONFIDENCE = 0.5
@@ -298,7 +298,7 @@ def check_trace(p):
         for n, obj in hist:
             where = p.label("trace", n)
             if not m:
-                out.append(Issue(where, f"{item_id}: not a valid item ID (three capital letters, a hyphen, three or more digits)", item_id))
+                out.append(Issue(where, f"{item_id}: not a valid item ID (two to four capital letters, a hyphen, three or more digits)", item_id))
                 break
             if obj.get("event") == "write":
                 want = ITEM_TYPES.get(obj.get("item_type"))
@@ -312,9 +312,9 @@ def check_trace(p):
             removed = obj.get("event") == "remove"
             if obj.get("event") != "write":
                 continue
-            upstream, relied = obj.get("upstream") or [], obj.get("relied_on") or []
+            upstream, relied = obj.get("upstream_ids") or [], obj.get("register_refs") or []
             if not upstream and not relied:
-                out.append(Issue(where, f"{item_id}: no upstream items and nothing relied on; an item with no source is a question, not a fact", item_id))
+                out.append(Issue(where, f"{item_id}: no upstream_ids and no register_refs; an item with no source is a question, not a fact", item_id))
             for up in upstream:
                 if up == item_id:
                     out.append(Issue(where, f"{item_id}: lists itself as upstream", item_id))
@@ -327,16 +327,16 @@ def check_trace(p):
                     out.append(Issue(where, f"{item_id}: relies on {ref} but the product has no {PO}/register.jsonl", item_id))
                 elif ref not in p.register:
                     out.append(Issue(where, f"{item_id}: relies on {ref}, which is not declared in the register", item_id))
-            ev = obj.get("evidence") or {}
-            if ev.get("tag") == "Validated" and not ev.get("sources"):
+            tag, sources = obj.get("evidence_tag"), obj.get("sources")
+            if tag == "Validated" and not sources:
                 out.append(Issue(where, f"{item_id}: tagged Validated with no sources", item_id))
-            if ev.get("tag") == "Stated" and not ev.get("sources") and not relied:
+            if tag == "Stated" and not sources and not relied:
                 out.append(Issue(where, f"{item_id}: tagged Stated but names no source and relies on no register entry", item_id))
-            if ev.get("tag") == "Assumed" and not any(p.register.get(r, {}).get("type") == "assumption" for r in relied):
+            if tag == "Assumed" and not any(p.register.get(r, {}).get("type") == "assumption" for r in relied):
                 out.append(Issue(where, f"{item_id}: tagged Assumed but relies on no register assumption", item_id, "warning"))
     for item_id, obj in p.live().items():
         current = [n for n, o in p.history[item_id]][-1]
-        for up in obj.get("upstream") or []:
+        for up in obj.get("upstream_ids") or []:
             cur = p.current(up)
             if cur and cur.get("event") == "remove":
                 out.append(Issue(p.label("trace", current), f"{item_id}: upstream {up} has been removed; rebuild or relink", item_id, "warning"))
@@ -355,7 +355,7 @@ def check_trace(p):
 
 def find_cycles(p):
     live = p.live()
-    graph = {i: [u for u in (o.get("upstream") or []) if u in live] for i, o in live.items()}
+    graph = {i: [u for u in (o.get("upstream_ids") or []) if u in live] for i, o in live.items()}
     state, out = {}, []
 
     def visit(node, stack):
@@ -396,7 +396,7 @@ def check_markdown(p):
     for rel, text in texts.items():
         for lineno, line in enumerate(text.splitlines(), 1):
             for found in ID_IN_TEXT.findall(line):
-                if found[:3] not in PREFIXES:
+                if found.split("-")[0] not in PREFIXES:
                     continue
                 if found not in p.history:
                     out.append(Issue(f"{p.slug}/{rel}:{lineno}", f"{found} has no trace record; declare it with scripts/traces.py add trace", found))
@@ -593,7 +593,7 @@ def cmd_versions(args):
     head = git("rev-parse", "--short", "HEAD") or "unknown"
     if git("status", "--porcelain", "--untracked-files=no"):
         head += "+dirty"
-    print(json.dumps({"aidev_po": head, "skills": skills, "templates": templates}, indent=2))
+    print(json.dumps({"aidev_po": head, "skill_versions": skills, "template_versions": templates}, indent=2))
     return 0
 
 
@@ -637,7 +637,7 @@ def fill_trace(folder, objs):
         staged = Product(folder, {"trace": objs[:k]})
         obj.setdefault("ts", now())
         if obj.get("event") == "write" and not obj.get("item_id"):
-            obj["item_id"] = next_id_for(staged, obj.get("item_type", "other"))
+            obj["item_id"] = next_id_for(staged, obj.get("item_type", ""))
         if obj.get("event") in ("write", "remove") and "rev" not in obj:
             hist = staged.history.get(obj.get("item_id"), [])
             obj["rev"] = (hist[-1][1].get("rev", 0) if hist else 0) + 1
@@ -709,7 +709,7 @@ def describe(p, item_id, w):
                for _, r in p.reviews if item_id in (r.get("item_ids") or [])
                and str(r.get("ts", "")) >= w.get("ts", "") and (until is None or str(r.get("ts", "")) < until)]
     relied = []
-    for ref in w.get("relied_on") or []:
+    for ref in w.get("register_refs") or []:
         decl, then = register_state(p, ref, w.get("ts"))
         _, current = register_state(p, ref)
         relied.append({"id": ref, "type": decl.get("type"), "text": decl.get("text"),
@@ -719,8 +719,9 @@ def describe(p, item_id, w):
     return {"item_id": item_id, "rev": w.get("rev"), "latest_rev": cur.get("rev"), "removed": cur.get("event") == "remove",
             "item_type": w.get("item_type"), "summary": w.get("summary"), "file": w.get("file"), "ts": w.get("ts"),
             "run": w.get("run"), "stage": w.get("stage"), "agent": w.get("agent"), "step": w.get("step"),
-            "evidence": w.get("evidence"), "skills": w.get("skills"), "templates": w.get("templates"),
-            "rerun": w.get("rerun"), "relied_on": relied, "reviews": reviews, "upstream": w.get("upstream") or [],
+            "evidence_tag": w.get("evidence_tag"), "sources": w.get("sources") or [],
+            "skill_versions": w.get("skill_versions"), "template_versions": w.get("template_versions"),
+            "rerun": w.get("rerun"), "register_refs": relied, "reviews": reviews, "upstream_ids": w.get("upstream_ids") or [],
             "revisions": len(writes)}
 
 
@@ -754,13 +755,13 @@ def cmd_chain(args):
             nodes[item_id] = {"item_id": item_id, "missing": True}
             return
         nodes[item_id] = describe(p, item_id, w)
-        for up in nodes[item_id]["upstream"]:
+        for up in nodes[item_id]["upstream_ids"]:
             walk(up, p.write_before(up, as_of), depth + 1)
 
     walk(args.item_id, root, 0)
     if args.json:
         print(json.dumps({"root": args.item_id, "as_of": as_of, "nodes": nodes,
-                          "edges": [[i, u] for i, d in nodes.items() for u in d.get("upstream", [])]}, indent=2))
+                          "edges": [[i, u] for i, d in nodes.items() for u in d.get("upstream_ids", [])]}, indent=2))
         return 0
     print(f"as of {as_of}")
     for depth, item_id, repeat in order:
@@ -772,18 +773,18 @@ def cmd_chain(args):
         if d.get("missing"):
             print(f"{pad}{item_id} (no trace at that time)")
             continue
-        tag = (d.get("evidence") or {}).get("tag")
+        tag = d.get("evidence_tag")
         later = f", now rev {d['latest_rev']}" if d["latest_rev"] != d["rev"] else ""
         print(f"{pad}{item_id} rev {d['rev']}{later}{' REMOVED' if d['removed'] else ''} [{tag}] {d['summary']}")
         print(f"{pad}  wrote: {d['stage']} / {d['agent']} / step {d['step']} / {d['run']} in {d['file']}"
               f"{' / rerun ' + d['rerun'] if d.get('rerun') else ''}")
-        print(f"{pad}  skills: {', '.join(f'{k}@{v}' for k, v in (d.get('skills') or {}).items()) or 'none'}")
-        for r in d["relied_on"]:
+        print(f"{pad}  skills: {', '.join(f'{k}@{v}' for k, v in (d.get('skill_versions') or {}).items()) or 'none'}")
+        for r in d["register_refs"]:
             then = f"{r['status_then']}: {r['answer_then']}" if r.get("answer_then") else r.get("status_then")
             now_ = f"{r['status_now']}: {r['answer_now']}" if r.get("answer_now") else r.get("status_now")
             changed = f" (now {now_})" if now_ != then else ""
             print(f"{pad}  relied on {r['id']} ({r['type']}): {r['text']} -> then {then}{changed}")
-        if not d["relied_on"] and not d["upstream"]:
+        if not d["register_refs"] and not d["upstream_ids"]:
             print(f"{pad}  relied on nothing")
         for r in d["reviews"]:
             notes = "; ".join(f"{f['severity']} {f['text']}" for f in r["findings"]) or "no finding on this item"
@@ -798,10 +799,10 @@ def downstream_of(p, start, register_refs=()):
     live = p.live()
     children = {}
     for i, o in live.items():
-        for u in o.get("upstream") or []:
+        for u in o.get("upstream_ids") or []:
             children.setdefault(u, set()).add(i)
     hit = set(start) & set(live)
-    hit |= {i for i, o in live.items() if set(o.get("relied_on") or []) & set(register_refs)}
+    hit |= {i for i, o in live.items() if set(o.get("register_refs") or []) & set(register_refs)}
     todo = list(hit)
     while todo:
         for c in children.get(todo.pop(), ()):

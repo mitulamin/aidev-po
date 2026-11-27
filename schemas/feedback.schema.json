@@ -34,10 +34,10 @@
         "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
         "file": { "type": "string" },
         "section": { "type": "string", "description": "The heading text." },
-        "item_ids": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
+        "item_ids": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" }, "uniqueItems": true },
         "item_revs": {
           "type": "object",
-          "propertyNames": { "pattern": "^[A-Z]{3}-[0-9]{3,}$" },
+          "propertyNames": { "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" },
           "additionalProperties": { "type": "integer", "minimum": 1 },
           "description": "The rev of each item when the feedback was given, so it stays attached to the version it was about."
         },

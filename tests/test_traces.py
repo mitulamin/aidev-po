@@ -12,9 +12,9 @@ RUN = "run-20261230090000-abcd"
 
 def write_line(**over):
     line = {"event": "write", "item_type": "actor", "run": RUN, "stage": "actors", "agent": "actors-producer",
-            "role": "producer", "step": "2-actor-sweep", "file": "actors/actors.md", "summary": "Auditor: reads bookings.",
-            "upstream": ["PRB-001"], "relied_on": [], "evidence": {"tag": "Inferred"}, "skills": {"trace-records": "b11bf9d"},
-            "templates": {}, "aidev_po": "b11bf9d"}
+            "role": "producer", "step": "2-actor-sweep", "file": "03-actors.md", "summary": "Auditor: reads bookings.",
+            "upstream_ids": ["IDEA-001"], "register_refs": [], "evidence_tag": "Inferred", "skill_versions": {"trace-records": "b11bf9d"},
+            "template_versions": {}, "aidev_po": "b11bf9d"}
     line.update(over)
     return line
 
@@ -31,14 +31,14 @@ class FixtureIsValid(unittest.TestCase):
         prefixes = list(schema["x-item-types"].values())
         self.assertEqual(len(prefixes), len(set(prefixes)), "prefixes must be unique")
         for p in prefixes:
-            self.assertRegex(p, r"^[A-Z]{3}$")
+            self.assertRegex(p, r"^[A-Z]{2,4}$")
 
 
 class Checks(unittest.TestCase):
     def setUp(self):
         self.repo = copy_fixture()
         self.product = self.repo / "clinic-booking"
-        self.trace = self.product / ".po" / "trace.jsonl"
+        self.trace = self.product / ".po" / "traces.jsonl"
 
     def tearDown(self):
         shutil.rmtree(self.repo.parent)
@@ -48,7 +48,7 @@ class Checks(unittest.TestCase):
         return code, [l for l in err.splitlines() if l.startswith("error:")]
 
     def test_untraced_id_in_markdown(self):
-        with (self.product / "actors" / "actors.md").open("a") as fh:
+        with (self.product / "03-actors.md").open("a") as fh:
             fh.write("| ACT-009 | Auditor | Check bookings | Read only | Assumed |\n")
         code, errs = self.errors()
         self.assertEqual(code, 1)
@@ -57,7 +57,7 @@ class Checks(unittest.TestCase):
     def test_traced_item_missing_from_file(self):
         append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z"))
         _, errs = self.errors()
-        self.assertTrue(any("ACT-004: ID does not appear in actors/actors.md" in e for e in errs), errs)
+        self.assertTrue(any("ACT-004: ID does not appear in 03-actors.md" in e for e in errs), errs)
 
     def test_prefix_must_match_type(self):
         append_jsonl(self.trace, write_line(item_id="REQ-009", rev=1, ts="2026-12-30T09:00:00Z"))
@@ -65,11 +65,11 @@ class Checks(unittest.TestCase):
         self.assertTrue(any("prefix REQ does not match item_type actor" in e for e in errs), errs)
 
     def test_no_source_is_an_error(self):
-        with (self.product / "actors" / "actors.md").open("a") as fh:
+        with (self.product / "03-actors.md").open("a") as fh:
             fh.write("| ACT-004 | Auditor | Check | Read | Inferred |\n")
-        append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z", upstream=[]))
+        append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z", upstream_ids=[]))
         _, errs = self.errors()
-        self.assertTrue(any("no upstream items and nothing relied on" in e for e in errs), errs)
+        self.assertTrue(any("no upstream_ids and no register_refs" in e for e in errs), errs)
 
     def test_rev_order_and_reuse(self):
         append_jsonl(self.trace, write_line(item_id="ACT-001", rev=3, ts="2026-12-30T09:00:00Z"))
@@ -84,27 +84,27 @@ class Checks(unittest.TestCase):
         self.assertTrue(any("written after it was removed" in e for e in errs), errs)
 
     def test_unknown_register_ref(self):
-        with (self.product / "actors" / "actors.md").open("a") as fh:
+        with (self.product / "03-actors.md").open("a") as fh:
             fh.write("| ACT-004 | Auditor | Check | Read | Stated |\n")
         append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z",
-                                            relied_on=["r-20261230000000-ffff"], evidence={"tag": "Stated"}))
+                                            register_refs=["r-20261230000000-ffff"], evidence_tag="Stated"))
         _, errs = self.errors()
         self.assertTrue(any("not declared in the register" in e for e in errs), errs)
 
     def test_validated_needs_sources(self):
-        with (self.product / "actors" / "actors.md").open("a") as fh:
+        with (self.product / "03-actors.md").open("a") as fh:
             fh.write("| ACT-004 | Auditor | Check | Read | Validated |\n")
-        append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z", evidence={"tag": "Validated"}))
+        append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z", evidence_tag="Validated"))
         _, errs = self.errors()
         self.assertTrue(any("tagged Validated with no sources" in e for e in errs), errs)
 
     def test_cycle(self):
         for item, up in (("ACT-004", "ACT-005"), ("ACT-005", "ACT-004")):
-            with (self.product / "actors" / "actors.md").open("a") as fh:
+            with (self.product / "03-actors.md").open("a") as fh:
                 fh.write(f"| {item} | x | x | x | Inferred |\n")
         append_jsonl(self.trace, write_line(item_id="ACT-004", rev=1, ts="2026-12-30T09:00:00Z"))
-        append_jsonl(self.trace, write_line(item_id="ACT-005", rev=1, ts="2026-12-30T09:01:00Z", upstream=["ACT-004"]))
-        append_jsonl(self.trace, write_line(item_id="ACT-004", rev=2, ts="2026-12-30T09:02:00Z", upstream=["ACT-005"]))
+        append_jsonl(self.trace, write_line(item_id="ACT-005", rev=1, ts="2026-12-30T09:01:00Z", upstream_ids=["ACT-004"]))
+        append_jsonl(self.trace, write_line(item_id="ACT-004", rev=2, ts="2026-12-30T09:02:00Z", upstream_ids=["ACT-005"]))
         _, errs = self.errors()
         self.assertTrue(any("upstream cycle" in e for e in errs), errs)
 
@@ -162,18 +162,18 @@ class Add(unittest.TestCase):
     def test_next_ids(self):
         self.assertEqual(run("traces.py", "next-id", "actor", "--dir", self.product)[1].strip(), "ACT-004")
         self.assertEqual(run("traces.py", "next-id", "REQ", "--dir", self.product)[1].strip(), "REQ-002")
-        self.assertEqual(run("traces.py", "next-id", "slide", "--dir", self.product)[1].strip(), "SLD-001")
+        self.assertEqual(run("traces.py", "next-id", "presentation-item", "--dir", self.product)[1].strip(), "PRS-001")
         self.assertEqual(run("traces.py", "next-id", "FB", "--dir", self.product)[1].strip(), "FB-003")
         self.assertEqual(run("traces.py", "next-id", "LE", "--repo", self.repo)[1].strip(), "LE-003")
 
     def test_add_fills_id_rev_ts(self):
-        with (self.product / "actors" / "actors.md").open("a") as fh:
+        with (self.product / "03-actors.md").open("a") as fh:
             fh.write("| ACT-004 | Auditor | Check bookings | Read only | Inferred |\n")
         line = write_line()
         code, out, err = run("traces.py", "add", "trace", "--dir", self.product, "--json", json.dumps(line))
         self.assertEqual(code, 0, err)
         self.assertEqual(out.strip(), "ACT-004 rev 1")
-        last = read_jsonl(self.product / ".po" / "trace.jsonl")[-1]
+        last = read_jsonl(self.product / ".po" / "traces.jsonl")[-1]
         self.assertEqual((last["item_id"], last["rev"]), ("ACT-004", 1))
         self.assertIn("ts", last)
 
@@ -184,15 +184,15 @@ class Add(unittest.TestCase):
         self.assertEqual(out.strip(), "ACT-002 rev 2")
 
     def test_add_refuses_bad_line_and_appends_nothing(self):
-        before = (self.product / ".po" / "trace.jsonl").read_text()
-        line = write_line(upstream=["ACT-099"])
+        before = (self.product / ".po" / "traces.jsonl").read_text()
+        line = write_line(upstream_ids=["ACT-099"])
         code, _, err = run("traces.py", "add", "trace", "--dir", self.product, "--json", json.dumps(line))
         self.assertEqual(code, 1)
         self.assertIn("nothing appended", err)
-        self.assertEqual((self.product / ".po" / "trace.jsonl").read_text(), before)
+        self.assertEqual((self.product / ".po" / "traces.jsonl").read_text(), before)
 
     def test_add_several_lines_from_stdin(self):
-        with (self.product / "actors" / "actors.md").open("a") as fh:
+        with (self.product / "03-actors.md").open("a") as fh:
             fh.write("| ACT-004 | Auditor | x | x | Inferred |\n| ACT-005 | Insurer | x | x | Inferred |\n")
         lines = "\n".join(json.dumps(write_line(summary=s)) for s in ("Auditor", "Insurer"))
         code, out, err = run("traces.py", "add", "trace", "--dir", self.product, stdin=lines)
@@ -233,8 +233,8 @@ class Walks(unittest.TestCase):
         self.assertEqual(doc["nodes"]["REQ-001"]["rev"], 1)
         self.assertEqual(doc["nodes"]["ACT-003"]["rev"], 1)
         self.assertIn("delete", doc["nodes"]["ACT-003"]["summary"])
-        self.assertEqual(doc["nodes"]["ACT-003"]["relied_on"][0]["answer_then"], "They look after users and tidy up old bookings.")
-        self.assertEqual(set(doc["nodes"]), {"REQ-001", "STY-001", "ACT-003", "ACT-001", "PRB-001"})
+        self.assertEqual(doc["nodes"]["ACT-003"]["register_refs"][0]["answer_then"], "They look after users and tidy up old bookings.")
+        self.assertEqual(set(doc["nodes"]), {"REQ-001", "US-001", "ACT-003", "ACT-001", "IDEA-001"})
 
     def test_chain_current(self):
         code, out, _ = run("traces.py", "chain", "REQ-001", "--json", "--dir", FIXTURE / "clinic-booking")
@@ -243,19 +243,19 @@ class Walks(unittest.TestCase):
     def test_downstream(self):
         code, out, _ = run("traces.py", "downstream", "ACT-003", "--json", "--dir", FIXTURE / "clinic-booking")
         doc = json.loads(out)
-        self.assertEqual(doc["invalidated"], ["ACT-003", "STY-001", "REQ-001"])
+        self.assertEqual(doc["invalidated"], ["ACT-003", "US-001", "REQ-001"])
         self.assertEqual(doc["reopened_stages"], ["actors", "scope", "fsd"])
 
     def test_downstream_of_register_ref(self):
-        code, out, _ = run("traces.py", "downstream", "PRB-001", "--register-ref", "r-20261210085500-0003", "--json",
+        code, out, _ = run("traces.py", "downstream", "IDEA-001", "--register-ref", "r-20261210085500-0003", "--json",
                            "--dir", FIXTURE / "clinic-booking")
         doc = json.loads(out)
-        self.assertEqual(set(doc["invalidated"]), {"PRB-001", "ACT-001", "ACT-002", "ACT-003", "STY-001", "REQ-001"})
+        self.assertEqual(set(doc["invalidated"]), {"IDEA-001", "ACT-001", "ACT-002", "ACT-003", "US-001", "REQ-001"})
 
     def test_locate_line_and_quote(self):
-        code, out, _ = run("traces.py", "locate", "actors/actors.md", "--line", "6", "--dir", FIXTURE / "clinic-booking")
+        code, out, _ = run("traces.py", "locate", "03-actors.md", "--line", "6", "--dir", FIXTURE / "clinic-booking")
         self.assertEqual(json.loads(out)["item_ids"], ["ACT-002"])
-        code, out, _ = run("traces.py", "locate", "fsd/fsd.md", "--quote", "shall not let anyone delete",
+        code, out, _ = run("traces.py", "locate", "08-fsd.md", "--quote", "shall not let anyone delete",
                            "--dir", FIXTURE / "clinic-booking")
         self.assertEqual(json.loads(out)["item_ids"], ["REQ-001"])
 

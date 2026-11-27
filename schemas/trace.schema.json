@@ -2,40 +2,24 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/mitulamin/aidev-po/schemas/trace.schema.json",
   "title": "Trace line",
-  "description": "One line of a product's trace: where each output item came from, so feedback can be walked back to the step where it went wrong. JSON Lines, UTF-8, append-only, stored at <product>/.po/trace.jsonl. Three events: write (an agent wrote or rewrote an item; rev goes up by one each time), review (a reviewer looked at the items in a file) and remove (an item was taken out; its ID is never reused). The current state of an item is its latest write or remove line. Producers declare each write line as they write the item (skill trace-records); scripts/traces.py add fills in ts and rev and checks the line before appending it. scripts/traces.py check validates a whole product.",
+  "description": "One line of a product's trace: where each output item came from, so feedback can be walked back to the step where it went wrong. JSON Lines, UTF-8, append-only, stored at <product>/.po/traces.jsonl. Three events: write (an agent wrote or rewrote an item; rev goes up by one each time), review (a reviewer looked at the items in a file) and remove (an item was taken out; its ID is never reused). The current state of an item is its latest write or remove line. Producers declare each write line as they write the item (skill trace-records); scripts/traces.py add fills in ts and rev and checks the line before appending it. scripts/traces.py check validates a whole product.",
   "x-status": "draft",
   "x-item-types": {
-    "problem": "PRB",
-    "outcome": "OUT",
-    "metric": "MET",
-    "canvas-box": "CNV",
-    "opportunity": "OPP",
-    "risk": "RSK",
-    "segment": "SEG",
-    "job": "JOB",
-    "persona": "PER",
-    "interview-question": "INQ",
+    "idea-item": "IDEA",
+    "audience-item": "AUD",
     "actor": "ACT",
-    "stakeholder": "STK",
     "system": "SYS",
-    "interface": "INT",
-    "event": "EVT",
-    "term": "TRM",
     "scope-item": "SCP",
-    "non-goal": "NGL",
-    "story": "STY",
-    "release": "REL",
-    "session": "WSH",
-    "agenda-item": "AGD",
-    "workshop-output": "WSO",
-    "slide": "SLD",
-    "faq": "FAQ",
-    "narrative-section": "NAR",
+    "workshop-item": "WKS",
+    "presentation-item": "PRS",
+    "fsd-section": "FSD",
+    "story": "US",
     "requirement": "REQ",
     "quality-requirement": "NFR",
-    "acceptance-criterion": "ACC",
-    "fsd-section": "SEC",
-    "other": "ITM"
+    "acceptance-criterion": "AC",
+    "handoff-item": "HND",
+    "decision": "DEC",
+    "parked-item": "PARK"
   },
   "oneOf": [
     { "$ref": "#/$defs/write" },
@@ -45,11 +29,11 @@
   "$defs": {
     "item_id": {
       "type": "string",
-      "pattern": "^[A-Z]{3}-[0-9]{3,}$",
-      "description": "Stable item ID: the item type's three-letter prefix (x-item-types), a hyphen and a number of at least three digits, for example ACT-007. Numbered per product and prefix, in order, from 001. Never changed and never reused, even after the item is removed."
+      "pattern": "^[A-Z]{2,4}-[0-9]{3,}$",
+      "description": "Stable item ID: the item type's prefix (x-item-types, the prefixes the stage templates use), a hyphen and a number of at least three digits, for example ACT-007 or REQ-012. Numbered per product and prefix, in order, from 001. Never changed and never reused, even after the item is removed."
     },
     "item_type": {
-      "enum": ["problem", "outcome", "metric", "canvas-box", "opportunity", "risk", "segment", "job", "persona", "interview-question", "actor", "stakeholder", "system", "interface", "event", "term", "scope-item", "non-goal", "story", "release", "session", "agenda-item", "workshop-output", "slide", "faq", "narrative-section", "requirement", "quality-requirement", "acceptance-criterion", "fsd-section", "other"]
+      "enum": ["idea-item", "audience-item", "actor", "system", "scope-item", "workshop-item", "presentation-item", "fsd-section", "story", "requirement", "quality-requirement", "acceptance-criterion", "handoff-item", "decision", "parked-item"]
     },
     "run": {
       "type": "string",
@@ -83,7 +67,7 @@
     },
     "evidence_tag": {
       "enum": ["Stated", "Inferred", "Assumed", "Simulated", "Validated"],
-      "description": "Stated: the user or a source document said it. Inferred: reasoned from stated items; the upstream items say from what. Assumed: nobody said it; proceeding as if true, with a register assumption. Simulated: from simulated users or personas; a hypothesis, never evidence. Validated: confirmed by a real person or real data, source recorded."
+      "description": "Stated: the user or a source document said it. Inferred: reasoned from other items; upstream_ids say which. Assumed: nobody said it; proceeding as if true, with a register assumption. Simulated: from simulated users or personas; a hypothesis, never evidence. Validated: confirmed by a real person or real data, source recorded."
     },
     "rerun": {
       "type": "string",
@@ -91,7 +75,7 @@
     },
     "write": {
       "type": "object",
-      "required": ["event", "item_id", "item_type", "rev", "ts", "run", "stage", "agent", "role", "step", "file", "summary", "upstream", "relied_on", "evidence", "skills", "templates", "aidev_po"],
+      "required": ["event", "item_id", "item_type", "rev", "ts", "run", "stage", "agent", "role", "step", "file", "summary", "upstream_ids", "register_refs", "evidence_tag", "skill_versions", "template_versions", "aidev_po"],
       "additionalProperties": false,
       "properties": {
         "event": { "const": "write" },
@@ -110,34 +94,27 @@
         },
         "file": { "type": "string", "minLength": 1, "description": "Markdown file, relative to the product folder, where the item ID appears." },
         "summary": { "type": "string", "minLength": 1, "description": "The item in one line, as written at this rev." },
-        "upstream": {
+        "upstream_ids": {
           "type": "array",
           "items": { "$ref": "#/$defs/item_id" },
           "uniqueItems": true,
-          "description": "Item IDs this item was derived from (PROV wasDerivedFrom), declared by the agent as it writes. Upstream and relied_on together must not both be empty."
+          "description": "Item IDs this item was derived from (PROV wasDerivedFrom), declared by the agent as it writes. upstream_ids and register_refs must not both be empty."
         },
-        "relied_on": {
+        "register_refs": {
           "type": "array",
           "items": { "$ref": "#/$defs/register_id" },
           "uniqueItems": true,
           "description": "Register IDs of the user answers, decisions and assumptions this item rests on."
         },
-        "evidence": {
-          "type": "object",
-          "required": ["tag"],
-          "additionalProperties": false,
-          "properties": {
-            "tag": { "$ref": "#/$defs/evidence_tag" },
-            "sources": {
-              "type": "array",
-              "items": { "type": "string", "minLength": 1 },
-              "description": "Documents, notes, transcripts or URLs, with a line or section where possible, for example workshops/2026-12-01-notes.md#L12. Validated needs at least one."
-            },
-            "note": { "type": "string" }
-          }
+        "evidence_tag": { "$ref": "#/$defs/evidence_tag" },
+        "sources": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Documents, notes, transcripts or URLs, with a line or section where possible, for example workshops/2026-12-01-notes.md#L12. Validated needs at least one."
         },
-        "skills": { "$ref": "#/$defs/versions", "description": "Skills the agent applied for this item, name to version." },
-        "templates": { "$ref": "#/$defs/versions", "description": "Templates the file was built from, path under templates/ to version. Empty object if none." },
+        "evidence_note": { "type": "string" },
+        "skill_versions": { "$ref": "#/$defs/versions", "description": "Skills the agent applied for this item, name to version." },
+        "template_versions": { "$ref": "#/$defs/versions", "description": "Templates the file was built from, path under templates/ (for example 03-actors.md) to version. Empty object if none." },
         "aidev_po": { "type": "string", "minLength": 1, "description": "Short git commit of the aidev-po checkout during the run, with +dirty if it had uncommitted edits. Pins every agent, skill and template version." },
         "rerun": { "$ref": "#/$defs/rerun", "description": "Set when the write was made by /po-rerun-from." },
         "model": { "type": "string", "description": "Optional: the model that ran the agent." }
@@ -157,7 +134,7 @@
         "file": { "type": "string", "minLength": 1 },
         "item_ids": { "type": "array", "items": { "$ref": "#/$defs/item_id" }, "minItems": 1, "uniqueItems": true, "description": "Every item in the file at the time of the review." },
         "verdict": { "enum": ["PASS", "FAIL"] },
-        "findings_file": { "type": "string" },
+        "findings_file": { "type": "string", "description": "The reviewer's report, relative to the product folder, for example .po/runs/<run>/actors-review.md." },
         "findings": {
           "type": "array",
           "items": {

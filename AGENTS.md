@@ -65,7 +65,7 @@ The products repo is the user's, and `po` treats it that way. (Behaviour arrives
 <!-- extension point: learning loop (PR 3) -->
 ## Learning loop
 
-Every output item (a requirement, an actor row, a slide, an agenda item) gets a stable ID such as `ACT-007` and a trace line in `<product>/.po/trace.jsonl`, declared by the agent as it writes (skill `trace-records`). Feedback on any item can then be walked back to the step where it went wrong.
+Every output item (a requirement, an actor row, a slide, an agenda item) gets a stable ID such as `ACT-007` and a trace line in `<product>/.po/traces.jsonl`, declared by the agent as it writes (skill `trace-records`). Feedback on any item can then be walked back to the step where it went wrong.
 
 - `/po-feedback`: record feedback (severity P0 to P3, one of nine what's-wrong categories), from chat or pull request comments in the products repo, and trace it with the `tracer`.
 - `/po-rerun-from`: rebuild from the traced step, after showing what is invalidated and getting the user's OK.
