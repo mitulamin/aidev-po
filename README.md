@@ -1,21 +1,61 @@
 # aidev-po
 
-aidev product owner: market, purpose, design philosophy and scope boundaries.
+![Status: Alpha](https://img.shields.io/badge/status-alpha-FF6B35)
+
+> [!WARNING]
+> This project is a work in progress and is considered alpha. It has not been fully tested yet.
 
 aidev-po is a set of agents, skills and commands that take a basic product idea through discovery to a full design specification (FSD). It is the product-definition sibling of [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop), which takes a spec through build, verify and ship. The FSD hands off to ai-sdlc-loop.
 
 You talk to one agent, `po`. It works through the stages Idea, Audience, Actors, Systems, Scope, Workshops, Presentations and FSD, and consults you at every stage gate.
 
-**Status: foundation only.** The repo scaffold, licences, build script and schemas are here. The agents, skills, learning loop, docs and a worked example arrive in follow-up PRs, and this README is rewritten with them.
+Browse the docs site: [https://mitulamin.github.io/aidev-po/](https://mitulamin.github.io/aidev-po/) (served from [docs/](docs/) on `main`).
 
-## Quick look
+## Status
 
-- [AGENTS.md](AGENTS.md): how `po` behaves, in plain markdown. Cursor reads it automatically.
-- [docs/products-repo.md](docs/products-repo.md): your product work lives in a separate private git repo, not here.
-- [schemas/](schemas/): the shared register and stubs for scorecard, trace and feedback.
-- [examples/](examples/): the worked example (coming).
+The repo is built in pull requests: the foundation (licences, scaffold, build script, schemas, products-repo detection) first, then the stage agents and skills, then the learning loop, then the docs, then a worked example. This README and [docs/](docs/) describe how aidev-po is designed to work. Where a page describes behaviour that has not landed yet, treat it as the contract the build follows. The worked example will be a fictional demo in [examples/](examples/), not a real client product.
 
-Docs, method, philosophy and quick start are coming.
+## What it aims to do
+
+1. Turn a rough idea into a specification a build team (human or AI) can plan from: problem, outcome, audience, actors, systems, scope and non-goals, testable requirements, quality requirements, decisions and open questions.
+2. Keep evidence visible. Every item is tagged Stated, Inferred, Assumed, Simulated or Validated, and an item with no evidence is a question, not a fact.
+3. Challenge assumptions like a real product owner, and record it when you overrule.
+4. Put the human in charge at every gate. `po` recommends; you decide.
+5. Learn from every run. Feedback on any output is traced back to where it first went wrong, and becomes a small, tested, human-approved edit.
+
+See [Philosophy](docs/philosophy.md) for the thinking behind this, and [How it fits](docs/how-it-fits.md) for how it relates to aidev, ai-sdlc-loop, aidev-platform and the governance platform, and what it does and does not do.
+
+## How it works
+
+`po` is a coordinator. It does not do the stage work itself: for each stage it starts a producer in a fresh context, then an adversarial reviewer in another, and brings the result to you at the gate with the open questions, at most five at a time, each with a recommended answer and a Park option.
+
+| Stage | Main techniques |
+|-------|-----------------|
+| Idea | Double Diamond, Lean Canvas, opportunity solution tree, assumption mapping |
+| Audience | Jobs to be Done, the Mom Test, value proposition canvas |
+| Actors | Actor modelling, power/interest stakeholder map |
+| Systems | C4 context, EventStorming, integration register, glossary |
+| Scope | Impact mapping, story mapping, MoSCoW, non-goals |
+| Workshops | Planned by AI, run by a person; synthesis written back to the register |
+| Presentations | PR/FAQ, narrative memo, decision-led decks, one-page PRD |
+| FSD | ISO/IEC/IEEE 29148 outline, INVEST, Given/When/Then, EARS, ISO/IEC 25010; handoff by gate PR |
+
+More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](docs/learning-loop.md). The research behind the choices, with sources, is in [Research](docs/research.md).
+
+## Quick start
+
+```
+git clone https://github.com/mitulamin/aidev-po.git
+cd aidev-po
+```
+
+Open the folder in Cursor and run `/po-start`, or tell your agent to follow [AGENTS.md](AGENTS.md) and act as `po`. `po` finds your products repo, lists your products, and asks whether to continue one or start a new one. Full steps in [docs/quick-start.md](docs/quick-start.md).
+
+## Your products live in their own repo
+
+Product work does not live here. It lives in a **separate git repo that you own, always outside this checkout, private by default**, one per client or team.
+
+If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/aidev-products` or `../aidev-products`. Once you choose, it offers to `git init` the folder with an initial commit (no remote by default), optionally to create a **private** GitHub repo with `gh` (or shows the manual steps; you can decline and add a remote later), and saves the path in `aidev-po.local.json` (gitignored). `AIDEV_PO_PRODUCTS_DIR` overrides it. `po` commits at stage gates only with your OK each time, and never pushes unless you ask. Details in [docs/products-repo.md](docs/products-repo.md).
 
 ## Layout
 
@@ -23,8 +63,13 @@ Docs, method, philosophy and quick start are coming.
 |------|------|
 | `agents/`, `skills/`, `commands/` | Sources |
 | `.cursor/` | Generated from the sources by `python3 scripts/build-agents.py` |
-| `templates/`, `schemas/`, `scripts/`, `docs/`, `examples/` | As named |
-| `products/` | Ignored mount point for your own products repo |
+| `templates/` | Copyable stage and config templates (MIT) |
+| `schemas/` | JSON Schemas: register, plus stubs for trace, feedback and scorecard |
+| `scripts/` | Tooling |
+| `docs/` | The documentation site (GitHub Pages, Markdown) |
+| `examples/` | The one worked example, a fictional demo (not live products) |
+
+There is no products folder in this repo.
 
 ## Licences
 
@@ -35,4 +80,4 @@ Same split as ai-sdlc-loop. This is not legal advice; the detail is in [NOTICE.m
 - `templates/`: MIT, [templates/LICENSE](templates/LICENSE)
 - Your products repo is yours and is not covered by any of these.
 
-Products are private by default: they live in a separate git repo you own and `products/` is gitignored here. See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) to contribute.

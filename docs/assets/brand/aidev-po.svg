@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-labelledby="aidevPoTitle">
+  <title id="aidevPoTitle">aidev-po</title>
+  <defs>
+    <linearGradient id="aidevPoBracket" x1="64" y1="22" x2="64" y2="106" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B35"/>
+      <stop offset="100%" stop-color="#FF9F1A"/>
+    </linearGradient>
+  </defs>
+  <path d="M 44,22 L 18,64 L 44,106" stroke="url(#aidevPoBracket)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 84,22 L 110,64 L 84,106" stroke="url(#aidevPoBracket)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 52,46 H 76 M 52,64 H 76 M 52,82 H 66" stroke="#00B7D8" stroke-width="8" stroke-linecap="round"/>
+</svg>
