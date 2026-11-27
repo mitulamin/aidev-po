@@ -1,0 +1,22 @@
+# GitHub Pages: Settings, Pages, Source "Deploy from a branch", Branch main, folder /docs.
+# No theme and no Actions: the layout and CSS are this folder's own, copied from the
+# ai-sdlc-loop site (https://github.com/mitulamin/ai-sdlc-loop) so the two sites match.
+title: aidev-po
+tagline: from a basic idea to a full design specification
+description: aidev-po takes a basic product idea through discovery to a full design specification (FSD), with an AI product owner that asks, challenges and learns.
+url: https://mitulamin.github.io
+baseurl: /aidev-po
+github_repo: https://github.com/mitulamin/aidev-po
+markdown: kramdown
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+exclude:
+  - README.md

@@ -1,3 +1,7 @@
+---
+title: Your products repo
+---
+
 # Your products repo
 
 aidev-po is the tooling. Your product work (ideas, audiences, registers, decisions, workshops, the FSD) lives somewhere else: a **separate git repo that you own, outside the aidev-po checkout, private by default**. This keeps client work out of a public repo and gives it its own history.
@@ -83,4 +87,4 @@ Why not a default inside the checkout? A repo inside a repo is easy to commit by
 
 ## Licence
 
-Your products repo is not covered by aidev-po's licences. See [NOTICE.md](../NOTICE.md).
+Your products repo is not covered by aidev-po's licences. See [NOTICE.md](https://github.com/mitulamin/aidev-po/blob/main/NOTICE.md).
