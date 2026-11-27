@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+
+# Products live in a separate git repo outside this checkout, private by default.
+# Its path is recorded in aidev-po.local.json (below) or set in AIDEV_PO_PRODUCTS_DIR.
+# See docs/products-repo.md.
+
+# Local config: the recorded path of your products repo.
+/aidev-po.local.json
+
+# Safety net only: there is no default location inside this checkout, but if you
+# do put a products repo at products/, nothing in it is ever committed here.
+/products/
+
+# If you point products_dir at some other path inside this checkout, add that path
+# to .git/info/exclude (local only) or to this file in your fork.
