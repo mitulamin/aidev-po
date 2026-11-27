@@ -17,7 +17,7 @@ layout_class: landing
 </section>
 
 <div class="notice" markdown="1">
-**Status.** Schemas are drafts: the shared register, plus trace, feedback, attribution, rerun, ledger and scorecard. The learning loop adds `/po-feedback`, `/po-rerun-from` and `/po-retro`, and the agents `tracer`, `learn-producer` and `learn-reviewer`. The worked example will be a fictional demo under [examples/](https://github.com/mitulamin/aidev-po/tree/main/examples), not a real client product.
+**Status.** Schemas are drafts: the shared register, plus trace, feedback, attribution, rerun, ledger and scorecard. The learning loop adds `/po-feedback`, `/po-rerun-from` and `/po-retro`, and the agents `tracer`, `learn-producer` and `learn-reviewer`. A worked example, a fictional demo and not a real client product, is in [examples/](https://github.com/mitulamin/aidev-po/tree/main/examples).
 </div>
 
 <section class="lp-section" aria-labelledby="why">

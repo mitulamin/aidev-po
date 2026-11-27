@@ -85,7 +85,7 @@ The products repo is the user's, and `po` treats it that way. (Behaviour arrives
 | `scripts/` | Tooling. `build-agents.py`, `products-dir.py`, `register.py`, `traces.py`, `scorecard.py`. |
 | `tests/` | Tests for the scripts, with a fictional fixture products repo. `python3 -m unittest discover -s tests -t tests` |
 | `docs/` | Documentation site (Markdown, served by GitHub Pages from `/docs`). |
-| `examples/` | The one worked example (later PR). Not live products. |
+| `examples/` | The one worked example, a fictional products repo (`examples/tool-library-loans/`); CI checks it. Not live products. |
 | (outside this checkout) | Your products repo. Its path is recorded in `aidev-po.local.json`. |
 
 <!-- extension point: learning loop (PR 3) -->

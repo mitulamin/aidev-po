@@ -1,0 +1,524 @@
+{
+  "schema_version": "1.0.0",
+  "note": "Fictional demo. skills: one row per skill, a run entry added by po after each run, each criterion 0 to 2. measures, stages, causes and summary: written by scripts/scorecard.py update. Last updated after FB-002 was taken in on 2026-11-20.",
+  "skills": [
+    {
+      "skill_name": "c4-context-eventstorming",
+      "stage": "systems",
+      "runs": [
+        {
+          "run_id": "run-20261016093000-4d04",
+          "date": "2026-10-16",
+          "scores": {
+            "triggered": 2,
+            "followed": 2,
+            "reviewer_caught": 1,
+            "outcome": 0,
+            "cost": 2
+          },
+          "total": 7,
+          "harm_flag": true,
+          "product": "tool-library-loans",
+          "evidence_link": "tool-library-loans/.po/tracer/FB-001-AT-001.md",
+          "human_note": "SYS-012: the policy form turned a house rule into an automatic sanction (AT-001, P1 at fsd)."
+        },
+        {
+          "run_id": "run-20261112093000-9c09",
+          "date": "2026-11-12",
+          "scores": {
+            "triggered": 2,
+            "followed": 2,
+            "reviewer_caught": 1,
+            "outcome": 2,
+            "cost": 2
+          },
+          "total": 9,
+          "harm_flag": false,
+          "product": "tool-library-loans",
+          "evidence_link": "tool-library-loans/.po/runs/run-20261112093000-9c09/gate-systems.md",
+          "human_note": "Rerun RR-001 with the correction as a register decision; SYS-012 rev 2 right first time."
+        }
+      ],
+      "verdict": null
+    },
+    {
+      "skill_name": "evidence-tags",
+      "stage": "all",
+      "runs": [
+        {
+          "run_id": "run-20261012093000-2b02",
+          "date": "2026-10-12",
+          "scores": {
+            "triggered": 2,
+            "followed": 2,
+            "reviewer_caught": 2,
+            "outcome": 2,
+            "cost": 2
+          },
+          "total": 10,
+          "harm_flag": false,
+          "product": "tool-library-loans",
+          "evidence_link": "tool-library-loans/.po/runs/run-20261012093000-2b02/gate-audience.md",
+          "human_note": "Reviewer failed AUD-003 tagged Stated on an assumption; fixed to Validated from the desk notes."
+        },
+        {
+          "run_id": "run-20261016093000-4d04",
+          "date": "2026-10-16",
+          "scores": {
+            "triggered": 2,
+            "followed": 1,
+            "reviewer_caught": 0,
+            "outcome": 0,
+            "cost": 2
+          },
+          "total": 5,
+          "harm_flag": false,
+          "product": "tool-library-loans",
+          "evidence_link": "tool-library-loans/.po/tracer/FB-001-AT-001.md",
+          "human_note": "SYS-012 Inferred with an unsupported 'automatic'; the audit passed it."
+        }
+      ],
+      "verdict": null
+    },
+    {
+      "skill_name": "trace-records",
+      "stage": "all",
+      "runs": [
+        {
+          "run_id": "run-20261102093000-8b08",
+          "date": "2026-11-02",
+          "scores": {
+            "triggered": 2,
+            "followed": 2,
+            "reviewer_caught": 2,
+            "outcome": 2,
+            "cost": 1
+          },
+          "total": 9,
+          "harm_flag": false,
+          "product": "tool-library-loans",
+          "human_note": "Complete traces let the tracer walk FB-001 to SYS-012 without guessing."
+        },
+        {
+          "run_id": "run-20261112093000-9c09",
+          "date": "2026-11-12",
+          "scores": {
+            "triggered": 2,
+            "followed": 2,
+            "reviewer_caught": 2,
+            "outcome": 2,
+            "cost": 1
+          },
+          "total": 9,
+          "harm_flag": false,
+          "product": "tool-library-loans",
+          "human_note": "downstream SYS-012 gave the rerun's rebuild list."
+        }
+      ],
+      "verdict": "keep"
+    },
+    {
+      "skill_name": "learning-loop",
+      "stage": "learn",
+      "runs": [
+        {
+          "run_id": "retro-20261118-01",
+          "date": "2026-11-18",
+          "scores": {
+            "triggered": 2,
+            "followed": 2,
+            "reviewer_caught": 2,
+            "outcome": 2,
+            "cost": 1
+          },
+          "total": 9,
+          "harm_flag": false,
+          "evidence_link": ".po/retro/retro-20261118-01/report.md",
+          "human_note": "One client preference applied; one global edit deferred; one rejected on held-out regressions."
+        }
+      ],
+      "verdict": null
+    }
+  ],
+  "measures": [
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261005093000-1a01",
+      "stage": "idea",
+      "date": "2026-10-05",
+      "items_written": 24,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 3,
+      "reviewer_catch_share": 100.0,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261012093000-2b02",
+      "stage": "audience",
+      "date": "2026-10-12",
+      "items_written": 16,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 3,
+      "reviewer_catch_share": 100.0,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261014093000-3c03",
+      "stage": "actors",
+      "date": "2026-10-14",
+      "items_written": 15,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 2,
+      "reviewer_catch_share": 100.0,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261016093000-4d04",
+      "stage": "systems",
+      "date": "2026-10-16",
+      "items_written": 20,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 3,
+      "reviewer_catch_share": 100.0,
+      "attributions": 0,
+      "origins_in_run": 1,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": 0.0,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261020093000-5e05",
+      "stage": "scope",
+      "date": "2026-10-20",
+      "items_written": 17,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 5,
+      "reviewer_catch_share": 100.0,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261022093000-6f06",
+      "stage": "workshops",
+      "date": "2026-10-22",
+      "items_written": 9,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 2,
+      "reviewer_catch_share": 100.0,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261029093000-7a07",
+      "stage": "presentations",
+      "date": "2026-10-29",
+      "items_written": 23,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 1,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 1
+      },
+      "feedback_per_100_items": {
+        "total": 4.3,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 4.3
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 2,
+      "reviewer_catch_share": 66.7,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261102093000-8b08",
+      "stage": "fsd",
+      "date": "2026-11-02",
+      "items_written": 57,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 1,
+        "P0": 0,
+        "P1": 1,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 1.8,
+        "P0": 0.0,
+        "P1": 1.8,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 1,
+      "reviewer_findings": 3,
+      "reviewer_catch_share": 75.0,
+      "attributions": 1,
+      "origins_in_run": 0,
+      "confirmed": 1,
+      "confirmed_share": 100.0,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    },
+    {
+      "product": "tool-library-loans",
+      "run": "run-20261112093000-9c09",
+      "stage": "systems,scope,presentations,fsd",
+      "date": "2026-11-12",
+      "items_written": 10,
+      "trace_complete_pct": 100.0,
+      "feedback": {
+        "total": 0,
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "feedback_per_100_items": {
+        "total": 0.0,
+        "P0": 0.0,
+        "P1": 0.0,
+        "P2": 0.0,
+        "P3": 0.0
+      },
+      "p0_p1": 0,
+      "reviewer_findings": 0,
+      "reviewer_catch_share": null,
+      "attributions": 0,
+      "origins_in_run": 0,
+      "confirmed": 0,
+      "confirmed_share": null,
+      "repeat_causes": 0,
+      "repeat_cause_rate": null,
+      "recurrence_after_edit": 0
+    }
+  ],
+  "stages": [
+    {
+      "product": "tool-library-loans",
+      "stage": "idea",
+      "gates": 1,
+      "questions": 8,
+      "questions_per_gate": 8.0
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "audience",
+      "gates": 1,
+      "questions": 2,
+      "questions_per_gate": 2.0
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "actors",
+      "gates": 1,
+      "questions": 4,
+      "questions_per_gate": 4.0
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "systems",
+      "gates": 2,
+      "questions": 5,
+      "questions_per_gate": 2.5
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "scope",
+      "gates": 2,
+      "questions": 4,
+      "questions_per_gate": 2.0
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "workshops",
+      "gates": 1,
+      "questions": 3,
+      "questions_per_gate": 3.0
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "presentations",
+      "gates": 2,
+      "questions": 3,
+      "questions_per_gate": 1.5
+    },
+    {
+      "product": "tool-library-loans",
+      "stage": "fsd",
+      "gates": 2,
+      "questions": 3,
+      "questions_per_gate": 1.5
+    }
+  ],
+  "causes": [
+    {
+      "cause": "unsupported-inference",
+      "agent": "systems-producer",
+      "count": 1,
+      "runs": 1,
+      "products": [
+        "tool-library-loans"
+      ],
+      "first_seen": "2026-10-16",
+      "last_seen": "2026-10-16",
+      "after_edit": 0
+    }
+  ],
+  "summary": {
+    "runs": 9,
+    "items_written": 191,
+    "feedback": {
+      "total": 2,
+      "P0": 0,
+      "P1": 1,
+      "P2": 0,
+      "P3": 1
+    },
+    "feedback_per_100_items": 1.0,
+    "trace_complete_pct": 100.0,
+    "reviewer_catch_share": 92.0,
+    "confirmed_share": 100.0,
+    "repeat_cause_rate": 0.0,
+    "recurrence_after_edit": 0,
+    "held_out_regressions": 0
+  },
+  "generated": "2026-11-20T16:10:00Z"
+}

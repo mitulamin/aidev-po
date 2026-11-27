@@ -1,0 +1,12 @@
+diff --git a/.po/preferences.md b/.po/preferences.md
+index 75eae52..04fa5d4 100644
+--- a/.po/preferences.md
++++ b/.po/preferences.md
+@@ -5,3 +5,7 @@
+ ## Money
+ 
+ - Amounts in pounds sterling; the grant is the budget ceiling unless the board says otherwise.
++
++## House rules and sanctions
++
++- House rules are applied by the coordinator in person. Never specify an automatic sanction (suspension, fee, block) without a register decision that names who decides. (Added by retro-20261118-01, ledger LE-002, from FB-001.)

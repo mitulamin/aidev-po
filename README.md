@@ -17,7 +17,7 @@ Browse the docs site: [https://mitulamin.github.io/aidev-po/](https://mitulamin.
 
 Schemas in [schemas/](schemas/) are drafts: the shared register, plus trace, feedback, attribution, rerun, ledger and scorecard. The learning loop adds the commands `/po-feedback`, `/po-rerun-from` and `/po-retro`, and the agents `tracer`, `learn-producer` and `learn-reviewer`.
 
-The repo is built in pull requests: the foundation first, then the stage agents and skills, the learning loop, these docs, then a worked example. The worked example will be a fictional demo in [examples/](examples/), not a real client product.
+A worked example is in [examples/](examples/): a fictional tool-library products repo that runs the stages and the learning loop end to end. It is a demo, not a real client product.
 
 ## What it aims to do
 

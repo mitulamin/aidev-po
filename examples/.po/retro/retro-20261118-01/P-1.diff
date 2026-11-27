@@ -1,0 +1,12 @@
+diff --git a/skills/c4-context-eventstorming/SKILL.md b/skills/c4-context-eventstorming/SKILL.md
+index eb4916c..598c181 100644
+--- a/skills/c4-context-eventstorming/SKILL.md
++++ b/skills/c4-context-eventstorming/SKILL.md
+@@ -40,6 +40,7 @@ Don't:
+ 1. Pull all actors (`ACT-NNN`) and upstream constraints/decisions.
+ 2. Produce the C4 Level 1 System Context table and Mermaid/ASCII diagram.
+ 3. Map the end-to-end EventStorming flow (Trigger -> Command -> Aggregate -> Domain Event -> Policy -> External System) with stable IDs (`SYS-NNN`).
++   For a policy that applies a sanction or changes a person's rights, record who decides: the system, or a named actor. If the inputs do not say, raise a `[QUESTION: ...]` instead of writing an automatic policy.
+ 4. Extract all Hotspots into register requests (`[QUESTION: ...]` / `[ASSUMPTION: ...]`).
+ 
+ ## Self-check
