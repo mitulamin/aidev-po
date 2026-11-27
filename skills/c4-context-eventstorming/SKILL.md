@@ -1,0 +1,57 @@
+---
+name: c4-context-eventstorming
+description: "Use during the Systems stage to define C4 Level 1 System Context (plus Level 2 containers when needed) and map domain events, commands, actors, aggregates, policies, and hotspots via EventStorming."
+licence: CC-BY-SA-4.0
+---
+
+# C4 Context and EventStorming
+
+Establish the system boundary, external integrations, trust boundaries, and end-to-end domain event flow before deciding scope or detailed requirements.
+
+## When to use
+
+During the `systems` stage after `actors` are defined and before `scope` slicing.
+
+## Producer: dos and don'ts
+
+Do:
+- Draw a **C4 Level 1 System Context** diagram as diffable **Mermaid** diagram code (`SYS-NNN`): the product system box, every human actor from `actors`, every external system/API (including contracted platforms on client work), and data/protocol arrows
+- Maintain an **Integration Register** (`SYS-NNN`): direction, data, protocol, owner, volume/SLA, and failure behaviour for every interface; every arrow on the diagram must have an owner and a row here, and unknown cells become `[QUESTION: ...]` entries, never guesses
+- Add a **C4 Level 2 Container** overview only if multiple deployable boundaries or major architectural assumptions affect scope, cost, or compliance
+- Run a **Process EventStorming** flow in chronological order:
+  - **Domain Events** (orange, past tense, e.g., `OrderSubmitted`)
+  - **Commands** (blue, imperative, triggered by actor or policy)
+  - **Actors** (matching `ACT-NNN` IDs)
+  - **Aggregates / Entities** (yellow, business rules/invariants enforced)
+  - **Policies / Reactions** (lilac: "Whenever `<Event>`, then `<Command>`")
+  - **External Systems** (pink, matching C4 Context)
+  - **Hotspots** (red: unknowns, bottlenecks, failure modes, conflicting rules — become workshop agenda items)
+- Write a **Glossary & Bounded Contexts** table so the FSD and code share one ubiquitous language
+- Turn every EventStorming Hotspot into an explicit `[QUESTION: ...]` or `[ASSUMPTION: ...]` in the register
+- Tag every system dependency, SLA, data contract, and event rule with evidence tags (`[Stated]`, `[Inferred]`, `[Assumed]`, `[Validated]`)
+
+Don't:
+- Jump into database schemas, framework picks, or microservice splits prematurely
+- Leave external system failure modes, ownership, or auth boundaries unstated
+- Invent new actors in EventStorming that are missing from `actors` without raising an upstream gap
+
+## Steps
+
+1. Pull all actors (`ACT-NNN`) and upstream constraints/decisions.
+2. Produce the C4 Level 1 System Context table and Mermaid/ASCII diagram.
+3. Map the end-to-end EventStorming flow (Trigger -> Command -> Aggregate -> Domain Event -> Policy -> External System) with stable IDs (`SYS-NNN`).
+4. Extract all Hotspots into register requests (`[QUESTION: ...]` / `[ASSUMPTION: ...]`).
+
+## Self-check
+
+- [ ] Does every actor in C4 Context and EventStorming match an `ACT-NNN` from `actors` (or flag a missing actor)?
+- [ ] Are all external systems, data flows, trust boundaries, and failure modes explicitly listed with evidence tags?
+- [ ] Are Domain Events phrased in past tense and linked to Commands, Aggregates, and Policies?
+- [ ] Is every EventStorming Hotspot captured in `=== REGISTER REQUESTS ===`?
+
+## Adversarial reviewer
+
+- Flag any external integration with no stated owner, protocol, auth model, or failure fallback (`[Assumed]` if unconfirmed).
+- Flag any EventStorming flow that jumps from UI action to persistence without naming the Domain Event or business invariant.
+- Flag any Hotspot left unlogged in the register.
+- Flag premature implementation detail (specific ORM/library choices) disguised as system context unless locked upstream.

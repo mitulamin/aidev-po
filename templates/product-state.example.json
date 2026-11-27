@@ -1,0 +1,18 @@
+{
+  "product_slug": "example-product",
+  "title": "Example Product",
+  "current_stage": "idea",
+  "completed_stages": [],
+  "last_run": {
+    "run_id": "",
+    "ts": "",
+    "stage": "idea",
+    "summary": "Initialised product folder; awaiting Idea producer."
+  },
+  "trace_reserve": {
+    "schema": "schemas/trace.schema.json",
+    "traces_file": ".po/traces.jsonl",
+    "feedback_file": ".po/feedback.jsonl",
+    "note": "Reserved for PR 3 learning loop."
+  }
+}

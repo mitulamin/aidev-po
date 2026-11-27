@@ -1,0 +1,57 @@
+---
+name: evidence-tags
+description: "Use when writing, reviewing, or auditing any product discovery artefact so every claim, metric, persona, or requirement carries an evidence tag and verifiable source."
+licence: CC-BY-SA-4.0
+---
+
+# Evidence tags and provenance
+
+Every claim in a product artefact must show where it came from. An item without evidence is a question or assumption, never a fact.
+
+## When to use
+
+Every producer and reviewer across all stages (Idea through FSD), and `evidence-auditor` at every stage gate.
+
+## Allowed tags
+
+| Tag | Meaning | Required provenance |
+| --- | --- | --- |
+| `Stated` | Directly stated by the user, stakeholder, customer, or source document | Exact quote or file/interview/doc reference |
+| `Inferred` | Logically derived from stated or validated items | Explicit upstream item IDs + reasoning |
+| `Assumed` | Working hypothesis chosen without direct confirmation | Register ID (`r-...`) as `assumption` or `question` |
+| `Simulated` | Synthetic exploration (e.g. simulated user critique) used ONLY to spot gaps | Explicit `[Simulated]` label + disclaimer; never counts as validation |
+| `Validated` | Confirmed through observed real-world behaviour, test, data, or workshop sign-off | Concrete observation, metric, or sign-off record |
+
+## Producer: dos and don'ts
+
+Do:
+- Tag every substantive claim, problem statement, persona attribute, metric, constraint, and requirement with `[Stated]`, `[Inferred]`, `[Assumed]`, `[Simulated]`, or `[Validated]`
+- Include the concrete source immediately after the tag (user quote, file path, interview date/id, upstream item ID, or register ID `r-...`)
+- Convert any untagged or sourceless belief into an `[Assumed]` item and emit `[ASSUMPTION: ...]` or `[QUESTION: ...]` in `=== REGISTER REQUESTS ===`
+- Label any synthetic persona walk-through or simulated user feedback `[Simulated]` and treat its findings strictly as gap-discovery hypotheses to verify
+
+Don't:
+- Present an assumption or inference as `[Stated]` or `[Validated]`
+- Cite vague sources like "industry standard", "users want", or "common sense" without an `[Assumed]` tag and register entry
+- Treat `[Simulated]` user feedback as market validation or evidence of demand
+- Leave any artefact item without a stable ID (`<PREFIX>-NNN`) and an evidence tag
+
+## Steps
+
+1. Draft each output item with a stable ID (`<PREFIX>-NNN`).
+2. Attach one of the five evidence tags and its exact source or upstream IDs.
+3. For every `[Assumed]` item, ensure a matching `[ASSUMPTION: ...]` or `[QUESTION: ...]` entry is declared for `.po/register.jsonl`.
+4. Verify no `[Simulated]` output is used to justify scope or demand on its own.
+
+## Self-check
+
+- [ ] Does every substantive item carry a stable ID, one of the five tags, and a concrete source or register reference?
+- [ ] Are all `[Assumed]` items declared in `=== REGISTER REQUESTS ===`?
+- [ ] Are any `[Simulated]` explorations explicitly labelled and never treated as `[Validated]`?
+
+## Adversarial reviewer
+
+- Fail (`Verdict: FAIL`) any artefact containing an untagged claim, metric, persona trait, or requirement.
+- Fail any item tagged `[Stated]` or `[Validated]` whose cited source does not exist or does not support the claim.
+- Fail any `[Assumed]` item not declared in the register or `=== REGISTER REQUESTS ===`.
+- Fail any `[Simulated]` user input presented as real customer validation.
