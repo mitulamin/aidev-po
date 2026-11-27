@@ -15,7 +15,9 @@ Browse the docs site: [https://mitulamin.github.io/aidev-po/](https://mitulamin.
 
 ## Status
 
-The repo is built in pull requests: the foundation (licences, scaffold, build script, schemas, products-repo detection) first, then the stage agents and skills, then the learning loop, then the docs, then a worked example. This README and [docs/](docs/) describe how aidev-po is designed to work. Where a page describes behaviour that has not landed yet, treat it as the contract the build follows. The worked example will be a fictional demo in [examples/](examples/), not a real client product.
+Schemas in [schemas/](schemas/) are drafts: the shared register, plus trace, feedback, attribution, rerun, ledger and scorecard. The learning loop adds the commands `/po-feedback`, `/po-rerun-from` and `/po-retro`, and the agents `tracer`, `learn-producer` and `learn-reviewer`.
+
+The repo is built in pull requests: the foundation first, then the stage agents and skills, the learning loop, these docs, then a worked example. The worked example will be a fictional demo in [examples/](examples/), not a real client product.
 
 ## What it aims to do
 

@@ -2,6 +2,8 @@
 
 The documentation site for aidev-po. These are plain Markdown pages that read fine on GitHub and are also published with GitHub Pages.
 
+The schemas those pages describe are drafts: the shared register, plus trace, feedback, attribution, rerun, ledger and scorecard. The learning loop adds the commands `/po-feedback`, `/po-rerun-from` and `/po-retro`, and the agents `tracer`, `learn-producer` and `learn-reviewer`. See [learning-loop.md](learning-loop.md).
+
 ## Publishing
 
 Settings, Pages, Source "Deploy from a branch", Branch `main`, folder `/docs`. There is no Actions workflow; GitHub builds the Markdown with Jekyll.
@@ -21,7 +23,7 @@ The look is copied from the [ai-sdlc-loop site](https://github.com/mitulamin/ai-
 | [how-it-fits.md](how-it-fits.md) | How it fits with aidev, ai-sdlc-loop, aidev-platform and the governance platform, and what it does and does not do |
 | [method.md](method.md) | The coordinator pattern, evidence tags, challenger, outliner questions, stage gates |
 | [stages.md](stages.md) | Stage by stage: Idea to FSD, with techniques and artefacts |
-| [learning-loop.md](learning-loop.md) | Stable IDs, traces, feedback, tracer, rerun, retro, scorecard |
+| [learning-loop.md](learning-loop.md) | Stable IDs, traces, feedback, `/po-feedback`, `/po-rerun-from`, `/po-retro`, `tracer`, `learn-producer`, `learn-reviewer`, scorecard |
 | [quick-start.md](quick-start.md) | Get going in a few minutes |
 | [products-repo.md](products-repo.md) | Where your product work lives |
 | [research.md](research.md) | What the design is based on, with sources |
