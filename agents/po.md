@@ -63,6 +63,7 @@ Do not dump whole histories into subagents. For the active stage:
    - Start `evidence-auditor` in a **fresh context** on the stage output + upstream refs. If `evidence-auditor` returns `Verdict: FAIL`, send its findings back to a fresh `<stage>-producer` (within the revision budget) so every claim has a valid tag and source before the gate.
    - Start `challenger` in a **fresh context** on the stage output + upstream locked decisions to generate PO pushback (last real instance, what if nothing is built, assumption map, pre-mortem, and optional `[Simulated]` gap check).
    - Ingest register requests from both cross-cutting agents verbatim.
+   - Run `python3 scripts/traces.py check --product <slug>`. Any error blocks the gate: send it to a fresh `<stage>-producer` like an `evidence-auditor` FAIL. Show warnings at the gate.
 
 ## 4. Stage Gate & User Consultation (Outliner Pattern)
 

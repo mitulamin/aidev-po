@@ -2,7 +2,7 @@
 import json
 import unittest
 
-from helpers import FIXTURE, ROOT, read_jsonl
+from helpers import FIXTURE, ROOT, read_jsonl, run
 
 try:
     import jsonschema
@@ -76,6 +76,25 @@ class Rejects(unittest.TestCase):
         line = [l for l in read_jsonl(FIXTURE / "clinic-booking" / ".po" / "register.jsonl") if l.get("type") == "feedback"][0]
         self.assertTrue(v.is_valid(line))
         self.assertFalse(v.is_valid({k: x for k, x in line.items() if k != "record"}))
+
+
+class RegisterScript(unittest.TestCase):
+    """scripts/register.py accepts the learning loop's register lines, as the schema does."""
+
+    def test_selftest(self):
+        code, out, err = run("register.py", "selftest")
+        self.assertEqual(code, 0, err)
+
+    def test_fixture_registers_pass_check(self):
+        for product in ("clinic-booking", "team-rota"):
+            code, _, err = run("register.py", "check", "--register", FIXTURE / product / ".po" / "register.jsonl")
+            self.assertEqual(code, 0, f"{product}: {err}")
+
+    def test_types_match_schema(self):
+        import importlib
+        register = importlib.import_module("register")
+        schema = json.loads((ROOT / "schemas" / "register.schema.json").read_text(encoding="utf-8"))
+        self.assertEqual(list(register.TYPES), schema["$defs"]["declare"]["properties"]["type"]["enum"])
 
 
 if __name__ == "__main__":

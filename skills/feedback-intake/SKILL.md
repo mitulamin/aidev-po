@@ -46,7 +46,7 @@ If two fit, take the earlier one in the list, except `not-sure`, which is used o
 2. **Record the revision.** Put each item's current `rev` in `target.item_revs`, so the feedback stays attached to the version it was about.
 3. **Severity and category.** Use the user's if given. Otherwise propose both, with a one-line reason, and ask the user to confirm or change them in one short question. Never record a severity the user has not seen.
 4. **Keep the words.** `text` is the user's words, verbatim. Put what it should say, if they said, in `expected`.
-5. **Write it.** `python3 scripts/traces.py add feedback --product <slug> --json '{...}'` (it assigns the `FB-` ID), then a register declare line of type `feedback` with `record` set to that ID, the `item_ids`, and the user's words as `text`.
+5. **Write it.** `python3 scripts/traces.py add feedback --product <slug> --json '{...}'` (it assigns the `FB-` ID), then its register line: `python3 scripts/register.py add --type feedback --record <FB-ID> --agent po --stage <stage of the target> --item-id <ID> ... --text "<the user's words>" --register <product>/.po/register.jsonl`.
 6. **Hand on.** Offer to trace it now (the `tracer`); for P0 and P1 recommend yes. Fixing the output is `/po-rerun-from`; improving aidev-po is `/po-retro`.
 
 ## Pull request comments
