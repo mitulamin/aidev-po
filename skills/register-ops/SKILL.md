@@ -17,7 +17,7 @@ Every producer, reviewer, `evidence-auditor`, `challenger`, and `po` when record
 - File path inside the product folder: `<products-repo>/<slug>/.po/register.jsonl`.
 - Append-only JSONL: never edit or delete existing lines; state changes are `update` lines referencing `ref`.
 - Valid `stage` values: `idea`, `audience`, `actors`, `systems`, `scope`, `workshops`, `presentations`, `fsd`.
-- Valid `type` values: `assumption`, `question`, `decision` (note: high-urgency blockers are `question` with `urgency: "high"`).
+- Valid `type` values: `assumption`, `question`, `decision` (note: high-urgency blockers are `question` with `urgency: "high"`). The learning loop adds `feedback` and `attribution`, which only `po` writes, with `register.py add --record <FB-n|AT-n>` (skill `feedback-intake`, command `/po-feedback`); they never appear in a register-request block.
 - Valid `status` values: `open`, `surfaced`, `answered`, `dismissed`, `duplicate`, `decided`, `superseded`.
 - Valid `by` values on updates: `coordinator`, `user`.
 

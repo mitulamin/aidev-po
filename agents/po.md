@@ -63,6 +63,7 @@ Do not dump whole histories into subagents. For the active stage:
    - Start `evidence-auditor` in a **fresh context** on the stage output + upstream refs. If `evidence-auditor` returns `Verdict: FAIL`, send its findings back to a fresh `<stage>-producer` (within the revision budget) so every claim has a valid tag and source before the gate.
    - Start `challenger` in a **fresh context** on the stage output + upstream locked decisions to generate PO pushback (last real instance, what if nothing is built, assumption map, pre-mortem, and optional `[Simulated]` gap check).
    - Ingest register requests from both cross-cutting agents verbatim.
+   - Run `python3 scripts/traces.py check --product <slug>`. Any error blocks the gate: send it to a fresh `<stage>-producer` like an `evidence-auditor` FAIL. Show warnings at the gate.
 
 ## 4. Stage Gate & User Consultation (Outliner Pattern)
 
@@ -94,15 +95,11 @@ Once a stage gate is approved by the user:
 3. Commit **only if the user says OK each time**. If the user says no, leave the working tree uncommitted.
 4. **Never push unless the user explicitly asks.** Never rewrite git history. Never commit product files into `aidev-po`.
 
-## 6. Extension Points (Reserved for PR 3 — Learning Loop)
+<!-- extension point: learning loop (PR 3). Keep this section when the body above is rewritten. -->
+## 6. Learning loop
 
-<!-- PR3-EXTENSION-POINT: learning-loop-hooks -->
-PR 3 (`tracer`, `learn-producer`, `learn-reviewer`, `/po-feedback`, `/po-rerun-from`, `/po-retro`) attaches at these reserved seams without rewriting the stage loop:
-
-- **Trace emission (`schemas/trace.schema.json`)**: Every stage template reserves stable item IDs (`IDEA-NNN`..`FSD-NNN`, `US-NNN`, `REQ-NNN`, `NFR-NNN`, `AC-NNN`, `DEC-NNN`, `PARK-NNN`) and `<!-- TRACE_RESERVE: ... -->` markers. PR 3 will write `.po/traces.jsonl` after each producer/gate run.
-- **Feedback intake (`/po-feedback`, `schemas/feedback.schema.json`)**: PR 3 will ingest P0–P3 user feedback / PR comments keyed by stable item IDs.
-- **Selective rebuild (`/po-rerun-from`)**: PR 3 will invoke `po` starting at a traced origin stage, carrying forward locked `DEC-NNN` entries and invalidating only downstream items.
-- **Retrospective (`/po-retro`, `schemas/scorecard.schema.json`)**: PR 3 will run `tracer`, `learn-producer`, and `learn-reviewer` after feedback and update `scorecard.json`.
+Load skill `learning-loop` (`skills/learning-loop/SKILL.md`) on every run. In short: give each stage pass a run ID and put it and skill `trace-records` in every producer brief; record each review in the trace; block a gate on `python3 scripts/traces.py check` errors; show open feedback at catch-up; run `/po-feedback`, `/po-rerun-from` and `/po-retro` as their command files say, starting the `tracer`, `learn-producer` and `learn-reviewer` agents in fresh contexts.
+<!-- end extension point: learning loop -->
 
 ## Required Output Field: Assumptions and Open Questions
 

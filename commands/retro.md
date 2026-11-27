@@ -1,0 +1,32 @@
+---
+name: retro
+description: "Turn traced feedback into small, tested, user-approved edits to aidev-po or the client's preferences, with learn-producer and learn-reviewer in fresh contexts, held-out tests and a ledger of every accepted and rejected edit. Then update the scorecard."
+---
+
+# /po-retro
+
+Fix the process for next time. This is ai-sdlc-loop's Learn phase (`/retro`), fed by the tracer's attributions instead of summaries.
+
+The argument, if any, limits the retro to one product. By default it covers every product in the products repo.
+
+## Steps
+
+1. **Gather.**
+   1. *Trace what was left untraced.* `python3 scripts/traces.py open-feedback --all --json` lists feedback with no attribution, which is what `/po-feedback` leaves behind when the user chose "leave it for `/po-retro`" for a P2 or P3. If there is any, show it (product, ID, severity, items, words) and ask whether to trace it now. Recommend yes. If the user says no for some, leave those out of this retro; they stay open and are offered again next time. For each one the user agrees to, run `/po-feedback`'s steps 3 to 6 (tracer in a fresh context, ingest, register line, show the finding, the user confirms or rejects). Do not start step 2 until every agreed line has an attribution.
+   2. *Select.* From each product, the current attributions that the user confirmed, or that are at 0.8 or more and not rejected, and that no ledger line in `<products repo>/.po/ledger.jsonl` names yet. Leave out cause `input-changed` (a product correction, not a learning).
+   3. If there are none, say so, run step 10 and stop.
+2. **Set up.** Retro ID `retro-<yyyymmdd>-<nn>`; folder `<products repo>/.po/retro/<retro-id>/`.
+3. **Held-out pool.** Choose cases the producer will never see: confirmed cases already in the ledger from earlier retros, and the matching stages of the worked example in aidev-po's `examples/`. Write the list to `heldout-pool.md` in the retro folder and keep it out of the brief.
+4. **Brief.** Write `brief.md` in the format of `templates/learning/retro-brief.md`: the task, the acceptance criteria, the attributions with their tracer reports and feedback, the ledger, the scorecard's `causes`, the products repo path, and where to write.
+5. **Producer.** Start `learn-producer` (`.cursor/agents/learn-producer.md`) in a fresh context with the brief. It writes `proposals.md`, a diff per proposal, and `report.md`.
+6. **Held-out runs.** For each proposal, run the affected step on each held-out case in a scratch copy, without and with the edit (a scratch git worktree of aidev-po with the diff applied; never the live checkout or the products repo). Write the pass counts and any regression to `heldout.md` in the format of `templates/learning/heldout-results.md`.
+7. **Reviewer.** Start `learn-reviewer` (`.cursor/agents/learn-reviewer.md`) in a fresh context with the brief's task and acceptance criteria, `proposals.md`, the diffs and `heldout.md`; not the producer's transcript. On FAIL, start a new producer with the brief and `review.md`, rerun step 6 for changed proposals, then a new reviewer. After three FAILs in a row, stop and report the retro as failed with its findings.
+8. **The user decides.** Present every proposal in one batch: the edit, its scope and surface, the feedback and attributions behind it, held-in before and after, held-out before and after, the reviewer's verdict, and your recommendation. A proposal with a held-out regression or a reviewer FAIL is recommended for rejection. The user accepts, rejects or defers each.
+9. **Ledger, then apply.** Append one ledger line per proposal, accepted, rejected or deferred, with `python3 scripts/traces.py add ledger` (it refuses an accepted line without a reviewer PASS, an improved held-in result and a clean held-out result). Then apply each accepted edit:
+   - **global:** in the aidev-po checkout, on a new branch `learn/<retro-id>`, make the edit to the source in `agents/`, `skills/`, `commands/`, `templates/` or `scripts/`, run `python3 scripts/build-agents.py` and the tests, and commit only with the user's OK. The commit message describes the change, never the client or product. Never push unless asked; the user opens a pull request to aidev-po if they want it upstream.
+   - **client:** edit `<products repo>/.po/preferences.md`.
+   - **product:** a register decision in the product.
+
+   Append a new ledger line for each applied edit with `applied` filled in. Approved edits take effect from the next run.
+10. **Scorecard.** `python3 scripts/scorecard.py update`. Add a run entry for each skill this retro scored (`python3 scripts/scorecard.py add-run`). Show the user: feedback per 100 items by run, the repeat-cause rate, any recurrence after an edit, and held-out regressions. Then `python3 scripts/scorecard.py check` and the verdict each skill's runs point to; the user's verdict wins.
+11. **Commit, only with OK.** The ledger, retro folder and scorecard go in one products repo commit if the user says yes. Never push unless asked.

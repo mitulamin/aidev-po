@@ -32,6 +32,8 @@
       "type": "object",
       "required": ["id", "event", "ts", "agent", "stage", "type", "text", "status"],
       "additionalProperties": false,
+      "if": { "properties": { "type": { "enum": ["feedback", "attribution"] } } },
+      "then": { "required": ["record"] },
       "properties": {
         "id": { "$ref": "#/$defs/id" },
         "event": { "const": "declare" },
@@ -39,8 +41,13 @@
         "agent": { "type": "string", "minLength": 1 },
         "stage": { "$ref": "#/$defs/stage" },
         "type": {
-          "enum": ["assumption", "question", "decision"],
-          "description": "assumption: decided without being able to confirm it. question: could not settle it, wants an answer, ideally with a recommended answer in text. decision: a choice made, by the user or by po on the user's behalf, including a user overruling the challenger."
+          "enum": ["assumption", "question", "decision", "feedback", "attribution"],
+          "description": "assumption: decided without being able to confirm it. question: could not settle it, wants an answer, ideally with a recommended answer in text. decision: a choice made, by the user or by po on the user's behalf, including a user overruling the challenger. feedback: the user's feedback on an output (learning loop), full record in .po/feedback.jsonl, named in record. attribution: the tracer's finding for a feedback line, full record in .po/attributions.jsonl, named in record; answered with answer confirmed or rejected once the user has seen it."
+        },
+        "record": {
+          "type": "string",
+          "pattern": "^(FB|AT)-[0-9]{3,}$",
+          "description": "For types feedback and attribution: the id of the full record."
         },
         "text": { "type": "string", "minLength": 1, "description": "One-line statement, verbatim from the agent's register request." },
         "status": { "const": "open" },

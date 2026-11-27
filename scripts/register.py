@@ -5,6 +5,8 @@ Usage:
   scripts/register.py add --agent A --stage S --type assumption|question|decision --text T
                           [--impact I] [--urgency U] [--recommendation R]
                           [--item-id ID ...] [--via agent|coordinator] [--register PATH]
+  scripts/register.py add --agent po --stage S --type feedback|attribution --record FB-n|AT-n --text T
+                          [--item-id ID ...] [--register PATH]
   scripts/register.py ingest FILE|- --agent A --stage S [--via agent|coordinator] [--register PATH]
   scripts/register.py update --ref ID --status S [--stage STAGE] [--note N] [--answer A]
                              [--by coordinator|user] [--impact I] [--urgency U]
@@ -30,13 +32,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 STAGES = ("idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd")
-TYPES = ("assumption", "question", "decision")
+BLOCK_TYPES = ("assumption", "question", "decision")
+RECORD_TYPES = ("feedback", "attribution")
+TYPES = BLOCK_TYPES + RECORD_TYPES
 STATUSES = ("open", "surfaced", "answered", "dismissed", "duplicate", "decided", "superseded")
 LEVELS = ("low", "medium", "high")
 VIA_VALUES = ("agent", "coordinator")
 BY_VALUES = ("coordinator", "user")
 
 ID_RE = re.compile(r"^r-[0-9]{14}-[0-9a-f]{4}$")
+RECORD_RE = re.compile(r"^(FB|AT)-[0-9]{3,}$")
 TS_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 HEADER = "=== REGISTER REQUESTS ==="
@@ -44,12 +49,12 @@ FOOTER = "=== END REGISTER REQUESTS ==="
 NONE_TEXT = "None."
 PLACEHOLDER = "<one-line statement>"
 
-TYPE_TO_TAG = {t: t.upper() for t in TYPES}
+TYPE_TO_TAG = {t: t.upper() for t in BLOCK_TYPES}
 TAG_TO_TYPE = {tag: t for t, tag in TYPE_TO_TAG.items()}
 LINE_RE = re.compile(r"\[(" + "|".join(re.escape(t) for t in TAG_TO_TYPE) + r"): (\S.*)\]")
 
 DECLARE_REQUIRED = ("id", "event", "ts", "agent", "stage", "type", "text", "status")
-DECLARE_OPTIONAL = ("impact", "urgency", "recommendation", "item_ids", "via")
+DECLARE_OPTIONAL = ("impact", "urgency", "recommendation", "item_ids", "via", "record")
 UPDATE_REQUIRED = ("id", "event", "ts", "agent", "stage", "ref", "status")
 UPDATE_OPTIONAL = ("note", "answer", "by", "impact", "urgency")
 
@@ -155,6 +160,10 @@ def validate(rec, known_ids=None):
             errs.append("a declared entry must start with status 'open'")
         if "via" in rec and rec["via"] not in VIA_VALUES:
             errs.append(f"via must be one of {VIA_VALUES}")
+        if rec["type"] in RECORD_TYPES and "record" not in rec:
+            errs.append(f"type {rec['type']} needs record, the FB- or AT- id of the full record")
+        if "record" in rec and not RECORD_RE.fullmatch(rec["record"]):
+            errs.append(f"record {rec['record']!r} must match {RECORD_RE.pattern}")
     else:
         if not ID_RE.fullmatch(rec["ref"]):
             errs.append(f"ref {rec['ref']!r} must match {ID_RE.pattern}")
@@ -198,7 +207,7 @@ def declare_record(fields, used=()):
         "text": fields["text"],
         "status": "open",
     }
-    for k in ("impact", "urgency", "recommendation", "via"):
+    for k in ("impact", "urgency", "recommendation", "via", "record"):
         if fields.get(k):
             rec[k] = fields[k]
     if fields.get("item_ids"):
@@ -229,6 +238,7 @@ def cmd_add(args):
         "recommendation": args.recommendation,
         "item_ids": args.item_id,
         "via": args.via,
+        "record": args.record,
     })
     errs = validate(rec)
     if errs:
@@ -408,10 +418,26 @@ def selftest():
         if checked != 0:
             problems.append("ingested/updated entries do not validate")
 
+        with contextlib.redirect_stdout(io.StringIO()):
+            for t, record in (("feedback", "FB-001"), ("attribution", "AT-001")):
+                cmd_add(argparse.Namespace(
+                    agent="po", stage="actors", type=t, text=f"{t} line", impact=None, urgency=None,
+                    recommendation=None, item_id=["ACT-003"], via=None, record=record, register=str(reg),
+                ))
+            checked = cmd_check(argparse.Namespace(register=str(reg)))
+        if checked != 0:
+            problems.append("feedback and attribution entries do not validate")
+        base = {"id": new_id(), "event": "declare", "ts": now(), "agent": "po", "stage": "actors", "text": "x", "status": "open"}
+        if not validate(dict(base, type="feedback")):
+            problems.append("a feedback entry with no record was accepted")
+        if not validate(dict(base, type="attribution", record="FB-1")):
+            problems.append("a malformed record was accepted")
+
     if problems:
         print("\n".join(problems), file=sys.stderr)
         return 1
-    print(f"register-request parser OK: {', '.join(TYPE_TO_TAG.values())} round-trip, verbatim ingest, rejects bad blocks")
+    print(f"register-request parser OK: {', '.join(TYPE_TO_TAG.values())} round-trip, verbatim ingest, rejects bad blocks; "
+          f"{' and '.join(RECORD_TYPES)} entries need a record")
     return 0
 
 
@@ -433,6 +459,7 @@ def main():
     a.add_argument("--recommendation")
     a.add_argument("--item-id", action="append", default=[], help="stable item ID (repeatable)")
     a.add_argument("--via", choices=VIA_VALUES)
+    a.add_argument("--record", help="for types feedback and attribution: the FB- or AT- id in .po/feedback.jsonl or .po/attributions.jsonl")
 
     u = common(sub.add_parser("update"))
     u.add_argument("--ref", required=True)

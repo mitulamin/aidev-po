@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/attribution.schema.json",
+  "title": "Attribution line",
+  "description": "The tracer's finding for one feedback line: the step where the error began (origin), the steps that only passed it on (carriers), the cause, a confidence and alternatives. JSON Lines, UTF-8, append-only, stored at <product>/.po/attributions.jsonl. The latest line for an id is its current state: when the user confirms or rejects an attribution, or the tracer revises it, po appends a full new line with the same id. Each attribution also gets a register line of type attribution (register.schema.json).",
+  "x-status": "draft",
+  "x-causes": {
+    "question-not-asked": "The information needed was never asked for. The stage's question bank or the producer's steps had no question for it.",
+    "answer-misheard": "The user answered, but the answer was recorded or read with a different meaning.",
+    "unsupported-inference": "An agent inferred or assumed it without enough basis, or tagged an inference as Stated.",
+    "skill-gap": "The skill the agent followed had no rule for this, or a rule that led it wrong.",
+    "reviewer-miss": "A reviewer had a check that should have caught it and passed it. Usually the alternative or the should_have_caught, not the origin, because reviewers do not write items.",
+    "template-gap": "The template had no place for it, or its structure pushed the agent the wrong way.",
+    "ignored-decision": "A locked decision, answer or assumption in the register was there and was not followed.",
+    "input-changed": "The output matched what the user said at the time; the user or the source has since changed. A product correction, not a learning.",
+    "client-preference": "The output is fine in general, but this client wants it another way. Belongs in the client's preference profile.",
+    "unknown": "No cause can be named from the trace. Confidence is low and po asks the user one question."
+  },
+  "type": "object",
+  "required": ["id", "ts", "feedback", "agent", "origin", "carriers", "cause", "explanation", "confidence", "basis", "replay", "alternatives", "user_verdict"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^AT-[0-9]{3,}$", "description": "AT-<number>, numbered per product in order from AT-001." },
+    "ts": { "type": "string", "format": "date-time" },
+    "feedback": { "type": "string", "pattern": "^FB-[0-9]{3,}$" },
+    "agent": { "type": "string", "description": "tracer, or po for a line that only records the user's verdict." },
+    "origin": { "$ref": "#/$defs/step", "description": "The earliest step where the error is already present." },
+    "carriers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/step" },
+      "description": "Later steps that only passed the error on: their output was right given their input. In order, from the origin towards the item the feedback is about."
+    },
+    "cause": { "$ref": "#/$defs/cause" },
+    "explanation": { "type": "string", "minLength": 1, "description": "One or two sentences: what went wrong at the origin and why, as conditions, not blame." },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "High 0.8 or more: one node where the error first appears, a source mismatch, and replay confirms. Medium 0.5 to under 0.8: clear chain, no replay or an inconclusive one. Low under 0.5: several candidates; po asks the user one question before anything is proposed." },
+    "basis": { "type": "string", "minLength": 1, "description": "The evidence: trace lines, register lines and file lines read." },
+    "replay": {
+      "type": "object",
+      "required": ["result"],
+      "additionalProperties": false,
+      "properties": {
+        "result": { "enum": ["confirmed", "refuted", "inconclusive", "not-run"] },
+        "note": { "type": "string" }
+      },
+      "description": "Whether the origin step was re-run in a scratch folder with the correction, and whether the item then came out right. Never run against the products repo."
+    },
+    "alternatives": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["origin", "cause", "confidence", "why"],
+        "additionalProperties": false,
+        "properties": {
+          "origin": { "$ref": "#/$defs/step" },
+          "cause": { "$ref": "#/$defs/cause" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "why": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "should_have_caught": { "type": ["string", "null"], "description": "The reviewer agent that should have caught it, if any." },
+    "question_for_user": { "type": "string", "description": "Required in practice when confidence is under 0.5 or the category is not-sure: the one question po asks the user." },
+    "suggested_surface": {
+      "enum": ["skill", "reviewer-check", "lint", "template", "question-bank", "agent-brief", "client-preference", "product-decision", "none"],
+      "description": "Where a fix would most likely go. A hint for /po-retro, not a decision."
+    },
+    "user_verdict": { "enum": [null, "confirmed", "rejected", "unsure"], "description": "null until the user has seen it." },
+    "user_note": { "type": "string" }
+  },
+  "$defs": {
+    "cause": {
+      "enum": ["question-not-asked", "answer-misheard", "unsupported-inference", "skill-gap", "reviewer-miss", "template-gap", "ignored-decision", "input-changed", "client-preference", "unknown"]
+    },
+    "step": {
+      "type": "object",
+      "required": ["run", "stage", "agent", "step"],
+      "additionalProperties": false,
+      "description": "One agent step, as recorded in the trace. item_id and rev name the item it wrote, when there is one; a process problem may have none.",
+      "properties": {
+        "run": { "type": "string", "pattern": "^run-[0-9]{14}-[0-9a-f]{4}$" },
+        "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
+        "agent": { "type": "string", "minLength": 1 },
+        "step": { "type": "string", "minLength": 1 },
+        "item_id": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3,}$" },
+        "rev": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}
