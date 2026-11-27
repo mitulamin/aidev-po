@@ -24,7 +24,7 @@ Docs, method, philosophy and quick start are coming.
 | `agents/`, `skills/`, `commands/` | Sources |
 | `.cursor/` | Generated from the sources by `python3 scripts/build-agents.py` |
 | `templates/`, `schemas/`, `scripts/`, `docs/`, `examples/` | As named |
-| `products/` | Ignored mount point for your own products repo |
+| (outside this checkout) | Your products repo, set up by `po` on first run |
 
 ## Licences
 
@@ -35,4 +35,4 @@ Same split as ai-sdlc-loop. This is not legal advice; the detail is in [NOTICE.m
 - `templates/`: MIT, [templates/LICENSE](templates/LICENSE)
 - Your products repo is yours and is not covered by any of these.
 
-Products are private by default: they live in a separate git repo you own and `products/` is gitignored here. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Products are private by default: they live in a separate private git repo you own, outside this checkout, and the path is recorded in a gitignored `aidev-po.local.json`. See [CONTRIBUTING.md](CONTRIBUTING.md).

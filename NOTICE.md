@@ -30,7 +30,7 @@ The text is in [templates/LICENSE](templates/LICENSE). It covers everything unde
 
 ## Your products are yours
 
-Whatever you put in your products repo (`products/` by default) is not part of this repo and is not covered by any licence here. Using aidev-po to produce it does not make it GPL or CC BY-SA. Licence your products repo however you like.
+Whatever you put in your products repo (outside this checkout) is not part of this repo and is not covered by any licence here. Using aidev-po to produce it does not make it GPL or CC BY-SA. Licence your products repo however you like.
 
 Agent and skill output is only as good as the inputs you gave. Do not paste material into a product you cannot license the way you intend.
 
