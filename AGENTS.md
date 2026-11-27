@@ -84,7 +84,7 @@ The products repo is the user's, and `po` treats it that way. (Behaviour arrives
 | `schemas/` | JSON Schemas, all draft: the register, plus trace, feedback, attribution, rerun, ledger and scorecard for the learning loop (`/po-feedback`, `/po-rerun-from`, `/po-retro`; agents `tracer`, `learn-producer`, `learn-reviewer`). |
 | `scripts/` | Tooling. `build-agents.py`, `products-dir.py`, `register.py`, `traces.py`, `scorecard.py`. |
 | `tests/` | Tests for the scripts, with a fictional fixture products repo. `python3 -m unittest discover -s tests -t tests` |
-| `docs/` | Documentation (stub). |
+| `docs/` | Documentation site (Markdown, served by GitHub Pages from `/docs`). |
 | `examples/` | The one worked example (later PR). Not live products. |
 | (outside this checkout) | Your products repo. Its path is recorded in `aidev-po.local.json`. |
 

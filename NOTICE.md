@@ -24,6 +24,10 @@ The text is in [LICENSE-CONTENT](LICENSE-CONTENT). It covers markdown and other 
 
 Each file is under one licence.
 
+## Logo and site assets
+
+The aidev-po logo (the Lens mark in `docs/assets/aidev-po.svg`, its PNG exports and `docs/favicon.ico`) and the rest of the `docs/` site content are CC BY-SA 4.0, copyright Shravi Limited and contributors. Credit them if you reuse the logo or the writing.
+
 ## MIT (templates)
 
 The text is in [templates/LICENSE](templates/LICENSE). It covers everything under `templates/`, code and writing. Templates are meant to be copied into your own product folders, so they start under MIT, not GPL.
