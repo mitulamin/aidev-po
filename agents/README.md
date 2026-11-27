@@ -24,4 +24,10 @@ Agent sources, one markdown file per agent, with `name` and `description` front 
 - [evidence-auditor.md](evidence-auditor.md): Adversarial check that every item carries an evidence tag (`Stated`, `Inferred`, `Assumed`, `Simulated`, `Validated`) and verifiable provenance.
 - [challenger.md](challenger.md): Fresh-context PO pushback (Mom Test last real instance, build-nothing baseline, assumption map, pre-mortem, `[Simulated]` gap check).
 
-Learning-loop agents (`tracer`, `learn-producer`, `learn-reviewer`) arrive in PR 3.
+## Learning-loop agents
+
+| Agent | Role |
+| --- | --- |
+| [tracer.md](tracer.md) | Walks one piece of feedback back through the trace to the step where the error began; writes an attribution. |
+| [learn-producer.md](learn-producer.md) | At `/po-retro`, turns confirmed attributions into proposed small, one-surface edits with held-in baselines. Proposes only. |
+| [learn-reviewer.md](learn-reviewer.md) | At `/po-retro`, reviews those proposals adversarially, with held-out cases. |

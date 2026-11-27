@@ -328,6 +328,10 @@ def cmd_check(args):
         raise SystemExit(f"{path}: not found")
     doc = json.loads(path.read_text(encoding="utf-8"))
     errors = check_doc(doc, path.name)
+    try:
+        import jsonschema  # noqa: F401
+    except ImportError:
+        print(tr.NO_JSONSCHEMA.replace("no line was", "the scorecard was not"), file=sys.stderr)
     for e in errors:
         print(f"error: {e}", file=sys.stderr)
     for row in doc.get("skills") or []:

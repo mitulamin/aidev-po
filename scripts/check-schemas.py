@@ -71,6 +71,10 @@ def main():
         print("\n".join(errors), file=sys.stderr)
         return 1
     note = "" if jsonschema else " (jsonschema not installed: structure checked only)"
+    if not jsonschema:
+        print("skipped: the jsonschema package is not installed, so the schemas were not checked as draft 2020-12 "
+              "schemas and the register examples were not validated. Install it with: python3 -m pip install jsonschema",
+              file=sys.stderr)
     print(f"{len(schemas)} schema(s) ok{note}")
     return 0
 

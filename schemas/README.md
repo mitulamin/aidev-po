@@ -11,6 +11,7 @@ JSON Schema (draft 2020-12) for the files agents write into a product folder. Co
 | [rerun.schema.json](rerun.schema.json) | draft | `<product>/.po/reruns.jsonl` | One `/po-rerun-from`: plan, OK, rebuild, commit. |
 | [ledger.schema.json](ledger.schema.json) | draft | `<products repo>/.po/ledger.jsonl` | Every accepted and rejected learned edit from `/po-retro`. |
 | [scorecard.schema.json](scorecard.schema.json) | draft | `<products repo>/.po/scorecard.json` | Per-skill scores and per-run measures. |
+| [product-state.schema.json](product-state.schema.json) | draft | `<product>/.po/state.json` | Where a product stands: depth (`thin` or `full`), current and completed stages, last run. |
 
 All `.jsonl` files are JSON Lines, UTF-8 and append-only: never edit or delete a line. The register follows [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop)'s surface register: declare and update lines, ids `r-<UTC timestamp>-<4 hex>`, current status is the latest update for an id. Feedback, attribution, rerun and ledger files keep the latest line for an id as its current state; a change is a full new line with the same id.
 

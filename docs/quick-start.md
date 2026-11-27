@@ -13,6 +13,8 @@ git clone https://github.com/mitulamin/aidev-po.git
 cd aidev-po
 ```
 
+Optional: `python3 -m pip install jsonschema`. The scripts need only Python 3; with `jsonschema` installed, `traces.py check`, `scorecard.py check` and `check-schemas.py` also validate every line against its schema in `schemas/`. Without it they still run and say the schema checks were skipped.
+
 The generated agents in `.cursor/` are committed, so there is nothing to build to use it. (Only if you change a source in `agents/`, `skills/` or `commands/`, run `python3 scripts/build-agents.py`.)
 
 ## 2. Set up your products repo
@@ -21,7 +23,7 @@ Your product work does not live in aidev-po. It lives in a **separate git repo t
 
 You do not need to do this by hand. The first time you run `po` with nothing configured, it says so and suggests a location: `~/aidev-products`, `~/Documents/aidev-products`, or `../aidev-products` (next to the checkout). You pick one, and `po`:
 
-- with your OK, runs `git init` there with an initial commit (no remote at this point),
+- with your OK, runs `git init` there with an initial commit holding a short `README.md` and `.gitignore` (no remote at this point). Git needs your name and email for that commit; if they are not set, `po` stops and asks you to run `git config --global user.name "Your Name"` and `git config --global user.email "you@example.com"` first,
 - saves the path in `aidev-po.local.json` (gitignored), so it does not ask again,
 - then asks once whether you want the repo on GitHub. If you say yes, it creates a **private** repo and pushes with `gh repo create <name> --private --source . --push` (or gives you the manual steps if `gh` is not ready). If you say no, nothing else happens and you can add a remote later with `git remote add origin <url>`.
 
@@ -40,8 +42,8 @@ Open the folder in Cursor and run `/po-start`, or tell the agent "act as `po`". 
 `po` then:
 
 - lists the products in your products repo and asks: continue one, or start a new one;
-- for a **new** product, asks for a short slug, creates `<products repo>/<slug>/` and starts at Idea;
-- for an **existing** product, catches up first (current stage, register, recent decisions, last run) and tells you where things stand before it helps.
+- for a **new** product, asks for a short slug, proposes a depth (a thin pass and one-page PRD, or the full FSD) that you can override and that is saved in the product's `.po/state.json`, creates `<products repo>/<slug>/` and starts at Idea;
+- for an **existing** product, catches up first (depth, current stage, register, recent decisions, open feedback, waiting attributions, unfinished reruns, last run) and tells you where things stand before it helps.
 
 ### Commands
 
@@ -79,4 +81,4 @@ A fictional demo product lives under [examples/](https://github.com/mitulamin/ai
 
 ## Not working yet?
 
-Some commands and agents arrive in later pull requests (see the status note on the [home page](index.md)). Until then `po` follows `AGENTS.md`: it finds the products repo, offers init or clone, lists products and consults you at gates.
+If a `/po-*` command is not offered, run `python3 scripts/build-agents.py` to regenerate `.cursor/`, or just tell the agent to act as `po`: it follows `AGENTS.md`, finds the products repo, offers init or clone, lists products and consults you at gates.

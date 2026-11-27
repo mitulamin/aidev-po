@@ -4,7 +4,7 @@ Skill sources, one folder per skill: `skills/<name>/SKILL.md` with `name` and `d
 
 ## Shared skills
 
-- [outliner-qa](outliner-qa/SKILL.md): Layered Q&A (<=5 questions/round), recommended answer first, Park with revisit trigger, lock sheet, Given/When/Then
+- [outliner-qa](outliner-qa/SKILL.md): Layered Q&A (<=5 questions/round), recommended answer first, Park with revisit trigger, Decision Sheet, Given/When/Then
 - [evidence-tags](evidence-tags/SKILL.md): Evidence tags (`Stated`, `Inferred`, `Assumed`, `Simulated`, `Validated`) and provenance rules
 - [register-ops](register-ops/SKILL.md): Append-only `.po/register.jsonl` operations (`schemas/register.schema.json`, `scripts/register.py`)
 

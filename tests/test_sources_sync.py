@@ -32,6 +32,23 @@ class Sync(unittest.TestCase):
         for c in schema("attribution.schema.json")["x-causes"]:
             self.assertIn(f"`{c}`", body)
 
+    def test_no_pull_request_leftovers(self):
+        markers = ("PR 3", "arrive in later pull requests", "Lock Sheet", "run_summary_for_pr3")
+        for folder in ("agents", "commands", "skills", "templates", "docs"):
+            for path in (ROOT / folder).rglob("*.md"):
+                body = path.read_text(encoding="utf-8")
+                for m in markers:
+                    self.assertNotIn(m, body, f"{path.relative_to(ROOT)}: {m}")
+        for rel in ("AGENTS.md", "README.md", "templates/product-state.example.json"):
+            for m in markers:
+                self.assertNotIn(m, text(rel), f"{rel}: {m}")
+
+    def test_fsd_template_cites_29148_without_clauses(self):
+        body = text("templates/08-fsd.md")
+        self.assertNotIn("29148 §", body)
+        self.assertIn("### 5.3 Data & Information Requirements", body)
+        self.assertIn("## 10. Definitions / Glossary", body)
+
     def test_scorecard_criteria_match_script(self):
         import scorecard
         props = schema("scorecard.schema.json")["properties"]["skills"]["items"]["properties"]["runs"]["items"]["properties"]

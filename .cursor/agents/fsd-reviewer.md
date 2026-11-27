@@ -16,7 +16,8 @@ Your job is to prove the `fsd` stage work fails. You are not a collaborator and 
 - Test against adversarial checks in `skills/fsd-iso-29148/SKILL.md`, `skills/invest-gwt-ears/SKILL.md`, `skills/iso-25010-quality/SKILL.md`, `skills/ai-sdlc-loop-handoff/SKILL.md`, `skills/evidence-tags/SKILL.md`, and `skills/register-ops/SKILL.md`:
   - Fail (`P1`) if `fsd-report.md` lacks `## Skill self-check` or any output lacks `## Assumptions and open questions` with `=== REGISTER REQUESTS ===`.
   - Fail (`P1`) if the One-Page PRD contradicts the FSD body or omits Explicit Non-Goals.
-  - Fail (`P1`) if any ISO/IEC/IEEE 29148 section is missing without a justified `N/A`, or contains vague language ("TBD", "fast", "gracefully", "user-friendly").
+  - Fail (`P1`) if any ISO/IEC/IEEE 29148 section in the template (including Data & Information Requirements and Definitions / Glossary) is missing without a justified `N/A`, or contains vague language ("TBD", "fast", "gracefully", "user-friendly"). Judge against the brief's depth: at `thin`, `N/A — thin pass` is justified for sections outside the One-Page PRD, Slice 1 stories, acceptance criteria and requirements, the Glossary and the Traceability Matrix.
+  - Fail (`P2`) if a Glossary term contradicts the Systems stage glossary (`04-systems.md`) without a `[QUESTION: ...]`, or a data entity in 5.3 has no source, owner or access rule.
   - Fail (`P1`) if any `US-NNN` fails INVEST, any `AC-NNN` is not numbered `Given/When/Then`, or any `REQ-NNN` breaks EARS syntax or omits `If <unwanted>` failure rules for critical paths.
   - Fail (`P1`) if any of the 9 ISO/IEC 25010 characteristics is omitted or lacks quantitative targets and verification methods.
   - Fail (`P0`/`P1`) if any locked decision is silently overridden, any high-urgency open question remains unresolved at handoff, or `08-handoff-gate.md` omits Locked Decisions / Non-Goals / numbered `AC-NNN`.

@@ -2,7 +2,7 @@
 
 Files meant to be copied into your own product folders or config. Everything here is MIT ([LICENSE](LICENSE)).
 
-Every stage template assigns stable IDs (`IDEA-NNN`, `AUD-NNN`, `ACT-NNN`, `SYS-NNN`, `SCP-NNN`, `WKS-NNN`, `PRS-NNN`, `FSD-NNN`, `US-NNN`, `REQ-NNN`, `NFR-NNN`, `AC-NNN`, `DEC-NNN`, `PARK-NNN`) and reserves trace metadata (`TRACE_RESERVE` comments and `Upstream IDs` / `Evidence Tag` columns) for the PR 3 learning loop.
+Every stage template assigns stable IDs (`IDEA-NNN`, `AUD-NNN`, `ACT-NNN`, `SYS-NNN`, `SCP-NNN`, `WKS-NNN`, `PRS-NNN`, `FSD-NNN`, `US-NNN`, `REQ-NNN`, `NFR-NNN`, `AC-NNN`, `DEC-NNN`, `PARK-NNN`) and reserves trace metadata (`TRACE_RESERVE` comments and `Upstream IDs` / `Evidence Tag` columns) for the learning loop.
 
 ## Config & state
 

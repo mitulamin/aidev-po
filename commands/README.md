@@ -15,5 +15,6 @@ Command sources, one markdown file per command, with `name` and `description` fr
 | [workshops.md](workshops.md) | `/po-workshops` | Enter/run the `workshops` stage |
 | [presentations.md](presentations.md) | `/po-presentations` | Enter/run the `presentations` stage |
 | [fsd.md](fsd.md) | `/po-fsd` | Enter/run the `fsd` stage and `ai-sdlc-loop` handoff gate |
-
-Learning-loop commands (`/po-feedback`, `/po-rerun-from`, `/po-retro`) arrive in PR 3.
+| [feedback.md](feedback.md) | `/po-feedback` | Learning loop: record feedback (P0 to P3, nine categories) from chat or products-repo pull request comments, and trace it |
+| [rerun-from.md](rerun-from.md) | `/po-rerun-from` | Learning loop: rebuild from the traced step, after showing what is invalidated and getting the user's OK |
+| [retro.md](retro.md) | `/po-retro` | Learning loop: trace untraced feedback, then turn it into small, tested, user-approved edits; ledger and scorecard |

@@ -1,6 +1,7 @@
 {
   "product_slug": "tool-library-loans",
   "title": "Lantern Lane Tool Library — Loans & Reservations (fictional demo)",
+  "depth": "full",
   "current_stage": "fsd",
   "completed_stages": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"],
   "last_run": {

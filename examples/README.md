@@ -73,7 +73,7 @@ The example has 183 items, each with a stable ID and a trace record:
 
    See `.po/runs/run-20261112093000-9c09/`.
 5. **Retro.** `/po-retro` produced three proposals:
-   - P-1, a global skill edit: deferred, since there is one case in one product.
+   - P-1, a global skill edit: deferred, since there is one case in one product. Later adopted: the maintainer applied it to `skills/c4-context-eventstorming/SKILL.md` with its trigger widened by DEC-001 to any change the person it lands on cannot undo themselves. The ledger shows this as a newer `LE-001` line (`accepted`, `applied`); the deferred line and the retro files are left as they were.
    - P-2, a client preference: accepted and applied.
    - P-3, a reviewer check: it regressed two held-out cases, the learn-reviewer failed it, and the ledger records it as rejected so it isn't proposed again.
 6. **Scorecard.** `c4-context-eventstorming` has a harm flag from the systems run, so the verdict is the user's. `trace-records` points to keep.

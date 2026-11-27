@@ -7,6 +7,8 @@
 - **Register**: `.po/register.jsonl`
 <!-- TRACE_RESERVE: item_id_prefix=PRS; trace_file=.po/traces.jsonl; fields=item_id,run,stage,agent,step,skill_versions,template_versions,upstream_ids,evidence_tag,register_refs -->
 
+> **Output**: a structured deck outline plus the PR/FAQ and a narrative memo, as text in this file. This is not a designed deck: no slides, layouts or visuals. A person builds the deck from section 5 in their own tool.
+
 ## 1. Working Backwards Press Release (<= 1 Page)
 
 - **Headline (`PRS-001`)**: `<Target customer> can now <core outcome> without <old pain>` `[Inferred — SCP-002]`

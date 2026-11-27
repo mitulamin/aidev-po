@@ -1,6 +1,7 @@
 {
   "product_slug": "example-product",
   "title": "Example Product",
+  "depth": "full",
   "current_stage": "idea",
   "completed_stages": [],
   "last_run": {
@@ -13,6 +14,6 @@
     "schema": "schemas/trace.schema.json",
     "traces_file": ".po/traces.jsonl",
     "feedback_file": ".po/feedback.jsonl",
-    "note": "Reserved for PR 3 learning loop."
+    "note": "Learning-loop files for this product; their shapes are in aidev-po's schemas/."
   }
 }

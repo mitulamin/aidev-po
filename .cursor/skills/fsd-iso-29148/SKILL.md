@@ -24,7 +24,11 @@ Do:
   4. **User Characteristics** (actors/roles/permissions from `ACT-NNN`)
   5. **Constraints, Assumptions & Dependencies** (citing register IDs `r-...` and `DEC-NNN`)
   6. **Specific Requirements** (Functional `REQ-NNN` in EARS, User Stories `US-NNN` with `AC-NNN` in Given/When/Then, Non-Functional `NFR-NNN` per ISO 25010, Data/Interface contracts)
-  7. **Verification & Traceability Matrix** (mapping `IDEA/AUD/ACT/SYS/SCP` -> `US/REQ/NFR` -> `AC-NNN` -> verification method)
+  7. **Data & Information Requirements** (each entity: key fields, source and owner, who reads or writes it, retention and deletion)
+  8. **Verification & Traceability Matrix** (mapping `IDEA/AUD/ACT/SYS/SCP` -> `US/REQ/NFR` -> `AC-NNN` -> verification method)
+  9. **Definitions / Glossary** (terms and definitions from the Systems stage glossary in `04-systems.md`; new terms only for words the FSD introduces)
+- Cite the standard by name only, not by clause number; section names follow `templates/08-fsd.md`
+- Size it to the product's `depth` (`thin`: One-Page PRD plus Slice 1 stories, acceptance criteria and requirements, Glossary and Traceability Matrix; `full`: everything)
 - Give every item a stable ID (`FSD-NNN`, `US-NNN`, `REQ-NNN`, `NFR-NNN`, `AC-NNN`), upstream IDs, and an evidence tag
 - Honour every locked decision (`DEC-NNN`); never silently alter an upstream locked choice
 
@@ -52,4 +56,5 @@ Don't:
 - Fail (`P1`) if the One-Page PRD contradicts the FSD body or omits Non-Goals.
 - Fail (`P1`) if any ISO/IEC/IEEE 29148 section is missing without a justified `N/A`, or contains vague terms ("TBD", "user-friendly", "fast").
 - Fail (`P1`) if any requirement lacks a stable ID, upstream traceability link, or verifiable acceptance criterion.
+- Fail (`P2`) if a Glossary term contradicts the Systems stage glossary without a `[QUESTION: ...]`, or a data entity has no source, owner or access rule.
 - Fail (`P0`/`P1`) if any locked decision from `.po/register.jsonl` is silently altered or dropped.

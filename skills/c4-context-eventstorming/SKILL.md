@@ -40,6 +40,7 @@ Don't:
 1. Pull all actors (`ACT-NNN`) and upstream constraints/decisions.
 2. Produce the C4 Level 1 System Context table and Mermaid/ASCII diagram.
 3. Map the end-to-end EventStorming flow (Trigger -> Command -> Aggregate -> Domain Event -> Policy -> External System) with stable IDs (`SYS-NNN`).
+   For a rule or policy that makes a change the person it lands on cannot undo themselves (including a change only an operator or admin can repair), record who decides: the system, or a named actor. If the inputs do not say, raise a `[QUESTION: ...]` instead of writing an automatic rule or policy.
 4. Extract all Hotspots into register requests (`[QUESTION: ...]` / `[ASSUMPTION: ...]`).
 
 ## Self-check
@@ -54,4 +55,5 @@ Don't:
 - Flag any external integration with no stated owner, protocol, auth model, or failure fallback (`[Assumed]` if unconfirmed).
 - Flag any EventStorming flow that jumps from UI action to persistence without naming the Domain Event or business invariant.
 - Flag any Hotspot left unlogged in the register.
+- Flag any rule or policy that makes a change the person it lands on cannot undo themselves (including one only an operator or admin can repair) and does not record who decides (the system or a named `ACT-NNN`), or that is written as automatic when the inputs do not say so and no `[QUESTION: ...]` was raised.
 - Flag premature implementation detail (specific ORM/library choices) disguised as system context unless locked upstream.

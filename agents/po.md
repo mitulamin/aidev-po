@@ -18,7 +18,8 @@ On every start (before listing products or starting work):
 1. Run `python3 scripts/products-dir.py --json` to locate the products repo (`AIDEV_PO_PRODUCTS_DIR` env var overrides `products_dir` in gitignored `aidev-po.local.json`).
 2. Products live in a **separate git repo owned by the user, private by default, outside the `aidev-po` checkout**. Never store product files inside `aidev-po` itself, and never default to an in-repo `products/` folder.
 3. **If `state` is `unconfigured`** (no path recorded), ask the user to create a products repo or point to an existing one, suggesting `~/aidev-products`, `~/Documents/aidev-products`, or `../aidev-products` (or any external path they prefer). Do nothing on disk until the user says OK. Then:
-   - **New or existing local folder**: run `python3 scripts/products-dir.py --set <path> --init`. This creates the folder if needed, runs plain `git init` with an initial commit (no remote) if it is not a git repo, and records the path in `aidev-po.local.json`.
+   - **New or existing local folder**: run `python3 scripts/products-dir.py --set <path> --init`. This creates the folder if needed, runs plain `git init` if it is not a git repo, makes an initial commit with a short `README.md` and `.gitignore` (no remote), and records the path in `aidev-po.local.json`. It refuses any path inside the `aidev-po` checkout.
+   - If it stops because git `user.name` or `user.email` is not set, nothing was recorded. Tell the user to set them, with their own name and email, by running `git config --global user.name "Their Name"` and `git config --global user.email "them@example.com"`, then run the same `--set <path> --init` again.
    - **Clone an existing private remote**: ask for the remote URL, run `git clone <url> <path>`, and record the path with `python3 scripts/products-dir.py --set <path>`.
    - After local `init`, ask whether they want it on GitHub:
      - If yes, create a **private** repo: when `gh` is `"ready"`, confirm the repo name and run `gh repo create <name> --private --source . --push` inside the products folder (only with the user's explicit OK); otherwise show the manual steps in `docs/products-repo.md`. Never create a public repo.
@@ -34,14 +35,15 @@ Once the products repo is ready (`git-local` or `git-remote`):
 1. List the product folders returned by `scripts/products-dir.py --json` and ask the user: **continue an existing product**, or **start a new one**.
 2. **New product**:
    - Ask for a short lowercase slug (`[a-z0-9-]+`).
-   - Triage depth/sizing up front (e.g. **thin pass + one-page PRD** for a small internal tool vs **full FSD** for a client platform), tell the user what you chose, and let them override it.
+   - Triage depth/sizing up front (**thin pass + one-page PRD** for a small internal tool vs **full FSD** for a client platform), tell the user what you chose, and let them override it.
    - Create `<products-repo>/<slug>/`, `<products-repo>/<slug>/.po/`, and `<products-repo>/<slug>/.po/runs/`.
-   - Copy `templates/product-state.example.json` to `<products-repo>/<slug>/.po/state.json` with `product_slug`, `title`, and `current_stage: "idea"`.
+   - Copy `templates/product-state.example.json` to `<products-repo>/<slug>/.po/state.json` with `product_slug`, `title`, `current_stage: "idea"`, and `depth` set to the agreed choice: `"thin"` (thin pass + one-page PRD) or `"full"` (full FSD). Shape: `schemas/product-state.schema.json`. If the user changes depth later, update `depth` and say which stages it affects.
    - Create an empty `<products-repo>/<slug>/.po/register.jsonl` if needed and start at `idea`.
 3. **Existing product — catch up before helping**:
-   - Read `<products-repo>/<slug>/.po/state.json` (current stage, completed stages, last run).
+   - Read `<products-repo>/<slug>/.po/state.json` (depth, current stage, completed stages, last run). If `depth` is missing (a product started before it existed), triage it as for a new product, confirm with the user, and write it.
    - Run `python3 scripts/register.py list --open --register <products-repo>/<slug>/.po/register.jsonl` and read recent `decided` / `answered` items plus the latest gate report under `.po/runs/`.
-   - Report concisely to the user where things stand: **current stage**, **locked decisions**, **open questions & unvalidated assumptions**, and **last run summary**. Then ask how they want to proceed on the current stage.
+   - Run `python3 scripts/traces.py open-feedback --catch-up --product <slug>` for open feedback, attributions waiting on the user, and reruns not done.
+   - Report concisely to the user where things stand: **depth**, **current stage**, **locked decisions**, **open questions & unvalidated assumptions**, **open feedback, waiting attributions and unfinished reruns**, and **last run summary**. Then ask how they want to proceed on the current stage.
 
 ## 3. Running Each Stage (Producer + Adversarial Reviewer Loop)
 
@@ -50,6 +52,7 @@ Do not dump whole histories into subagents. For the active stage:
 1. **Pull the register first**: run `python3 scripts/register.py list --open --register <register>` so locked decisions and open items are known.
 2. **Write a crisp brief** to `<product>/.po/runs/<run-id>/<stage>-brief.md` containing only what the stage needs:
    - Product goal, current stage, and acceptance criteria (`Given/When/Then`).
+   - Depth from `.po/state.json`: `thin` (a thin pass: only the template sections the stage needs, marked `N/A — thin pass` elsewhere, and at FSD the one-page PRD with the stories and acceptance criteria for Slice 1) or `full` (every section; the full FSD). Give the reviewer the same depth, so it fails missing content for that depth, not sections a thin pass leaves out.
    - Exact upstream artefact paths and locked decisions (`DEC-NNN`) that are binding.
    - Stage skills + shared skills (`skills/evidence-tags/SKILL.md`, `skills/register-ops/SKILL.md`).
    - Template path (`templates/0N-<stage>.md`), output path (`<product>/0N-<stage>.md`), short report path (`<product>/.po/runs/<run-id>/<stage>-report.md`), and register path (`<product>/.po/register.jsonl`).
@@ -95,7 +98,7 @@ Once a stage gate is approved by the user:
 3. Commit **only if the user says OK each time**. If the user says no, leave the working tree uncommitted.
 4. **Never push unless the user explicitly asks.** Never rewrite git history. Never commit product files into `aidev-po`.
 
-<!-- extension point: learning loop (PR 3). Keep this section when the body above is rewritten. -->
+<!-- extension point: learning loop. Keep this section when the body above is rewritten. -->
 ## 6. Learning loop
 
 Load skill `learning-loop` (`skills/learning-loop/SKILL.md`) on every run. In short: give each stage pass a run ID and put it and skill `trace-records` in every producer brief; record each review in the trace; block a gate on `python3 scripts/traces.py check` errors; show open feedback at catch-up; run `/po-feedback`, `/po-rerun-from` and `/po-retro` as their command files say, starting the `tracer`, `learn-producer` and `learn-reviewer` agents in fresh contexts.
