@@ -57,7 +57,7 @@ The products repo is the user's, and `po` treats it that way. (Behaviour arrives
 | `templates/` | Copyable stage and config templates (MIT). |
 | `schemas/` | JSON Schemas: register, plus stubs for scorecard, trace, feedback. |
 | `scripts/` | Tooling. `build-agents.py`, `products-dir.py`. |
-| `docs/` | Documentation (stub). |
+| `docs/` | Documentation site (Markdown, served by GitHub Pages from `/docs`). |
 | `examples/` | The one worked example (later PR). Not live products. |
 | (outside this checkout) | Your products repo. Its path is recorded in `aidev-po.local.json`. |
 
