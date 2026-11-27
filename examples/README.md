@@ -77,7 +77,7 @@ The example has 183 items, each with a stable ID and a trace record:
    - P-2, a client preference: accepted and applied.
    - P-3, a reviewer check: it regressed two held-out cases, the learn-reviewer failed it, and the ledger records it as rejected so it isn't proposed again.
 6. **Scorecard.** `c4-context-eventstorming` has a harm flag from the systems run, so the verdict is the user's. `trace-records` points to keep.
-7. **Still open.** FB-002 (P3, `wrong-for-audience`) came in from a products-repo pull request comment on slide `PRS-019` ("operators" should say "desk volunteers"). It isn't traced yet, which shows what open feedback looks like at catch-up.
+7. **Still open.** FB-002 (P3, `wrong-for-audience`) came in from a products-repo pull request comment on slide `PRS-019` ("operators" should say "desk volunteers"). It came in on 2026-11-20, after the retro, and has no attribution yet. `python3 scripts/traces.py open-feedback --all --repo examples` lists it, and `/po-continue` shows it at catch-up. The next `/po-retro` traces it first (step 1): it lists FB-002, asks whether to trace it now, runs the tracer and asks you to confirm, and only then selects attributions for proposals. If you say no, FB-002 stays open and is offered again at the next retro.
 
 To follow the trace yourself:
 
@@ -86,6 +86,7 @@ python3 scripts/traces.py chain REQ-004 --feedback FB-001 --dir examples/tool-li
 python3 scripts/traces.py locate 04-systems.md --quote FlagMemberForReview --dir examples/tool-library-loans
 python3 scripts/traces.py downstream SYS-012 --dir examples/tool-library-loans
 python3 scripts/scorecard.py measures --repo examples
+python3 scripts/traces.py open-feedback --all --repo examples    # FB-002, untraced
 ```
 
 ## Checks
@@ -127,7 +128,7 @@ Then open aidev-po in Cursor and try, for example:
 - `/po-continue tool-library-loans` to see the catch-up, with FB-002 open.
 - `/po-feedback PRS-019 P3 …` or `/po-feedback --pr …` to take in feedback.
 - `/po-rerun-from …` after a trace.
-- `/po-retro` to run a retro on the copy.
+- `/po-retro` to run a retro on the copy: it offers to trace FB-002 first, since no attribution names it yet.
 
 `po` commits to `/tmp/demo-products` only with your OK, and never pushes. Delete the folder when you are done.
 

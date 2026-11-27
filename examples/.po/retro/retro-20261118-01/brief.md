@@ -21,7 +21,7 @@ Turn the attributions below into proposed learned edits: one surface per edit, s
 |---------|-------------|----------|-------|--------------------|------------|------|---------------|
 | tool-library-loans | AT-001 | FB-001 P1 misunderstood-intent | `unsupported-inference` | systems-producer, 3-event-storming | 0.8 (replay confirmed) | confirmed | `tool-library-loans/.po/tracer/FB-001-AT-001.md` |
 
-Not gathered: FB-002 (P3, open, not yet traced; the user chose to leave it for a later retro).
+No feedback was open and untraced when this retro started (`traces.py open-feedback` was empty).
 
 ## Also read
 

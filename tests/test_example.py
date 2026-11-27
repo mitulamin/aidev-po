@@ -57,6 +57,12 @@ class Checks(unittest.TestCase):
                 self.assertTrue(any((po / "tracer").glob(f"*-{at}.md")), f"tracer report for {at}")
 
 
+    def test_fb002_is_open_feedback_for_the_next_retro(self):
+        code, out, err = run("traces.py", "open-feedback", "--all", "--json", "--repo", EXAMPLES)
+        self.assertEqual(code, 0, out + err)
+        self.assertEqual([(f["product"], f["id"]) for f in json.loads(out)], [("tool-library-loans", "FB-002")])
+
+
 @unittest.skipIf(jsonschema is None, "jsonschema not installed")
 class Lines(unittest.TestCase):
     def test_product_files(self):

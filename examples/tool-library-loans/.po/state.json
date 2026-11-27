@@ -7,7 +7,7 @@
     "run_id": "run-20261112093000-9c09",
     "ts": "2026-11-12T15:20:00Z",
     "stage": "fsd",
-    "summary": "Rerun RR-001 from systems (FB-001, AT-001): late returns are flagged for the coordinator, never auto-suspended. Gates for systems, scope, presentations and fsd approved again; committed with the user's OK. Since then: retro-20261118-01 (one client preference applied), and FB-002 (P3, open) on slide PRS-019. Gate PR to the build team: pending the user's OK."
+    "summary": "Rerun RR-001 from systems (FB-001, AT-001): late returns are flagged for the coordinator, never auto-suspended. Gates for systems, scope, presentations and fsd approved again; committed with the user's OK. Since then: retro-20261118-01 (one client preference applied), and FB-002 (P3, open, untraced) on slide PRS-019, which the next /po-retro traces first. Gate PR to the build team: pending the user's OK."
   },
   "trace_reserve": {
     "schema": "schemas/trace.schema.json",

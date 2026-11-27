@@ -29,5 +29,6 @@ jobs:
           python scripts/traces.py check --all --repo examples
           for f in examples/*/.po/register.jsonl; do python scripts/register.py check --register "$f"; done
           python scripts/scorecard.py check --repo examples
+          python scripts/traces.py open-feedback --all --repo examples
       - name: Tests
         run: python -m unittest discover -s tests -t tests -v
