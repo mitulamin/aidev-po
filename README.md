@@ -66,7 +66,7 @@ If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/ai
 | `agents/`, `skills/`, `commands/` | Sources |
 | `.cursor/` | Generated from the sources by `python3 scripts/build-agents.py` |
 | `templates/` | Copyable stage and config templates (MIT) |
-| `schemas/` | JSON Schemas: register, plus stubs for trace, feedback and scorecard |
+| `schemas/` | JSON Schemas (drafts): register, trace, feedback, attribution, rerun, ledger and scorecard |
 | `scripts/` | Tooling |
 | `docs/` | The documentation site (GitHub Pages, Markdown) |
 | `examples/` | The one worked example, a fictional demo (not live products) |
