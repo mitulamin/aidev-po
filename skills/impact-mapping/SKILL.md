@@ -1,0 +1,48 @@
+---
+name: impact-mapping
+description: "Use during the Scope stage to trace every proposed deliverable from Why (measurable business/user goal) through Who (actors) and How (behaviour change) to What (deliverables)."
+licence: CC-BY-SA-4.0
+---
+
+# Impact Mapping
+
+Ensure no deliverable enters scope unless it causes a measurable behaviour change in a real actor toward the product goal.
+
+## When to use
+
+At the start of the `scope` stage, connecting `idea`/`audience`/`actors`/`systems` to candidate deliverables before story mapping.
+
+## Producer: dos and don'ts
+
+Do:
+- Structure the map strictly in four levels with stable IDs (`SCP-NNN`):
+  1. **Why (Goal)**: measurable outcome (metric, target, timeframe/baseline) from `idea`/`audience`
+  2. **Who (Actors)**: specific `ACT-NNN` actors who can help or obstruct the goal
+  3. **How (Impacts)**: observable change in the actor's behaviour (do something faster, avoid an error, switch from workaround X)
+  4. **What (Deliverables)**: product capabilities or non-software interventions that enable that behaviour change
+- Include "what if nothing is built?" / non-software operational alternatives where an actor's behaviour can change without new code
+- Tag each Goal->Actor->Impact->Deliverable link with evidence tags
+
+Don't:
+- Put features in the "How" column (e.g., "How: use our new notifications page" — that is a What, not a behaviour change)
+- Keep deliverables in scope that have no traceable Impact link to a Goal
+- Assume an Impact is guaranteed without recording the causal assumption in the register
+
+## Steps
+
+1. State the measurable Goal (`Why`) anchored to upstream Desired Outcome.
+2. List the key Actors (`Who`) from `ACT-NNN`.
+3. Define the required behaviour shifts (`How`) and how they will be observed.
+4. Map candidate Deliverables (`What`) to each Impact and drop/park orphan features.
+
+## Self-check
+
+- [ ] Does every `What` deliverable trace cleanly back through `How` (behaviour change) -> `Who` (`ACT-NNN`) -> `Why` (Goal)?
+- [ ] Are all `How` items genuine human/system behaviour changes rather than disguised features?
+- [ ] Are unverified causal leaps ("if we build X, users will do Y") tagged `[Assumed]` and logged?
+
+## Adversarial reviewer
+
+- Fail any deliverable in scope that lacks an explicit `How` behaviour change and `Why` goal link.
+- Flag any `How` entry that describes a UI/feature instead of an actor behaviour change.
+- Flag missing negative/obstructing actors when relevant (e.g., approver or compliance bottleneck).

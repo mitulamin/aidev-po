@@ -1,0 +1,54 @@
+---
+name: fsd-iso-29148
+description: "Use during the FSD stage to author the complete Functional Specification Document following ISO/IEC/IEEE 29148 with a One-Page PRD executive summary on top and full item traceability."
+licence: CC-BY-SA-4.0
+---
+
+# FSD (ISO/IEC/IEEE 29148) with One-Page PRD on Top
+
+Combine an executive One-Page PRD at the top with a rigorous ISO/IEC/IEEE 29148 Functional Specification Document so both leadership and engineering (`ai-sdlc-loop`) have one authoritative source of truth.
+
+## When to use
+
+During the `fsd` stage, integrating all locked upstream artefacts (`idea` through `presentations`) into `08-fsd.md`.
+
+## Producer: dos and don'ts
+
+Do:
+- Open `08-fsd.md` with a **One-Page PRD** (<=1 page): Problem, Target Audience, Desired Outcome & Success Metrics, Solution Summary (Slice 1), Explicit Non-Goals, Key Risks/Dependencies, and Locked Decisions summary
+- Structure the full FSD body per **ISO/IEC/IEEE 29148**:
+  1. **Purpose & Scope** (product identification, overview, boundaries, non-goals)
+  2. **Product Perspective** (C4 system context, interfaces, external systems, operational constraints)
+  3. **Product Functions & User Stories** (grouped by capability/epic, linked to `SCP-NNN`)
+  4. **User Characteristics** (actors/roles/permissions from `ACT-NNN`)
+  5. **Constraints, Assumptions & Dependencies** (citing register IDs `r-...` and `DEC-NNN`)
+  6. **Specific Requirements** (Functional `REQ-NNN` in EARS, User Stories `US-NNN` with `AC-NNN` in Given/When/Then, Non-Functional `NFR-NNN` per ISO 25010, Data/Interface contracts)
+  7. **Verification & Traceability Matrix** (mapping `IDEA/AUD/ACT/SYS/SCP` -> `US/REQ/NFR` -> `AC-NNN` -> verification method)
+- Give every item a stable ID (`FSD-NNN`, `US-NNN`, `REQ-NNN`, `NFR-NNN`, `AC-NNN`), upstream IDs, and an evidence tag
+- Honour every locked decision (`DEC-NNN`); never silently alter an upstream locked choice
+
+Don't:
+- Repeat a heavyweight template with empty boilerplate sections; mark genuinely inapplicable 29148 subsections `N/A — <reason>`
+- Introduce unapproved Slice 2 / Non-Goal scope into the FSD without raising `[QUESTION: ...]`
+- Leave "TBD", "appropriate", "fast", or "user-friendly" in any requirement
+
+## Steps
+
+1. Read all locked upstream artefacts (`01-idea.md` through `07-presentations.md`) and `.po/register.jsonl`.
+2. Write the One-Page PRD summary at the top of `08-fsd.md`.
+3. Author each ISO/IEC/IEEE 29148 section with stable IDs, EARS requirements, INVEST stories, Given/When/Then criteria, and ISO 25010 NFRs.
+4. Build the end-to-end Traceability Matrix and verify zero orphan requirements or broken upstream links.
+
+## Self-check
+
+- [ ] Is there a complete One-Page PRD at the top of `08-fsd.md` consistent with the body?
+- [ ] Does the FSD cover all ISO/IEC/IEEE 29148 sections with stable IDs, upstream links, and evidence tags?
+- [ ] Does the Traceability Matrix map every `US-NNN`/`REQ-NNN`/`NFR-NNN` back to `SCP-NNN` and forward to numbered `AC-NNN` checks?
+- [ ] Are all locked decisions respected without silent overrides?
+
+## Adversarial reviewer
+
+- Fail (`P1`) if the One-Page PRD contradicts the FSD body or omits Non-Goals.
+- Fail (`P1`) if any ISO/IEC/IEEE 29148 section is missing without a justified `N/A`, or contains vague terms ("TBD", "user-friendly", "fast").
+- Fail (`P1`) if any requirement lacks a stable ID, upstream traceability link, or verifiable acceptance criterion.
+- Fail (`P0`/`P1`) if any locked decision from `.po/register.jsonl` is silently altered or dropped.
