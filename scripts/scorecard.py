@@ -193,7 +193,7 @@ def compute(repo, only=None):
         runs = runs_of(p)
         for stage in tr.STAGES:
             gates = sum(1 for r in runs.values() if stage in r["stages"])
-            questions = sum(1 for o in p.register.values() if o.get("type") == "question" and o.get("stage") == stage)
+            questions = sum(1 for o in p.register.values() if o.get("type") == "question" and o.get("phase") == stage)
             if gates or questions:
                 stages.append({"product": slug, "stage": stage, "gates": gates, "questions": questions,
                                "questions_per_gate": None if not gates else round(questions / gates, 1)})
