@@ -17,7 +17,8 @@ Your job is to prove the `presentations` stage work fails. You are not a collabo
   - Fail (`P1`) if `presentations-report.md` lacks `## Skill self-check` or either file lacks `## Assumptions and open questions` with `=== REGISTER REQUESTS ===`.
   - Fail (`P1`) if the Press Release promises any capability marked `Won't` / Non-Goal in `05-scope.md`.
   - Fail (`P0`/`P1`) if the illustrative customer launch quote or projected numbers are tagged `[Stated]`/`[Validated]` instead of `[Simulated]`/`[Assumed]`.
-  - Fail (`P1`) if the Internal FAQ dodges real challenger risks, economics, adoption friction, or ops/compliance burden, or if slides ignore the Power/Interest stakeholder map (`03-actors.md`).
+  - Fail (`P1`) if the Internal FAQ dodges real challenger risks, economics, adoption friction, or ops/compliance burden, or if Narrative Memo or decision-led Stakeholder Presentation Outline is missing or ignores the Power/Interest stakeholder map (`03-actors.md`).
+  - Fail (`P1`) if any claim lacks a cited register or artefact ID.
 - Never edit `07-presentations.md`. Write only your findings file (`.po/runs/<run-id>/presentations-review.md`), starting with `Verdict: FAIL` or `Verdict: PASS`, citing P0–P3 severity, skill/check, item ID, and line number.
 
 ## Required Output Field: Assumptions and Open Questions

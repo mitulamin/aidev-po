@@ -19,34 +19,40 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | `AUD-002` | `AUD-001` | ... | ... | ... | `[Stated / Validated / Assumed — ...]` | `AUD-001`, `IDEA-003` |
 
-*Note: Any simulated user exploration to spot blind spots MUST be recorded in Section 4 and tagged `[Simulated]` — never here.*
+*Note: Any simulated user exploration to spot blind spots MUST be recorded in Section 5 and tagged `[Simulated]` — never here.*
 
-## 3. Expanded Opportunity Solution Tree
+## 3. Value Proposition Canvas
 
-- **Desired Outcome (`AUD-003`)**: `<refined measurable outcome>` (upstream: `IDEA-014`)
-  - **Opportunity (`AUD-004`)**: `<validated/assumed customer pain>` (upstream: `IDEA-015`)
-    - **Sub-opportunity (`AUD-005`)**: ...
-      - **Candidate Solution 1 (`AUD-006`)**: ...
-      - **Candidate Solution 2 (`AUD-007`)**: ...
-      - **Fastest Assumption Test (`AUD-008`)**: ...
+| ID | Segment (`AUD-NNN`) | Customer Jobs (`When ..., I want to ..., so I can ...`) | Pains | Gains | Pain Relievers & Gain Creators | Unmatched Features (Fix No Pain -> Cut/Park) | Evidence Tag & Source | Upstream IDs |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `AUD-003` | `AUD-001` | ... | ... | ... | ... | `<none or feature to cut>` | `[Inferred / Assumed — ...]` | `AUD-002` |
 
-## 4. Discovery & Validation Plan (Incl. `[Simulated]` Gap Checks If Used)
+## 4. Expanded Opportunity Solution Tree
+
+- **Desired Outcome (`AUD-004`)**: `<refined measurable outcome>` (upstream: `IDEA-014`)
+  - **Opportunity (`AUD-005`)**: `<validated/assumed customer pain>` (upstream: `IDEA-015`)
+    - **Sub-opportunity (`AUD-006`)**: ...
+      - **Candidate Solution 1 (`AUD-007`)**: ...
+      - **Candidate Solution 2 (`AUD-008`)**: ...
+      - **Fastest Assumption Test (`AUD-009`)**: ...
+
+## 5. Discovery & Validation Plan (Incl. `[Simulated]` Gap Checks If Used)
 
 | ID | Hypothesis / Gap | Research Method (Mom Test Interview / Observation / Data) | Pass / Falsify Criterion | Tag | Upstream IDs |
 | --- | --- | --- | --- | --- | --- |
-| `AUD-009` | ... | ... | ... | `[Assumed]` / `[Simulated]` | `AUD-002` |
+| `AUD-010` | ... | ... | ... | `[Assumed]` / `[Simulated]` | `AUD-002`, `AUD-003` |
 
-## 5. Stage Exit Criteria (Given/When/Then)
+## 6. Stage Exit Criteria (Given/When/Then)
 
 - `AC-AUD-001`: Given `<segment/evidence>`, When `<check>`, Then `<verifiable outcome>`.
 
-## 6. Decision Sheet (Locked)
+## 7. Decision Sheet (Locked)
 
 | Decision ID | Choice | Who Decided | Why | Register ID |
 | --- | --- | --- | --- | --- |
 | `DEC-002` | ... | `user` / `po` | ... | `r-...` |
 
-## 7. Parked Items & Explicit Non-Goals
+## 8. Parked Items & Explicit Non-Goals
 
 | Park ID | Item | Why It Can Wait | Revisit Trigger | Register ID |
 | --- | --- | --- | --- | --- |

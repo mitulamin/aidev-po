@@ -32,22 +32,33 @@
 | `PRS-011` | What happens if nothing is built? | ... | `[Stated / Assumed — IDEA-002]` | `IDEA-002` |
 | `PRS-012` | What is the top failure mode and unit-cost/ops risk? | ... | `[Assumed — r-...]` | `SYS-002` |
 
-## 4. Stakeholder Presentation Outline (Tailored to Power/Interest Map)
+## 4. Narrative Memo (High-Power Stakeholders)
 
-| Slide | Title | Target Audience (`ACT-NNN`) | Key Point & Visual | Upstream IDs |
+*Short-form memo for high-power stakeholders (`Manage Closely` / `Keep Satisfied` in `03-actors.md`). Every claim cites a register or artefact ID.*
+
+- **Decision Requested (`PRS-013`)**: `<decision and options>` `[Inferred — DEC-..., SCP-003]`
+- **Problem & Cost of Status Quo (`PRS-014`)**: ... `[Stated / Validated — IDEA-001, AUD-002]`
+- **Recommended Slice 1 & Appetite (`PRS-015`)**: ... `[Stated / Inferred — SCP-001, SCP-003]`
+- **Explicit Non-Goals & Top Risks (`PRS-016`)**: ... `[Stated / Assumed — PARK-005, r-...]`
+
+## 5. Stakeholder Presentation Outline (Tailored to Power/Interest Map)
+
+*Decision-led: one decision per deck, answer first, tailored per audience from the same source material.*
+
+| Slide | Title | Target Audience (`ACT-NNN`) | Decision & Answer-First Key Point | Upstream IDs |
 | --- | --- | --- | --- | --- |
-| `PRS-013` | 1. Problem & Cost of Status Quo | `ACT-001` | ... | `IDEA-001`, `AUD-002` |
-| `PRS-014` | 2. Target Audience & Stakeholders | `ACT-001` | ... | `AUD-001`, `ACT-001` |
-| `PRS-015` | 3. Slice 1 Scope & Explicit Non-Goals | `ACT-001` | ... | `SCP-002`, `PARK-005` |
-| `PRS-016` | 4. Risks, Economics & Gate Ask | `ACT-001` | ... | `PRS-012`, `DEC-...` |
+| `PRS-017` | 1. Decision & Problem Cost | `ACT-001` | **Answer first**: ... | `IDEA-001`, `AUD-002` |
+| `PRS-018` | 2. Target Audience & Stakeholders | `ACT-001` | ... | `AUD-001`, `ACT-001` |
+| `PRS-019` | 3. Slice 1 Scope, Appetite & Non-Goals | `ACT-001` | ... | `SCP-001`, `SCP-003`, `PARK-005` |
+| `PRS-020` | 4. Risks, Economics & Gate Ask | `ACT-001` | ... | `PRS-012`, `DEC-...` |
 
-## 5. Decision Sheet (Locked)
+## 6. Decision Sheet (Locked)
 
 | Decision ID | Choice | Who Decided | Why | Register ID |
 | --- | --- | --- | --- | --- |
 | `DEC-007` | ... | `user` / `po` | ... | `r-...` |
 
-## 6. Parked Items & Explicit Non-Goals
+## 7. Parked Items & Explicit Non-Goals
 
 | Park ID | Item | Why It Can Wait | Revisit Trigger | Register ID |
 | --- | --- | --- | --- | --- |

@@ -16,13 +16,14 @@ During the `scope` stage (and reflected in `fsd` and `presentations`), plus when
 ## Producer: dos and don'ts
 
 Do:
+- Record the user-set **Appetite** (how much time, effort, or budget we are willing to spend on Release 1) and a crisp **Scope Statement (In / Out / Later)** (`SCP-001`)
 - Classify every scoped item (`SCP-NNN`) using MoSCoW:
   - **Must**: non-negotiable for Slice 1 viability; if any Must fails, the release is not viable
   - **Should**: important but workaround exists for Slice 1
   - **Could**: desirable low-cost enhancement if capacity remains
   - **Won't (this release)**: explicitly excluded now
 - Check the **Must budget**: Must items should normally stay <=60% of expected Slice 1 effort/complexity; if everything is Must, nothing is prioritised
-- Write an **Explicit Non-Goals** table (`PARK-NNN` / `NG-NNN`) for every Won't or deliberately rejected capability: what is excluded, why, who might miss it, and the concrete **revisit trigger** (specific metric, user signal, or regulatory event that would reopen it)
+- Write an **Explicit Non-Goals** table (`PARK-NNN` / `NG-NNN`) as a first-class section for every Won't or deliberately rejected capability: what is excluded, why, who might miss it, and the concrete **revisit trigger** (specific metric, user signal, or regulatory event that would reopen it)
 
 Don't:
 - Label >75% of features as "Must"

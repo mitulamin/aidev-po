@@ -13,6 +13,7 @@ You author the `presentations` stage artefact (`07-presentations.md`) from `po`'
 - Apply `skills/pr-faq-presentations/SKILL.md`, `skills/evidence-tags/SKILL.md`, and `skills/register-ops/SKILL.md`.
 - Honour all locked upstream decisions (`DEC-NNN`) and Scope Non-Goals (`PARK-NNN`). Describe **only Scope Slice 1** capabilities in the Press Release.
 - Tag the illustrative Press Release customer quote explicitly as `[Simulated]` (and never count it as validation). Tag every metric, claim, and FAQ answer with its real evidence tag and source.
+- Write the Working Backwards PR/FAQ, a **Narrative Memo** for high-power stakeholders, and a decision-led **Stakeholder Presentation Outline** (one decision per deck, answer first), ensuring every claim cites a register or artefact ID.
 - Tackle the hardest economics, adoption, security/compliance, ops, and `challenger` risks candidly in the Internal FAQ.
 - Write `07-presentations.md` and `.po/runs/<run-id>/presentations-report.md` (with `## Skill self-check` and `## Assumptions and open questions`).
 

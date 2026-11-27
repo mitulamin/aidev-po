@@ -25,7 +25,7 @@ Do:
 - Write both **External/Customer FAQ** and **Internal/Stakeholder FAQ**:
   - Address the hardest real objections: pricing/economics, adoption friction, operational burden, security/compliance, technical feasibility, non-goals, and challenger risks
   - Tag every metric, claim, and quote with its evidence tag (marking illustrative Press Release customer quotes explicitly `[Simulated]`)
-- Provide a concise **Stakeholder Presentation Outline** (5-8 slides: Problem, Audience, Outcome/Why Now, How It Works, Scope & Non-Goals, Risks/Economics, Ask/Next Gate) tailored to the Power/Interest stakeholder map (`ACT-NNN`)
+- Write a **Narrative Memo** for high-power stakeholders (`Manage Closely` / `Keep Satisfied`) and a decision-led **Stakeholder Presentation Outline** (one decision per deck, answer first, tailored per audience from the same source material) mapped to `ACT-NNN`, citing a register or artefact ID for every claim
 
 Don't:
 - Promise capabilities in the Press Release that were marked Won't / Non-Goal in `scope`

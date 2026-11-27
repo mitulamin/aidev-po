@@ -16,7 +16,8 @@ During the `systems` stage after `actors` are defined and before `scope` slicing
 ## Producer: dos and don'ts
 
 Do:
-- Draw/tabulate a **C4 Level 1 System Context** (`SYS-NNN`): the product system box, every human actor from `actors`, every external system/API, data/protocol direction, and trust/compliance boundaries
+- Draw a **C4 Level 1 System Context** diagram as diffable **Mermaid** diagram code (`SYS-NNN`): the product system box, every human actor from `actors`, every external system/API (including `aidev-platform` contract for Shravi client work), and data/protocol arrows
+- Maintain an **Integration Register** (`SYS-NNN`): direction, data, protocol, owner, volume/SLA, and failure behaviour for every interface; every arrow on the diagram must have an owner and a row here, and unknown cells become `[QUESTION: ...]` entries, never guesses
 - Add a **C4 Level 2 Container** overview only if multiple deployable boundaries or major architectural assumptions affect scope, cost, or compliance
 - Run a **Process EventStorming** flow in chronological order:
   - **Domain Events** (orange, past tense, e.g., `OrderSubmitted`)
@@ -25,7 +26,8 @@ Do:
   - **Aggregates / Entities** (yellow, business rules/invariants enforced)
   - **Policies / Reactions** (lilac: "Whenever `<Event>`, then `<Command>`")
   - **External Systems** (pink, matching C4 Context)
-  - **Hotspots** (red: unknowns, bottlenecks, failure modes, conflicting rules)
+  - **Hotspots** (red: unknowns, bottlenecks, failure modes, conflicting rules — become workshop agenda items)
+- Write a **Glossary & Bounded Contexts** table so the FSD and code share one ubiquitous language
 - Turn every EventStorming Hotspot into an explicit `[QUESTION: ...]` or `[ASSUMPTION: ...]` in the register
 - Tag every system dependency, SLA, data contract, and event rule with evidence tags (`[Stated]`, `[Inferred]`, `[Assumed]`, `[Validated]`)
 

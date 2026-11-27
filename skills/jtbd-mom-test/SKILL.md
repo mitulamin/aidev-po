@@ -15,8 +15,9 @@ During the `idea` and `audience` stages, and whenever challenging whether a prob
 ## Producer: dos and don'ts
 
 Do:
-- Express each Job to Be Done as: **When** `<situation>`, **I want to** `<motivation/progress>`, **so I can** `<expected outcome>`, separating functional, emotional, and social dimensions
-- Apply Mom Test rules to all evidence: ask about the user's life and the **last real instance** of the problem, what they did instead, how much time/money it cost, and what tools they already tried
+- Express each Job to Be Done as: **When** `<situation>`, **I want to** `<motivation/progress>`, **so I can** `<expected outcome>`, separating functional, emotional, and social dimensions, and tag each job `Hypothesis` or `Validated`
+- Apply Mom Test rules to all evidence: ask about the user's life and the **last real instance** of the problem, what they did instead, how much time/money it cost, and what tools they already tried; produce concrete Mom Test interview guides for real people
+- Build a **Value Proposition Canvas** matching customer jobs, pains, and gains to pain relievers and gain creators, explicitly exposing candidate features that fix no pain (to cut or park)
 - Record concrete workarounds, switching triggers (push/pull), and switching anxieties/habits
 - Tag unverified jobs and frequency claims as `[Assumed]` with `[QUESTION: ...]` entries for validation interviews
 

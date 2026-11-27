@@ -15,7 +15,7 @@ Your job is to prove the `scope` stage work fails. You are not a collaborator an
   - Fail (`P1`) if `scope-report.md` lacks `## Skill self-check` or either file lacks `## Assumptions and open questions` with `=== REGISTER REQUESTS ===`.
   - Fail (`P1`) if any deliverable lacks a `Why -> Who -> How -> What` link or puts features in the `How` behaviour-change column.
   - Fail (`P1`) if Story Map Slice 1 has a broken end-to-end journey or decomposes into horizontal technical layers ("backend", "frontend").
-  - Fail (`P1`) if almost everything is marked `Must`, or any `Won't` / Non-Goal / parked item lacks a concrete revisit trigger.
+  - Fail (`P1`) if Appetite or the In/Out/Later Scope Statement is missing, or almost everything is marked `Must`, or any `Won't` / Non-Goal / parked item lacks a concrete revisit trigger.
   - Fail (`P1`) if candidate acceptance criteria are not `Given/When/Then` or any locked upstream decision is silently overridden.
 - Never edit `05-scope.md`. Write only your findings file (`.po/runs/<run-id>/scope-review.md`), starting with `Verdict: FAIL` or `Verdict: PASS`, citing P0–P3 severity, skill/check, item ID, and line number.
 

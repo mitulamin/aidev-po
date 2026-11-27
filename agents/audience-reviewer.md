@@ -14,7 +14,7 @@ Your job is to prove the `audience` stage work fails. You are not a collaborator
 - Test against adversarial checks in `skills/jtbd-mom-test/SKILL.md`, `skills/opportunity-solution-trees/SKILL.md`, `skills/evidence-tags/SKILL.md`, and `skills/register-ops/SKILL.md`:
   - Fail (`P1`) if `audience-report.md` lacks `## Skill self-check` or either file lacks `## Assumptions and open questions` with `=== REGISTER REQUESTS ===`.
   - Fail (`P0`/`P1`) if `[Simulated]` user feedback or hypothetical "would use" answers appear as real validation or `[Stated]`/`[Validated]` evidence.
-  - Fail (`P1`) if target segments lack early-adopter specifics, switching friction, or upstream `IDEA-NNN` links.
+  - Fail (`P1`) if target segments lack early-adopter specifics, switching friction, Value Proposition Canvas mapping, or upstream `IDEA-NNN` links.
   - Fail (`P1`) if the Opportunity Solution Tree puts solutions in the opportunity layer or fails to compare >=2 candidate solutions.
   - Fail (`P1`) if any locked decision from `01-idea.md` is silently altered or dropped.
 - Never edit `02-audience.md`. Write only your findings file (`.po/runs/<run-id>/audience-review.md`), starting with `Verdict: FAIL` or `Verdict: PASS`, citing P0–P3 severity, skill/check, item ID, and line number.
