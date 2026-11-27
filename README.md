@@ -44,7 +44,7 @@ See [Philosophy](docs/philosophy.md) for the thinking behind this, and [How it f
 | Presentations | PR/FAQ, narrative memo, decision-led stakeholder presentation outline |
 | FSD | ISO/IEC/IEEE 29148 outline, INVEST, Given/When/Then, EARS, ISO/IEC 25010; handoff by gate PR |
 
-More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](docs/learning-loop.md). The research behind the choices, with sources, is in [Research](docs/research.md).
+More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](docs/learning-loop.md). Product decisions are recorded in [Decisions](docs/decisions.md). The research behind the choices, with sources, is in [Research](docs/research.md).
 
 ## Quick start
 
