@@ -4,7 +4,7 @@ layout_class: landing
 ---
 
 <section class="lp-hero" aria-labelledby="lp-title">
-<div class="lp-logo"><img src="assets/brand/aidev-po.svg" alt="aidev-po logo" width="96" height="96"></div>
+<div class="lp-logo"><img src="assets/aidev-po.svg" alt="aidev-po logo" width="96" height="96"></div>
 <p class="lp-eyebrow">Product definition for AI-built software</p>
 <h1 id="lp-title">From a basic product idea to a full design specification, with an AI product owner that asks, challenges and learns</h1>
 <p class="lede">aidev-po is a set of agents, skills and commands. You talk to one agent, <code>po</code>. It works through eight stages, writes down where every claim came from, stops at every gate for your decision, and hands the approved FSD to ai-sdlc-loop.</p>

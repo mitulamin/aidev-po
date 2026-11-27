@@ -9,5 +9,6 @@
   </defs>
   <path d="M 44,22 L 18,64 L 44,106" stroke="url(#aidevPoBracket)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M 84,22 L 110,64 L 84,106" stroke="url(#aidevPoBracket)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M 52,46 H 76 M 52,64 H 76 M 52,82 H 66" stroke="#00B7D8" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="60" cy="60" r="18" stroke="#00B7D8" stroke-width="8"/>
+  <path d="M 73,73 L 83.5,85" stroke="#00B7D8" stroke-width="8" stroke-linecap="round"/>
 </svg>

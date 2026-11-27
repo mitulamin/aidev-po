@@ -6,7 +6,9 @@
 {%- assign page_title = page.title | default: site.title %}
 <title>{% if page.url == "/" %}{{ site.title }}: {{ site.tagline }}{% else %}{{ page_title }} | {{ site.title }}{% endif %}</title>
 <meta name="description" content="{{ site.description }}">
-<link rel="icon" href="{{ '/assets/brand/aidev-po.svg' | relative_url }}" type="image/svg+xml">
+<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" sizes="any">
+<link rel="icon" href="{{ '/assets/aidev-po.svg' | relative_url }}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ '/assets/aidev-po-512.png' | relative_url }}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ site.title }}">
 <meta property="og:title" content="{{ page_title }} | {{ site.title }}">
@@ -21,7 +23,7 @@
 <p class="sr">This project is a work in progress and is considered alpha. It has not been fully tested yet.</p>
 <header class="site-header">
 <div class="wrap header-inner">
-<a class="brand" href="{{ '/' | relative_url }}"><img class="brand-logo" src="{{ '/assets/brand/aidev-po.svg' | relative_url }}" alt="aidev-po logo" width="28" height="28">aidev-po</a>
+<a class="brand" href="{{ '/' | relative_url }}"><img class="brand-logo" src="{{ '/assets/aidev-po.svg' | relative_url }}" alt="aidev-po logo" width="28" height="28">aidev-po</a>
 <nav aria-label="Main">
 {%- for item in site.data.nav -%}
 <a href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a>
@@ -41,7 +43,7 @@
 </main>
 <footer class="site-footer">
 <div class="wrap">
-<p>aidev-po, a sibling of <a href="https://mitulamin.github.io/ai-sdlc-loop/">AI SDLC Loop</a>. Written content is CC BY-SA 4.0 and code is GPL-3.0; templates are MIT.
+<p>aidev-po, a sibling of <a href="https://mitulamin.github.io/ai-sdlc-loop/">AI SDLC Loop</a>. Written content, including the logo, is CC BY-SA 4.0 by Shravi Limited and contributors; code is GPL-3.0; templates are MIT.
 See <a href="{{ site.github_repo }}#readme">the README</a> and <a href="{{ site.github_repo }}/blob/main/NOTICE.md">NOTICE.md</a>.
 No trackers, no external scripts.</p>
 </div>

@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/assets/aidev-po-128.png" alt="aidev-po logo" width="128"></p>
+
 # aidev-po
 
 ![Status: Alpha](https://img.shields.io/badge/status-alpha-FF6B35)
@@ -76,7 +78,7 @@ Your products repo is not part of this checkout.
 Same split as ai-sdlc-loop. This is not legal advice; the detail is in [NOTICE.md](NOTICE.md).
 
 - Code (`scripts/`, `schemas/`, workflows): GPL-3.0, [LICENSE](LICENSE)
-- Writing (agents, skills, commands, docs, examples, root markdown): CC BY-SA 4.0, [LICENSE-CONTENT](LICENSE-CONTENT)
+- Writing and site content (agents, skills, commands, docs, the logo, examples, root markdown): CC BY-SA 4.0, [LICENSE-CONTENT](LICENSE-CONTENT), credited to Shravi Limited and contributors
 - `templates/`: MIT, [templates/LICENSE](templates/LICENSE)
 - Your products repo is yours and is not covered by any of these.
 
