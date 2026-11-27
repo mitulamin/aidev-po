@@ -1,28 +1,167 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/mitulamin/aidev-po/schemas/scorecard.schema.json",
-  "title": "Scorecard (stub)",
-  "description": "Stub. Follows ai-sdlc-loop's scorecard pattern: one row per skill, each run appended to runs, each criterion scored 0 to 2. The learning-loop additions (feedback per 100 items, recurring cause rate) arrive in a later PR; the fields below are the intended shape and may change.",
-  "x-status": "stub",
+  "title": "Scorecard",
+  "description": "How well aidev-po is doing for one products repo (one client or team), stored at <products repo>/.po/scorecard.json. Two parts. skills: ai-sdlc-loop's per-skill scorecard, unchanged in meaning: po adds a run entry per skill after each run, each criterion scored 0 to 2, verdict set after the user's review (keep at 70% or more of the maximum in at least two runs with no harm flag; drop if never triggered or 40% or less in every run where it applied; merge if its effect cannot be told apart from another skill's; the user's note overrides any score). measures, stages, causes and summary: written by scripts/scorecard.py update from the product folders' trace, feedback, attribution and register files and the ledger; never edited by hand.",
+  "x-status": "draft",
   "type": "object",
   "required": ["schema_version", "skills"],
+  "additionalProperties": false,
   "properties": {
-    "schema_version": { "type": "string" },
+    "schema_version": { "const": "1.0.0" },
     "note": { "type": "string" },
+    "generated": { "type": "string", "format": "date-time", "description": "When scripts/scorecard.py last wrote the computed parts." },
     "skills": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["skill_name", "stage", "runs"],
+        "required": ["skill_name", "stage", "runs", "verdict"],
+        "additionalProperties": false,
         "properties": {
-          "skill_name": { "type": "string" },
+          "skill_name": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd", "learn", "all"] },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["run_id", "date", "scores", "total", "harm_flag"],
+              "additionalProperties": false,
+              "properties": {
+                "run_id": { "type": "string" },
+                "product": { "type": "string" },
+                "date": { "type": "string", "format": "date" },
+                "scores": {
+                  "type": "object",
+                  "required": ["triggered", "followed", "reviewer_caught", "outcome", "cost"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "triggered": { "$ref": "#/$defs/score", "description": "Loaded at the right moment." },
+                    "followed": { "$ref": "#/$defs/score", "description": "The producer did what the dos and don'ts say." },
+                    "reviewer_caught": { "$ref": "#/$defs/score", "description": "The reviewer used its checks and found or confirmed something real." },
+                    "outcome": { "$ref": "#/$defs/score", "description": "A defect was prevented or caught, fewer loops, or a better artefact." },
+                    "cost": { "$ref": "#/$defs/score", "description": "The tokens and time were worth it." }
+                  }
+                },
+                "total": { "type": "integer", "minimum": 0, "description": "The sum of the scores; scripts/scorecard.py check checks it." },
+                "harm_flag": { "type": "boolean", "description": "It caused wrong work, a loop or bloat." },
+                "evidence_link": { "type": "string" },
+                "human_note": { "type": "string" }
+              }
+            }
+          },
+          "verdict": { "enum": [null, "keep", "merge", "drop"] }
+        }
+      }
+    },
+    "measures": {
+      "type": "array",
+      "description": "One entry per product run, in time order.",
+      "items": {
+        "type": "object",
+        "required": ["product", "run", "stage", "date", "items_written", "trace_complete_pct", "feedback", "feedback_per_100_items", "p0_p1", "reviewer_findings", "reviewer_catch_share", "attributions", "origins_in_run", "confirmed", "confirmed_share", "repeat_causes", "repeat_cause_rate", "recurrence_after_edit"],
+        "additionalProperties": false,
+        "properties": {
+          "product": { "type": "string" },
+          "run": { "type": "string" },
           "stage": { "type": "string" },
-          "runs": { "type": "array", "items": { "type": "object" } },
-          "verdict": { "type": ["string", "null"] }
-        },
-        "additionalProperties": true
+          "date": { "type": "string", "format": "date" },
+          "items_written": { "type": "integer", "minimum": 0, "description": "Distinct items with a write line in this run." },
+          "trace_complete_pct": { "$ref": "#/$defs/pct_or_null", "description": "Share of those items whose trace passes scripts/traces.py check, as a percentage. Target 100." },
+          "feedback": { "$ref": "#/$defs/by_severity", "description": "Feedback on items as written in this run (by the rev the feedback names), plus run-level feedback that names this run." },
+          "feedback_per_100_items": {
+            "type": "object",
+            "required": ["total", "P0", "P1", "P2", "P3"],
+            "additionalProperties": false,
+            "properties": {
+              "total": { "$ref": "#/$defs/num_or_null" },
+              "P0": { "$ref": "#/$defs/num_or_null" },
+              "P1": { "$ref": "#/$defs/num_or_null" },
+              "P2": { "$ref": "#/$defs/num_or_null" },
+              "P3": { "$ref": "#/$defs/num_or_null" }
+            },
+            "description": "feedback / items_written * 100, rounded to one decimal; null when no items were written."
+          },
+          "p0_p1": { "type": "integer", "minimum": 0 },
+          "reviewer_findings": { "type": "integer", "minimum": 0, "description": "Findings naming items of this run in review lines of the trace." },
+          "reviewer_catch_share": { "$ref": "#/$defs/pct_or_null", "description": "reviewer_findings / (reviewer_findings + feedback total) as a percentage: how much was caught before the user saw it. null when both are zero." },
+          "attributions": { "type": "integer", "minimum": 0, "description": "Current attributions for this run's feedback." },
+          "origins_in_run": { "type": "integer", "minimum": 0, "description": "Attributions, for any feedback, whose origin step is in this run: where errors began rather than where they were noticed." },
+          "confirmed": { "type": "integer", "minimum": 0, "description": "Of this run's attributions, how many the user confirmed." },
+          "confirmed_share": { "$ref": "#/$defs/pct_or_null" },
+          "repeat_causes": { "type": "integer", "minimum": 0, "description": "Attributions with origin in this run whose cause key (cause and origin agent) was already seen in an earlier run in this products repo." },
+          "repeat_cause_rate": { "$ref": "#/$defs/pct_or_null", "description": "repeat_causes / origins_in_run as a percentage." },
+          "recurrence_after_edit": { "type": "integer", "minimum": 0, "description": "Attributions with origin in this run whose cause key matches an accepted ledger edit applied before the run. Target 0." }
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "description": "Questions per gate, per product and stage. Each run of a stage ends at a gate.",
+      "items": {
+        "type": "object",
+        "required": ["product", "stage", "gates", "questions", "questions_per_gate"],
+        "additionalProperties": false,
+        "properties": {
+          "product": { "type": "string" },
+          "stage": { "type": "string" },
+          "gates": { "type": "integer", "minimum": 0 },
+          "questions": { "type": "integer", "minimum": 0, "description": "Register declare lines of type question for the stage." },
+          "questions_per_gate": { "$ref": "#/$defs/num_or_null" }
+        }
+      }
+    },
+    "causes": {
+      "type": "array",
+      "description": "How often the same cause comes back. One entry per cause key: the cause and the origin agent.",
+      "items": {
+        "type": "object",
+        "required": ["cause", "agent", "count", "runs", "products", "first_seen", "last_seen", "after_edit"],
+        "additionalProperties": false,
+        "properties": {
+          "cause": { "type": "string" },
+          "agent": { "type": "string" },
+          "count": { "type": "integer", "minimum": 1 },
+          "runs": { "type": "integer", "minimum": 1, "description": "Distinct runs it began in." },
+          "products": { "type": "array", "items": { "type": "string" } },
+          "first_seen": { "type": "string", "format": "date" },
+          "last_seen": { "type": "string", "format": "date" },
+          "after_edit": { "type": "integer", "minimum": 0, "description": "Times it came back after an accepted, applied ledger edit for the same cause key." }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runs", "items_written", "feedback", "feedback_per_100_items", "trace_complete_pct", "reviewer_catch_share", "confirmed_share", "repeat_cause_rate", "recurrence_after_edit", "held_out_regressions"],
+      "properties": {
+        "runs": { "type": "integer", "minimum": 0 },
+        "items_written": { "type": "integer", "minimum": 0 },
+        "feedback": { "$ref": "#/$defs/by_severity" },
+        "feedback_per_100_items": { "$ref": "#/$defs/num_or_null" },
+        "trace_complete_pct": { "$ref": "#/$defs/pct_or_null" },
+        "reviewer_catch_share": { "$ref": "#/$defs/pct_or_null" },
+        "confirmed_share": { "$ref": "#/$defs/pct_or_null" },
+        "repeat_cause_rate": { "$ref": "#/$defs/pct_or_null" },
+        "recurrence_after_edit": { "type": "integer", "minimum": 0 },
+        "held_out_regressions": { "type": "integer", "minimum": 0, "description": "Accepted ledger edits that had any held-out regression. Target 0." }
       }
     }
   },
-  "additionalProperties": true
+  "$defs": {
+    "score": { "type": "integer", "minimum": 0, "maximum": 2 },
+    "num_or_null": { "type": ["number", "null"], "minimum": 0 },
+    "pct_or_null": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+    "by_severity": {
+      "type": "object",
+      "required": ["total", "P0", "P1", "P2", "P3"],
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "P0": { "type": "integer", "minimum": 0 },
+        "P1": { "type": "integer", "minimum": 0 },
+        "P2": { "type": "integer", "minimum": 0 },
+        "P3": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
 }

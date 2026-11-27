@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/rerun.schema.json",
+  "title": "Rerun line",
+  "description": "One /po-rerun-from: rebuild a product's output from the step where an error began. JSON Lines, UTF-8, append-only, stored at <product>/.po/reruns.jsonl. The latest line for an id is its current state; po appends a full new line at each status change. Status runs planned, approved, done, then committed, or ends at declined or abandoned.",
+  "x-status": "draft",
+  "type": "object",
+  "required": ["id", "ts", "status", "feedback", "from", "correction", "invalidated", "reopened_stages"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^RR-[0-9]{3,}$" },
+    "ts": { "type": "string", "format": "date-time" },
+    "status": {
+      "enum": ["planned", "approved", "declined", "done", "committed", "abandoned"],
+      "description": "planned: plan shown to the user. approved: the user said yes to the plan. declined: the user said no. done: rebuilt, reviewed, and every reopened gate approved again. committed: the user OK'd a commit in the products repo. abandoned: stopped part way; reason in note, files left for the user."
+    },
+    "feedback": { "type": "array", "items": { "type": "string", "pattern": "^FB-[0-9]{3,}$" }, "minItems": 1, "uniqueItems": true },
+    "attribution": { "type": "string", "pattern": "^AT-[0-9]{3,}$" },
+    "from": {
+      "type": "object",
+      "required": ["stage", "agent", "step"],
+      "additionalProperties": false,
+      "description": "The step to rebuild from: normally the attribution's origin.",
+      "properties": {
+        "run": { "type": "string", "pattern": "^run-[0-9]{14}-[0-9a-f]{4}$" },
+        "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
+        "agent": { "type": "string", "minLength": 1 },
+        "step": { "type": "string", "minLength": 1 },
+        "item_id": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }
+      }
+    },
+    "correction": {
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "description": "What is now true, in the user's words where possible." },
+        "register_ref": { "type": "string", "pattern": "^r-[0-9]{14}-[0-9a-f]{4}$", "description": "The register decision or answer that records the correction. Written before the rerun so the producer gets it as an input." },
+        "supersedes": { "type": "array", "items": { "type": "string", "pattern": "^r-[0-9]{14}-[0-9a-f]{4}$" }, "description": "Register entries the correction replaces; items that relied on them are invalidated too." }
+      }
+    },
+    "invalidated": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" },
+      "uniqueItems": true,
+      "description": "Items to rebuild: the origin item and everything downstream of it, from scripts/traces.py downstream."
+    },
+    "kept": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true, "description": "Downstream items the user chose to keep as they are." },
+    "reopened_stages": {
+      "type": "array",
+      "items": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
+      "uniqueItems": true,
+      "description": "Stages whose gate must be approved again because they hold invalidated items."
+    },
+    "run": { "type": "string", "pattern": "^run-[0-9]{14}-[0-9a-f]{4}$", "description": "The run ID the rebuild writes under." },
+    "rebuilt": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
+    "removed": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
+    "added": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
+    "user_ok": { "type": "string", "format": "date-time", "description": "When the user approved the plan." },
+    "commit": { "type": ["string", "null"], "description": "Products repo commit, only after the user's OK." },
+    "note": { "type": "string" }
+  }
+}

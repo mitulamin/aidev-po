@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/ledger.schema.json",
+  "title": "Ledger line",
+  "description": "One decision on one proposed learned edit from /po-retro, accepted or rejected, as in ai-sdlc-loop's ledger of edits (9.12). JSON Lines, UTF-8, append-only, stored in the products repo at <products repo>/.po/ledger.jsonl (one ledger per client or team, so client evidence never lands in the public aidev-po repo). The latest line for an id is its current state: po appends a full new line when an accepted edit is applied.",
+  "x-status": "draft",
+  "type": "object",
+  "required": ["id", "ts", "retro", "scope", "surface", "change", "evidence", "held_in", "held_out", "review", "decision", "reason"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^LE-[0-9]{3,}$" },
+    "ts": { "type": "string", "format": "date-time" },
+    "retro": { "type": "string", "pattern": "^retro-[0-9]{8}-[0-9]{2}$", "description": "The retro this came from, retro-<yyyymmdd>-<nn>. Its files are in <products repo>/.po/retro/<retro>/." },
+    "scope": {
+      "enum": ["global", "client", "product"],
+      "description": "global: an edit to aidev-po itself, for every run. client: the client's preference profile, <products repo>/.po/preferences.md, never pooled across clients. product: a correction to one product's decisions; recorded for history, not a learning."
+    },
+    "surface": {
+      "type": "object",
+      "required": ["kind", "path"],
+      "additionalProperties": false,
+      "description": "The one surface the edit changes.",
+      "properties": {
+        "kind": { "enum": ["skill", "reviewer-check", "lint", "template", "question-bank", "agent-brief", "client-preference", "product-decision"] },
+        "path": { "type": "string", "minLength": 1, "description": "The source file, for example skills/actor-catalogue/SKILL.md, or .po/preferences.md, or <product>/.po/register.jsonl." }
+      }
+    },
+    "change": { "type": "string", "minLength": 1, "description": "The edit in a sentence, and the diff file under the retro folder." },
+    "evidence": {
+      "type": "object",
+      "required": ["feedback", "attributions", "cause"],
+      "additionalProperties": false,
+      "properties": {
+        "feedback": { "type": "array", "items": { "type": "string", "description": "<product>/FB-<n>" }, "minItems": 1 },
+        "attributions": { "type": "array", "items": { "type": "string", "description": "<product>/AT-<n>" } },
+        "cause": { "type": "string", "description": "The cause the edit targets, from attribution.schema.json x-causes." },
+        "mechanism": { "type": "string", "description": "The group of failures this edit fixes, in a phrase." }
+      }
+    },
+    "held_in": {
+      "type": "object",
+      "required": ["cases", "before", "after"],
+      "additionalProperties": false,
+      "description": "The failing cases the edit was made for (red before, green after).",
+      "properties": {
+        "cases": { "type": "array", "items": { "type": "string" } },
+        "before": { "type": "integer", "minimum": 0, "description": "Cases passing before the edit." },
+        "after": { "type": "integer", "minimum": 0, "description": "Cases passing after the edit." }
+      }
+    },
+    "held_out": {
+      "type": "object",
+      "required": ["cases", "before", "after", "regressions"],
+      "additionalProperties": false,
+      "description": "Cases the proposer never saw: other confirmed feedback cases and the worked example in examples/.",
+      "properties": {
+        "cases": { "type": "array", "items": { "type": "string" } },
+        "before": { "type": "integer", "minimum": 0 },
+        "after": { "type": "integer", "minimum": 0 },
+        "regressions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["verdict", "file"],
+      "additionalProperties": false,
+      "properties": {
+        "verdict": { "enum": ["PASS", "FAIL"] },
+        "file": { "type": "string" }
+      },
+      "description": "learn-reviewer's verdict on the proposal."
+    },
+    "decision": { "enum": ["accepted", "rejected", "deferred"], "description": "The user's decision. Only the user accepts." },
+    "reason": { "type": "string", "minLength": 1 },
+    "decided_by": { "type": "string", "description": "Who decided: always the user, by name if given." },
+    "applied": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "null until an accepted edit is applied. For a global edit, the aidev-po branch and commit (and the pull request, if the user opened one).",
+      "properties": {
+        "ts": { "type": "string", "format": "date-time" },
+        "where": { "enum": ["aidev-po", "products-repo"] },
+        "branch": { "type": "string" },
+        "commit": { "type": "string" },
+        "pr": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,22 +1,195 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/mitulamin/aidev-po/schemas/trace.schema.json",
-  "title": "Trace entry (stub)",
-  "description": "Stub. Where one output item came from, so feedback can be walked back to the step that caused it. One JSON Lines entry per output item. The full learning loop, with required fields and the tracer's use of them, arrives in a later PR; the fields below are the intended shape and may change.",
-  "x-status": "stub",
-  "type": "object",
-  "required": ["item_id", "run", "stage", "agent"],
-  "properties": {
-    "item_id": { "type": "string", "description": "Stable ID of the output item." },
-    "run": { "type": "string", "description": "Run identifier." },
-    "stage": { "type": "string" },
-    "agent": { "type": "string" },
-    "step": { "type": "string" },
-    "skill_versions": { "type": "object", "additionalProperties": { "type": "string" } },
-    "template_versions": { "type": "object", "additionalProperties": { "type": "string" } },
-    "upstream_ids": { "type": "array", "items": { "type": "string" } },
-    "evidence_tag": { "type": "string" },
-    "register_refs": { "type": "array", "items": { "type": "string" }, "description": "Register ids of the user's answers and decisions this item rests on." }
+  "title": "Trace line",
+  "description": "One line of a product's trace: where each output item came from, so feedback can be walked back to the step where it went wrong. JSON Lines, UTF-8, append-only, stored at <product>/.po/trace.jsonl. Three events: write (an agent wrote or rewrote an item; rev goes up by one each time), review (a reviewer looked at the items in a file) and remove (an item was taken out; its ID is never reused). The current state of an item is its latest write or remove line. Producers declare each write line as they write the item (skill trace-records); scripts/traces.py add fills in ts and rev and checks the line before appending it. scripts/traces.py check validates a whole product.",
+  "x-status": "draft",
+  "x-item-types": {
+    "problem": "PRB",
+    "outcome": "OUT",
+    "metric": "MET",
+    "canvas-box": "CNV",
+    "opportunity": "OPP",
+    "risk": "RSK",
+    "segment": "SEG",
+    "job": "JOB",
+    "persona": "PER",
+    "interview-question": "INQ",
+    "actor": "ACT",
+    "stakeholder": "STK",
+    "system": "SYS",
+    "interface": "INT",
+    "event": "EVT",
+    "term": "TRM",
+    "scope-item": "SCP",
+    "non-goal": "NGL",
+    "story": "STY",
+    "release": "REL",
+    "session": "WSH",
+    "agenda-item": "AGD",
+    "workshop-output": "WSO",
+    "slide": "SLD",
+    "faq": "FAQ",
+    "narrative-section": "NAR",
+    "requirement": "REQ",
+    "quality-requirement": "NFR",
+    "acceptance-criterion": "ACC",
+    "fsd-section": "SEC",
+    "other": "ITM"
   },
-  "additionalProperties": true
+  "oneOf": [
+    { "$ref": "#/$defs/write" },
+    { "$ref": "#/$defs/review" },
+    { "$ref": "#/$defs/remove" }
+  ],
+  "$defs": {
+    "item_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}-[0-9]{3,}$",
+      "description": "Stable item ID: the item type's three-letter prefix (x-item-types), a hyphen and a number of at least three digits, for example ACT-007. Numbered per product and prefix, in order, from 001. Never changed and never reused, even after the item is removed."
+    },
+    "item_type": {
+      "enum": ["problem", "outcome", "metric", "canvas-box", "opportunity", "risk", "segment", "job", "persona", "interview-question", "actor", "stakeholder", "system", "interface", "event", "term", "scope-item", "non-goal", "story", "release", "session", "agenda-item", "workshop-output", "slide", "faq", "narrative-section", "requirement", "quality-requirement", "acceptance-criterion", "fsd-section", "other"]
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^run-[0-9]{14}-[0-9a-f]{4}$",
+      "description": "Run ID, run-<UTC yyyymmddhhmmss>-<4 hex>. A run is one pass of a stage, from the producer's brief to the gate, or one /po-rerun-from. po makes it with scripts/traces.py new-run and puts it in every brief."
+    },
+    "register_id": {
+      "type": "string",
+      "pattern": "^r-[0-9]{14}-[0-9a-f]{4}$"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC, RFC 3339, for example 2026-11-27T22:30:00Z"
+    },
+    "stage": {
+      "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"]
+    },
+    "agent": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "The agent's name as in agents/, for example actors-producer, or po for the coordinator."
+    },
+    "role": {
+      "enum": ["producer", "reviewer", "coordinator", "user"]
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 },
+      "description": "Name to version. The version is the short git commit of the file's last change in aidev-po, with +dirty if it had uncommitted edits. scripts/traces.py versions prints them all."
+    },
+    "evidence_tag": {
+      "enum": ["Stated", "Inferred", "Assumed", "Simulated", "Validated"],
+      "description": "Stated: the user or a source document said it. Inferred: reasoned from stated items; the upstream items say from what. Assumed: nobody said it; proceeding as if true, with a register assumption. Simulated: from simulated users or personas; a hypothesis, never evidence. Validated: confirmed by a real person or real data, source recorded."
+    },
+    "rerun": {
+      "type": "string",
+      "pattern": "^RR-[0-9]{3,}$"
+    },
+    "write": {
+      "type": "object",
+      "required": ["event", "item_id", "item_type", "rev", "ts", "run", "stage", "agent", "role", "step", "file", "summary", "upstream", "relied_on", "evidence", "skills", "templates", "aidev_po"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "write" },
+        "item_id": { "$ref": "#/$defs/item_id" },
+        "item_type": { "$ref": "#/$defs/item_type" },
+        "rev": { "type": "integer", "minimum": 1, "description": "1 for the first write, one more for each rewrite." },
+        "ts": { "$ref": "#/$defs/ts" },
+        "run": { "$ref": "#/$defs/run" },
+        "stage": { "$ref": "#/$defs/stage" },
+        "agent": { "$ref": "#/$defs/agent" },
+        "role": { "$ref": "#/$defs/role" },
+        "step": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The step of the agent that wrote the item: the number and short name of the step in the agent's or skill's Steps list, for example 2-actor-sweep."
+        },
+        "file": { "type": "string", "minLength": 1, "description": "Markdown file, relative to the product folder, where the item ID appears." },
+        "summary": { "type": "string", "minLength": 1, "description": "The item in one line, as written at this rev." },
+        "upstream": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/item_id" },
+          "uniqueItems": true,
+          "description": "Item IDs this item was derived from (PROV wasDerivedFrom), declared by the agent as it writes. Upstream and relied_on together must not both be empty."
+        },
+        "relied_on": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/register_id" },
+          "uniqueItems": true,
+          "description": "Register IDs of the user answers, decisions and assumptions this item rests on."
+        },
+        "evidence": {
+          "type": "object",
+          "required": ["tag"],
+          "additionalProperties": false,
+          "properties": {
+            "tag": { "$ref": "#/$defs/evidence_tag" },
+            "sources": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "description": "Documents, notes, transcripts or URLs, with a line or section where possible, for example workshops/2026-12-01-notes.md#L12. Validated needs at least one."
+            },
+            "note": { "type": "string" }
+          }
+        },
+        "skills": { "$ref": "#/$defs/versions", "description": "Skills the agent applied for this item, name to version." },
+        "templates": { "$ref": "#/$defs/versions", "description": "Templates the file was built from, path under templates/ to version. Empty object if none." },
+        "aidev_po": { "type": "string", "minLength": 1, "description": "Short git commit of the aidev-po checkout during the run, with +dirty if it had uncommitted edits. Pins every agent, skill and template version." },
+        "rerun": { "$ref": "#/$defs/rerun", "description": "Set when the write was made by /po-rerun-from." },
+        "model": { "type": "string", "description": "Optional: the model that ran the agent." }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["event", "ts", "run", "stage", "agent", "role", "file", "item_ids", "verdict"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "review" },
+        "ts": { "$ref": "#/$defs/ts" },
+        "run": { "$ref": "#/$defs/run" },
+        "stage": { "$ref": "#/$defs/stage" },
+        "agent": { "$ref": "#/$defs/agent", "description": "The reviewer: a stage reviewer, challenger or evidence-auditor." },
+        "role": { "const": "reviewer" },
+        "file": { "type": "string", "minLength": 1 },
+        "item_ids": { "type": "array", "items": { "$ref": "#/$defs/item_id" }, "minItems": 1, "uniqueItems": true, "description": "Every item in the file at the time of the review." },
+        "verdict": { "enum": ["PASS", "FAIL"] },
+        "findings_file": { "type": "string" },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item_id", "severity", "text"],
+            "additionalProperties": false,
+            "properties": {
+              "item_id": { "$ref": "#/$defs/item_id" },
+              "severity": { "enum": ["P0", "P1", "P2", "P3"] },
+              "text": { "type": "string", "minLength": 1 }
+            }
+          },
+          "description": "Findings that name an item. Used to measure how much a reviewer caught before the user saw it."
+        }
+      }
+    },
+    "remove": {
+      "type": "object",
+      "required": ["event", "item_id", "rev", "ts", "run", "stage", "agent", "role", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "remove" },
+        "item_id": { "$ref": "#/$defs/item_id" },
+        "rev": { "type": "integer", "minimum": 2, "description": "One more than the item's last write." },
+        "ts": { "$ref": "#/$defs/ts" },
+        "run": { "$ref": "#/$defs/run" },
+        "stage": { "$ref": "#/$defs/stage" },
+        "agent": { "$ref": "#/$defs/agent" },
+        "role": { "$ref": "#/$defs/role" },
+        "reason": { "type": "string", "minLength": 1 },
+        "rerun": { "$ref": "#/$defs/rerun" }
+      }
+    }
+  }
 }

@@ -1,19 +1,72 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/mitulamin/aidev-po/schemas/feedback.schema.json",
-  "title": "Feedback entry (stub)",
-  "description": "Stub. One piece of user feedback on an output item, from /feedback or a PR comment. The full learning loop, with the attribution fields the tracer fills in, arrives in a later PR; the fields below are the intended shape and may change.",
-  "x-status": "stub",
-  "type": "object",
-  "required": ["id", "item_id", "severity", "text"],
-  "properties": {
-    "id": { "type": "string" },
-    "item_id": { "type": "string", "description": "The output item the feedback is about." },
-    "severity": { "enum": ["P0", "P1", "P2", "P3"] },
-    "category": { "type": "string", "description": "What is wrong. The fixed list of categories is defined in a later PR." },
-    "text": { "type": "string" },
-    "source": { "enum": ["command", "pr-comment"] },
-    "ts": { "type": "string", "format": "date-time" }
+  "title": "Feedback line",
+  "description": "One piece of user feedback on a product's output, from /po-feedback in chat or a pull request comment in the products repo. JSON Lines, UTF-8, append-only, stored at <product>/.po/feedback.jsonl. A feedback line is never edited; its status is worked out from the lines that refer to it: traced once an attribution names it (attribution.schema.json), fixed once a done rerun names it (rerun.schema.json), learned once a ledger entry names it (ledger.schema.json), or withdrawn by a later line with the same id and withdrawn true. Each feedback line also gets a register line of type feedback (register.schema.json) so po's catch-up shows it.",
+  "x-status": "draft",
+  "x-categories": {
+    "wrong-or-invented": "States something nobody said, or something false. Includes invented content: a requirement, actor, figure or quote with no source.",
+    "missing": "Leaves out an actor, system, requirement, risk, step or other item that should be there.",
+    "misunderstood-intent": "Took what the user said and recorded a different meaning: we said X, I meant Y.",
+    "wrong-scope-or-priority": "In when it should be out, out when it should be in, or the wrong priority (a Should written as a Must).",
+    "unclear-or-untestable": "Vague words, more than one requirement in one, no acceptance criteria, or a criterion nobody could test.",
+    "inconsistent": "Contradicts another output, the glossary, or a locked decision in the register.",
+    "wrong-for-audience": "Right content, wrong tone, depth, language or format for the person it is for.",
+    "process": "About how po worked, not about one item: too many questions, a leading question, a skipped gate, an unasked OK.",
+    "not-sure": "Feels wrong but the user cannot say why. The tracer asks the user one follow-up question before attributing it."
   },
-  "additionalProperties": true
+  "type": "object",
+  "required": ["id", "ts", "source", "target", "severity", "category", "text"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^FB-[0-9]{3,}$", "description": "FB-<number>, numbered per product in order from FB-001." },
+    "ts": { "type": "string", "format": "date-time" },
+    "source": { "enum": ["command", "pr-comment"] },
+    "by": { "type": "string", "description": "Who gave it: a name or a GitHub login. Optional." },
+    "target": {
+      "type": "object",
+      "required": ["level"],
+      "additionalProperties": false,
+      "description": "What the feedback is about. A run or a process point names the run; an artefact names the file; a section names the file and heading; an item or a quote names item IDs.",
+      "properties": {
+        "level": { "enum": ["run", "artefact", "section", "item", "quote"] },
+        "run": { "type": "string", "pattern": "^run-[0-9]{14}-[0-9a-f]{4}$" },
+        "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] },
+        "file": { "type": "string" },
+        "section": { "type": "string", "description": "The heading text." },
+        "item_ids": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{3,}$" }, "uniqueItems": true },
+        "item_revs": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[A-Z]{3}-[0-9]{3,}$" },
+          "additionalProperties": { "type": "integer", "minimum": 1 },
+          "description": "The rev of each item when the feedback was given, so it stays attached to the version it was about."
+        },
+        "quote": { "type": "string", "description": "The exact sentence or words the feedback is about." }
+      }
+    },
+    "severity": {
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "P0 blocks use: acting on it would cause real harm or a wrong build. P1 wrong. P2 weak: right but thin, vague or poorly argued. P3 polish."
+    },
+    "category": {
+      "enum": ["wrong-or-invented", "missing", "misunderstood-intent", "wrong-scope-or-priority", "unclear-or-untestable", "inconsistent", "wrong-for-audience", "process", "not-sure"],
+      "description": "What is wrong. The nine values are explained in x-categories."
+    },
+    "text": { "type": "string", "minLength": 1, "description": "The user's words, verbatim." },
+    "expected": { "type": "string", "description": "What it should say or do instead, if the user said." },
+    "pr": {
+      "type": "object",
+      "required": ["url", "comment_id"],
+      "additionalProperties": false,
+      "description": "For source pr-comment: where the comment is. comment_id keeps the same comment from being taken in twice.",
+      "properties": {
+        "url": { "type": "string" },
+        "comment_id": { "type": ["integer", "string"] },
+        "path": { "type": "string" },
+        "line": { "type": "integer" },
+        "commit": { "type": "string" }
+      }
+    },
+    "withdrawn": { "type": "boolean", "description": "Set on a later line with the same id when the user takes the feedback back." }
+  }
 }
