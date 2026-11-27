@@ -20,6 +20,7 @@
 - **Users & Actors (`HND-002`)**: `<from ACT-NNN>`
 - **Scope — Slice 1 Only (`HND-003`)**: `<list US-NNN, REQ-NNN, NFR-NNN>`
 - **Authoritative Spec Path**: `<path to 08-fsd.md>`
+- **Start command**: `/plan <bundle>/08-handoff-gate.md --register <bundle>/register.jsonl` (`register.jsonl` is a copy of `.po/register.jsonl` in the gate bundle, so locked decisions and open items carry over; never the product's own register)
 
 ## 3. Locked Decisions (Do Not Override Downstream)
 

@@ -6,7 +6,8 @@ Usage:
   scripts/products-dir.py --json           print the state as JSON
   scripts/products-dir.py --set PATH       record PATH in aidev-po.local.json (products_dir)
   scripts/products-dir.py --set PATH --init  the same, and set up PATH as a git repo if it is not one: create the
-                                           folder, run git init and make an empty initial commit. No remote is added.
+                                           folder, run git init and make an initial commit with a short README.md
+                                           and .gitignore. No remote is added.
 
 Standard library only. Products live in a separate git repo outside the aidev-po checkout,
 one per client or team. There is no default location; the user chooses one once. Where the
@@ -21,8 +22,10 @@ things on disk, so `po` runs them only after the user says yes. Nothing here add
 pushes: a remote is a separate question `po` asks afterwards (see docs/products-repo.md). The report
 includes `gh`, whether the GitHub CLI is ready (installed and signed in), for that question.
 
-A relative path is resolved from the aidev-po root; ~ is expanded. `--set` records a path as an
-absolute path, or as typed if it starts with ~.
+A relative path is resolved from the aidev-po root; ~ is expanded. `--set` records the resolved
+absolute path. It refuses any path inside the aidev-po checkout, including the checkout itself.
+When `--init` has to make the initial commit, it first checks that git user.name and user.email
+are set, and records nothing if either is missing.
 
 state is one of:
   unconfigured no path is set
@@ -34,6 +37,7 @@ state is one of:
 
 Exit code is 0 whenever the state was read, whatever the state is.
 """
+import argparse
 import json
 import os
 import subprocess
@@ -44,6 +48,21 @@ ROOT = Path(__file__).resolve().parent.parent
 ENV_VAR = "AIDEV_PO_PRODUCTS_DIR"
 CONFIG = ROOT / "aidev-po.local.json"
 SUGGESTIONS = ["~/aidev-products", "~/Documents/aidev-products", str(ROOT.parent / "aidev-products")]
+
+README = """# Products
+
+Product discovery work made with [aidev-po](https://github.com/mitulamin/aidev-po), one folder per product.
+Each product folder holds its stage files (`01-idea.md` to `08-fsd.md`) and a `.po/` folder with its
+state, register and traces.
+
+This repo is private by default. aidev-po commits here only with your OK and never pushes unless you ask.
+"""
+
+GITIGNORE = """.DS_Store
+Thumbs.db
+*.swp
+*~
+"""
 
 
 def read_config():
@@ -77,6 +96,26 @@ def git(path, *args):
 def is_repo_root(path):
     top = git(path, "rev-parse", "--show-toplevel")
     return top.returncode == 0 and Path(top.stdout.strip()).resolve() == path.resolve()
+
+
+def inside_checkout(path):
+    root = ROOT.resolve()
+    return path == root or root in path.parents
+
+
+def missing_identity(path):
+    """The git identity keys (user.name, user.email) a commit in path would lack."""
+    missing = []
+    for key in ("user.name", "user.email"):
+        if is_repo_root(path):
+            result = git(path, "config", "--get", key)
+        else:
+            result = subprocess.run(["git", "config", "--global", "--get", key], capture_output=True, text=True)
+            if result.returncode or not result.stdout.strip():
+                result = subprocess.run(["git", "config", "--system", "--get", key], capture_output=True, text=True)
+        if result.returncode or not result.stdout.strip():
+            missing.append(key)
+    return missing
 
 
 def gh_status():
@@ -113,17 +152,41 @@ def inspect():
     return info
 
 
+def initial_commit(path):
+    added = []
+    for name, text in (("README.md", README), (".gitignore", GITIGNORE)):
+        if not (path / name).exists():
+            (path / name).write_text(text, encoding="utf-8")
+            added.append(name)
+    if added:
+        git(path, "add", "--", *added)
+        result = git(path, "commit", "-m", "Initialise products repo")
+    else:
+        result = git(path, "commit", "--allow-empty", "-m", "Initialise products repo")
+    if result.returncode:
+        raise SystemExit("git init worked but the initial commit failed: " + (result.stderr.strip() or result.stdout.strip()))
+    print(f"made the initial commit ({', '.join(added) or 'empty'}); no remote added")
+
+
 def record(raw, init):
-    path = expand(raw)
-    if path.resolve() == ROOT.resolve():
-        raise SystemExit("products repo cannot be the aidev-po checkout itself")
+    path = expand(raw).resolve()
+    if inside_checkout(path):
+        raise SystemExit(f"{path} is inside the aidev-po checkout ({ROOT.resolve()}); "
+                         "choose a folder outside it, such as ~/aidev-products")
     if path.exists() and not path.is_dir():
         raise SystemExit(f"{path} exists and is not a folder")
-    stored = raw if raw.startswith("~") else str(path)
+    needs_commit = init and not (path.is_dir() and is_repo_root(path)
+                                 and git(path, "rev-parse", "--verify", "HEAD").returncode == 0)
+    if needs_commit:
+        missing = missing_identity(path)
+        if missing:
+            raise SystemExit(f"git {' and '.join(missing)} not set, so the initial commit would fail; nothing was recorded. "
+                             'Set them with: git config --global user.name "Your Name" and '
+                             'git config --global user.email "you@example.com", then run this again.')
     config = read_config()
-    config["products_dir"] = stored
+    config["products_dir"] = str(path)
     CONFIG.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
-    print(f"recorded products_dir {stored} in {CONFIG.name}")
+    print(f"recorded products_dir {path} in {CONFIG.name}")
     if os.environ.get(ENV_VAR):
         print(f"note: {ENV_VAR} is set and overrides it", file=sys.stderr)
     if init:
@@ -135,25 +198,25 @@ def record(raw, init):
             if result.returncode:
                 raise SystemExit(result.stderr.strip() or "git init failed")
             print(f"ran git init in {path}")
-        if git(path, "rev-parse", "--verify", "HEAD").returncode:
-            result = git(path, "commit", "--allow-empty", "-m", "Initialise products repo")
-            if result.returncode:
-                raise SystemExit("git init worked but the initial commit failed (set git user.name and user.email?): "
-                                 + (result.stderr.strip() or result.stdout.strip()))
-            print("made the initial commit; no remote added")
+        if needs_commit:
+            initial_commit(path)
 
 
 def main(argv):
-    if "--set" in argv:
-        i = argv.index("--set")
-        if i + 1 >= len(argv) or argv[i + 1].startswith("--"):
-            raise SystemExit("--set needs a path")
-        record(argv[i + 1], "--init" in argv)
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0],
+                                 epilog="See docs/products-repo.md for where the path is read from.")
+    ap.add_argument("--json", action="store_true", help="print the state as JSON")
+    ap.add_argument("--set", metavar="PATH", help="record PATH as the products repo in aidev-po.local.json")
+    ap.add_argument("--init", action="store_true",
+                    help="with --set: create the folder, git init it and make the initial commit if needed")
+    args = ap.parse_args(argv)
+    if args.init and not args.set:
+        ap.error("--init goes with --set PATH")
+    if args.set:
+        record(args.set, args.init)
         return 0
-    if "--init" in argv:
-        raise SystemExit("--init goes with --set PATH")
     info = inspect()
-    if "--json" in argv:
+    if args.json:
         print(json.dumps(info, indent=2))
     else:
         for key, value in info.items():

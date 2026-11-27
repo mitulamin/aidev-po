@@ -244,6 +244,34 @@ class OpenFeedback(unittest.TestCase):
         code, out, _ = run("traces.py", "open-feedback", "--dir", FIXTURE / "team-rota")
         self.assertIn("0 feedback line(s)", out)
 
+    def test_catch_up_fixture(self):
+        code, out, err = run("traces.py", "open-feedback", "--catch-up", "--all", "--json", "--repo", FIXTURE)
+        self.assertEqual(code, 0, err)
+        doc = json.loads(out)
+        self.assertEqual([(r["product"], r["id"]) for r in doc["open"]], [("clinic-booking", "FB-002")])
+        self.assertEqual([(r["product"], r["id"]) for r in doc["traced_not_fixed"]], [("team-rota", "FB-001")])
+        self.assertEqual((doc["waiting_attributions"], doc["unfinished_reruns"]), ([], []))
+
+    def test_catch_up_lists_waiting_attribution_and_unfinished_rerun(self):
+        repo = copy_fixture()
+        self.addCleanup(shutil.rmtree, repo.parent)
+        po = repo / "clinic-booking" / ".po"
+        at = read_jsonl(po / "attributions.jsonl")[-1]
+        append_jsonl(po / "attributions.jsonl", dict(at, id="AT-009", ts="2026-12-30T09:00:00Z", user_verdict=None))
+        rr = read_jsonl(po / "reruns.jsonl")[-1]
+        append_jsonl(po / "reruns.jsonl", dict(rr, id="RR-009", ts="2026-12-30T09:05:00Z", status="planned"))
+        code, out, err = run("traces.py", "open-feedback", "--catch-up", "--json", "--dir", repo / "clinic-booking")
+        self.assertEqual(code, 0, err)
+        doc = json.loads(out)
+        self.assertIn("AT-009", [r["id"] for r in doc["waiting_attributions"]])
+        self.assertEqual([(r["id"], r["status"]) for r in doc["unfinished_reruns"]], [("RR-009", "planned")])
+        code, out, _ = run("traces.py", "open-feedback", "--catch-up", "--dir", repo / "clinic-booking")
+        self.assertIn("1 rerun(s) not done", out)
+
+    def test_continue_uses_catch_up(self):
+        for rel in ("commands/continue.md", "agents/po.md"):
+            self.assertIn("traces.py open-feedback --catch-up", (ROOT / rel).read_text(), rel)
+
     def test_retro_traces_open_feedback_first(self):
         text = (ROOT / "commands" / "retro.md").read_text()
         self.assertIn("traces.py open-feedback", text)

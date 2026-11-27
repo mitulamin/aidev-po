@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/product-state.schema.json",
+  "title": "Product state",
+  "description": "Where one product stands. One JSON object, UTF-8, stored at <product>/.po/state.json. po copies templates/product-state.example.json there for a new product and rewrites the file at each gate.",
+  "x-status": "draft",
+  "type": "object",
+  "required": ["product_slug", "title", "depth", "current_stage", "completed_stages", "last_run"],
+  "additionalProperties": false,
+  "properties": {
+    "product_slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "depth": {
+      "enum": ["thin", "full"],
+      "description": "How deep the stages go, chosen at triage and confirmed or overridden by the user. thin: a thin pass through each stage and a one-page PRD, for a small internal tool. full: every stage in full and the full FSD, for a client platform. Every producer and reviewer brief states it."
+    },
+    "current_stage": { "$ref": "#/$defs/stage" },
+    "completed_stages": { "type": "array", "items": { "$ref": "#/$defs/stage" }, "uniqueItems": true },
+    "last_run": {
+      "type": "object",
+      "required": ["run_id", "ts", "stage", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "run_id": { "type": "string", "pattern": "^(run-[0-9]{14}-[0-9a-f]{4})?$", "description": "Empty until the first run." },
+        "ts": { "type": "string", "description": "UTC timestamp of the run, or empty until the first run." },
+        "stage": { "$ref": "#/$defs/stage" },
+        "summary": { "type": "string" }
+      }
+    },
+    "trace_reserve": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Where this product's learning-loop files are.",
+      "properties": {
+        "schema": { "type": "string" },
+        "traces_file": { "type": "string" },
+        "feedback_file": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "stage": { "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"] }
+  }
+}

@@ -4,7 +4,7 @@
 - **Stage**: `<idea | audience | actors | systems | scope | workshops | presentations | fsd>`
 - **Run ID**: `<run-id>`
 - **Date (UTC)**: `<YYYY-MM-DDTHH:MM:SSZ>`
-<!-- TRACE_RESERVE: run_summary_for_pr3; fields=run,stage,agent,verdicts,register_refs -->
+<!-- TRACE_RESERVE: run_summary; fields=run,stage,agent,verdicts,register_refs -->
 
 ## 1. Stage Artefact Produced
 

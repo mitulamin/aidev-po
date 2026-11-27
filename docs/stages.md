@@ -97,6 +97,8 @@ Where a stage reviewer finds problems, the producer revises in a fresh context, 
 
 **File:** `07-presentations.md`. **Goal:** tell the story so a stakeholder can decide, tailored to where they sit on the stakeholder map.
 
+**What you get:** text in one Markdown file, a structured deck outline (slide by slide: audience, key point, sources) plus the PR/FAQ and a narrative memo. It is not a designed deck: no slides, layouts or visuals are made. A person builds the deck from the outline in their own tool.
+
 - **PR/FAQ** (working backwards): a one-page press release, a customer FAQ and a hard-questions internal FAQ, answering for the first slice only.
 - **Narrative memo**: a short memo for high-power stakeholders (Manage Closely or Keep Satisfied on the actor map): the decision requested, the problem and cost of the status quo, the recommended slice 1 and appetite, and the non-goals and top risks. Every claim cites an ID.
 - **Stakeholder presentation outline**: decision-led, with one decision per deck and the answer first, tailored per audience from the same material. Each slide names its target audience from the actor map and its key point.
@@ -114,18 +116,19 @@ Where a stage reviewer finds problems, the producer revises in a fresh context, 
 2. Product perspective
 3. User characteristics and roles
 4. Constraints, assumptions and dependencies
-5. Specific functional requirements: user stories checked against **INVEST**, each with **Given/When/Then** acceptance criteria, and **EARS** statements for system and edge-case behaviour
+5. Specific functional requirements: user stories checked against **INVEST**, each with **Given/When/Then** acceptance criteria, **EARS** statements for system and edge-case behaviour, and data and information requirements (what each entity holds, its source and owner, who may read or change it, how long it is kept)
 6. Non-functional requirements as an **ISO/IEC 25010** quality matrix (a target and verification method per characteristic, or `N/A` with a reason)
 7. Verification and traceability matrix
 8. Decision sheet
 9. Parked items and non-goals
+10. Definitions and glossary, taken from the Systems stage glossary
 
 Every item carries its evidence tag and upstream IDs, so each requirement traces back to a goal, an actor and a source.
 
-**Handoff:** `08-handoff-gate.md` is the brief for ai-sdlc-loop's `/plan`. It has a readiness checklist (reviewer, evidence auditor and challenger all clear, no high-urgency open questions), the goal and slice 1 scope, the locked decisions, the non-goals, an index of acceptance criteria, and the plan for the **gate PR**. No PR is opened and nothing is pushed in an engineering repo without your explicit OK.
+**Handoff:** `08-handoff-gate.md` is the brief for ai-sdlc-loop's `/plan`. It has a readiness checklist (reviewer, evidence auditor and challenger all clear, no high-urgency open questions), the goal and slice 1 scope, the locked decisions, the non-goals, an index of acceptance criteria, the `/plan` command with `--register` pointing at a copy of the product's register in the gate bundle (so locked decisions carry over), and the plan for the **gate PR**. No PR is opened and nothing is pushed in an engineering repo without your explicit OK.
 
 **Gate:** you approve the FSD and the gate PR plan.
 
 ## Sizing
 
-Depth is sized by triage at the start of a product: a thin pass plus the one-page PRD for a small internal tool, the full FSD for a client platform. `po` tells you what it chose and you can override it.
+Depth is sized by triage at the start of a product: a thin pass plus the one-page PRD for a small internal tool, the full FSD for a client platform. `po` tells you what it chose and you can override it. The choice is kept as `depth` (`thin` or `full`) in the product's `.po/state.json`, and every producer and reviewer brief states it.

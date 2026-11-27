@@ -9,7 +9,8 @@ Usage:
   scripts/traces.py chain ITEM_ID [--feedback FB-n | --rev N] [--json]   WHERE
   scripts/traces.py downstream ITEM_ID... [--register-ref r-...] [--json]   WHERE
   scripts/traces.py locate FILE (--line N | --quote TEXT)   WHERE
-  scripts/traces.py open-feedback [--json]    WHERE | --all [--repo PATH]   feedback with no attribution yet
+  scripts/traces.py open-feedback [--catch-up] [--json]   WHERE | --all [--repo PATH]   feedback with no attribution yet;
+                                              --catch-up adds traced-not-fixed feedback, waiting attributions, reruns not done
   scripts/traces.py check                     WHERE | --all [--repo PATH]
 
   WHERE is --product SLUG (a folder in the products repo), or --dir PATH (a product folder
@@ -53,6 +54,8 @@ FILES = {
     "register": "register.jsonl",
 }
 LEDGER = "ledger.jsonl"
+NO_JSONSCHEMA = ("skipped: the jsonschema package is not installed, so no line was checked against its schema in schemas/. "
+                 "Install it with: python3 -m pip install jsonschema")
 SCHEMA_FILES = {
     "trace": "trace.schema.json",
     "feedback": "feedback.schema.json",
@@ -877,12 +880,47 @@ def cmd_open_feedback(args):
             target = fb.get("target") or {}
             rows.append({"product": slug, "id": fb_id, "severity": fb.get("severity"), "category": fb.get("category"),
                          "item_ids": target.get("item_ids") or [], "text": fb.get("text")})
+    if args.catch_up:
+        return catch_up(products, rows, args.json)
     if args.json:
         print(json.dumps(rows, indent=2))
         return 0
     for r in rows:
         print(f"{r['product']}/{r['id']}\t{r['severity']}\t{r['category']}\t{','.join(r['item_ids']) or '-'}\t{r['text']}")
     print(f"{len(rows)} feedback line(s) with no attribution")
+    return 0
+
+
+def catch_up(products, untraced, as_json):
+    """What po reports at catch-up: untraced feedback, plus traced feedback not fixed yet,
+    attributions waiting on the user, and reruns planned or approved but not done."""
+    out = {"open": untraced, "traced_not_fixed": [], "waiting_attributions": [], "unfinished_reruns": []}
+    for slug, p in products.items():
+        for fb_id, (_, fb) in p.feedback.items():
+            if p.feedback_status(fb_id) == "traced":
+                out["traced_not_fixed"].append({"product": slug, "id": fb_id, "severity": fb.get("severity"),
+                                                "category": fb.get("category"), "text": fb.get("text")})
+        for at_id, (_, at) in p.attributions.items():
+            if at.get("user_verdict") in (None, "unsure"):
+                out["waiting_attributions"].append({"product": slug, "id": at_id, "feedback": at.get("feedback"),
+                                                    "cause": at.get("cause"), "user_verdict": at.get("user_verdict")})
+        for rr_id, (_, rr) in p.reruns.items():
+            if rr.get("status") in ("planned", "approved"):
+                out["unfinished_reruns"].append({"product": slug, "id": rr_id, "status": rr.get("status"),
+                                                 "feedback": rr.get("feedback") or []})
+    if as_json:
+        print(json.dumps(out, indent=2))
+        return 0
+    for r in out["open"]:
+        print(f"open\t{r['product']}/{r['id']}\t{r['severity']}\t{r['category']}\t{r['text']}")
+    for r in out["traced_not_fixed"]:
+        print(f"traced, not fixed\t{r['product']}/{r['id']}\t{r['severity']}\t{r['category']}\t{r['text']}")
+    for r in out["waiting_attributions"]:
+        print(f"attribution waiting on the user\t{r['product']}/{r['id']}\t{r['feedback']}\t{r['cause']}")
+    for r in out["unfinished_reruns"]:
+        print(f"rerun not done\t{r['product']}/{r['id']}\t{r['status']}\t{','.join(r['feedback']) or '-'}")
+    print(f"{len(out['open'])} untraced, {len(out['traced_not_fixed'])} traced but not fixed, "
+          f"{len(out['waiting_attributions'])} attribution(s) waiting, {len(out['unfinished_reruns'])} rerun(s) not done")
     return 0
 
 
@@ -900,7 +938,9 @@ def cmd_check(args):
         issues = check_product(p)
         scope = p.slug
     errors = report(issues)
-    note = "" if validator("trace") else " (jsonschema not installed: schema checks skipped)"
+    note = "" if validator("trace") else " (schema checks skipped: jsonschema not installed)"
+    if note:
+        print(NO_JSONSCHEMA, file=sys.stderr)
     if errors:
         print(f"{len(errors)} error(s) in {scope}{note}", file=sys.stderr)
         return 1
@@ -948,6 +988,8 @@ def main(argv):
     where(sp)
     sp = sub.add_parser("open-feedback")
     sp.add_argument("--all", action="store_true", help="every product in the products repo")
+    sp.add_argument("--catch-up", action="store_true",
+                    help="also list traced feedback not fixed, attributions waiting on the user, and reruns not done")
     sp.add_argument("--json", action="store_true")
     where(sp)
     sp = sub.add_parser("check")

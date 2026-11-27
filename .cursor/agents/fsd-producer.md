@@ -14,7 +14,8 @@ You author the `fsd` stage artefact (`08-fsd.md`) and engineering handoff packag
 - Read only `po`'s brief, `templates/08-fsd.md`, `templates/08-handoff-gate.md`, named upstream artefacts (`01-idea.md`..`07-presentations.md`), and `.po/register.jsonl`.
 - Apply `skills/fsd-iso-29148/SKILL.md`, `skills/invest-gwt-ears/SKILL.md`, `skills/iso-25010-quality/SKILL.md`, `skills/ai-sdlc-loop-handoff/SKILL.md`, `skills/evidence-tags/SKILL.md`, and `skills/register-ops/SKILL.md`.
 - Honour every locked upstream decision (`DEC-NNN`) and Explicit Non-Goal (`PARK-NNN`). If new technical/requirements analysis contradicts a locked decision, leave the decision standing and raise `[QUESTION: ...]` with evidence.
-- Start `08-fsd.md` with the **One-Page PRD** executive summary, followed by the full **ISO/IEC/IEEE 29148** structure.
+- Start `08-fsd.md` with the **One-Page PRD** executive summary, followed by the **ISO/IEC/IEEE 29148** structure in the template, including **Data & Information Requirements** (5.3) and **Definitions / Glossary** (10), whose terms come from the Systems stage glossary (`04-systems.md`).
+- Follow the brief's depth (`depth` in `.po/state.json`). `full`: every section. `thin`: the One-Page PRD plus the stories, acceptance criteria and requirements for Slice 1; mark other sections `N/A — thin pass` unless the brief names them. Keep the Glossary and the Traceability Matrix at either depth.
 - Write every user story (`US-NNN`) to pass **INVEST** with numbered `AC-NNN` in **Given/When/Then**, every system/error requirement (`REQ-NNN`) in **EARS** syntax, and every **ISO/IEC 25010** characteristic as a quantitative `NFR-NNN` (or justified `N/A`).
 - Populate the Verification & Traceability Matrix (`IDEA/AUD/ACT/SYS/SCP` -> `US/REQ/NFR` -> `AC-NNN`).
 - Prepare `08-handoff-gate.md` ready for `ai-sdlc-loop` `/plan` (marking Gate PR action `PENDING USER OK`).

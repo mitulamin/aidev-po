@@ -22,24 +22,24 @@
 
 ---
 
-## 1. Purpose & Scope (ISO/IEC/IEEE 29148 §5.1–5.2)
+## 1. Purpose & Scope
 
 - **1.1 Product Identification & Purpose (`FSD-008`)**: ...
 - **1.2 System Boundaries (`FSD-009`)**: In-scope (Slice 1) vs Out-of-scope (Non-Goals).
 
-## 2. Product Perspective (ISO/IEC/IEEE 29148 §5.3)
+## 2. Product Perspective
 
 - **2.1 System Context (`FSD-010`)**: reference `04-systems.md` (`SYS-001`..`SYS-004`).
 - **2.2 External Interfaces & Failure Modes (`FSD-011`)**: protocols, auth, timeouts, fallbacks.
 - **2.3 Operational & Deployment Constraints (`FSD-012`)**: ...
 
-## 3. User Characteristics & Roles (ISO/IEC/IEEE 29148 §5.4)
+## 3. User Characteristics & Roles
 
 | Actor ID | Role | Goals & Context | Permissions / Forbidden Actions | Evidence Tag & Source | Upstream IDs |
 | --- | --- | --- | --- | --- | --- |
 | `ACT-002` | ... | ... | ... | ... | `03-actors.md` |
 
-## 4. Constraints, Assumptions & Dependencies (ISO/IEC/IEEE 29148 §5.5)
+## 4. Constraints, Assumptions & Dependencies
 
 | ID | Type (`Constraint` / `Assumption` / `Dependency`) | Statement | Register ID | Evidence Tag |
 | --- | --- | --- | --- | --- |
@@ -63,6 +63,14 @@
 | --- | --- | --- | --- | --- |
 | `REQ-001` | Event-driven | When `<trigger>`, the `<system>` shall `<response>`. | `[Inferred — SYS-004]` | `US-001`, `SYS-004` |
 | `REQ-002` | Unwanted behaviour | If `<error/timeout>`, then the `<system>` shall `<safe fallback>`. | `[Inferred — SYS-002]` | `SYS-002` |
+
+### 5.3 Data & Information Requirements
+
+The information the system keeps, receives or sends: what each entity holds, where it comes from, who may see or change it, and how long it is kept. Use the Glossary terms.
+
+| ID | Entity / Information | Key Fields & Meaning | Source & Owner | Access (who reads / writes) | Retention & Deletion | Evidence Tag & Source | Upstream IDs |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `FSD-014` | `<entity>` | ... | `<SYS-NNN / ACT-NNN>` | ... | `<period, or N/A — reason>` | `[Stated / Inferred — ...]` | `SYS-...`, `ACT-...` |
 
 ## 6. Non-Functional Requirements — ISO/IEC 25010 Quality Matrix
 
@@ -95,6 +103,14 @@
 | Park ID | Item | Why It Can Wait | Revisit Trigger | Register ID |
 | --- | --- | --- | --- | --- |
 | `PARK-008` | ... | ... | `<concrete event/metric>` | `r-...` |
+
+## 10. Definitions / Glossary
+
+Pull terms from the Systems stage Glossary & Bounded Contexts (`04-systems.md`), keeping their definitions; add a term only for a word this FSD introduces, and raise a `[QUESTION: ...]` if it conflicts with the Systems glossary.
+
+| ID | Term | Definition | Synonyms to Avoid | Bounded Context | Upstream IDs |
+| --- | --- | --- | --- | --- | --- |
+| `FSD-015` | ... | ... | ... | ... | `SYS-...` |
 
 ## Assumptions and open questions
 

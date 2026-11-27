@@ -8,6 +8,7 @@ The text is in [LICENSE](LICENSE). It covers:
 
 - `scripts/`
 - `schemas/` (JSON Schema files are treated as code)
+- `tests/`, including the fictional fixture products repo under `tests/fixtures/`
 - tooling, including workflow files under `.github/workflows/`
 
 Do not replace or edit `LICENSE` without a deliberate decision.

@@ -28,11 +28,18 @@ When `po` finds no products repo, it asks you to create one or point to an exist
 
 You can give any other path. Then, **only with your OK**, `po`:
 
-1. Creates the folder if needed and runs a plain `git init` there, with an empty initial commit. **No remote is added.**
+1. Creates the folder if needed and runs a plain `git init` there, with an initial commit holding a short `README.md` (what the repo is for) and a `.gitignore` (OS and editor clutter). Existing files with those names are left alone. **No remote is added.**
 2. Records the path (see below).
 3. Asks whether you want the repo on GitHub.
 
-Doing it by hand is the same: `python3 scripts/products-dir.py --set ~/aidev-products --init`.
+Doing it by hand is the same: `python3 scripts/products-dir.py --set ~/aidev-products --init` (`--help` lists the options).
+
+The initial commit needs your git name and email. If `user.name` or `user.email` is not set, the script stops before doing anything, records nothing, and says so. Set them and run it again:
+
+```
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
 
 An existing git repo is used as it is: nothing is re-initialised, and no commit is made if it already has any. To use a remote you already have, clone it first, wherever you like, and give `po` that path:
 
@@ -77,7 +84,7 @@ First match wins. `python3 scripts/products-dir.py` reports what it found.
 
 After that, `po` uses the recorded path on every run and does not ask again. To move to another products repo, run `--set` with the new path or set the environment variable.
 
-A relative path is resolved from the aidev-po root; `~` is expanded. If the path is inside the aidev-po checkout, add it to `.git/info/exclude`. A path outside needs nothing. `products/` at the root is ignored as a safety net, but it is not a default and is not looked at unless you point to it.
+A relative path is resolved from the aidev-po root and `~` is expanded; `--set` records the resolved absolute path. `--set` refuses any path inside the aidev-po checkout, not just the checkout root. `products/` at the root is still gitignored as a safety net.
 
 Why not a default inside the checkout? A repo inside a repo is easy to commit by mistake, `git clone` into a non-empty folder fails, and one checkout of aidev-po then ties you to one client. Outside, each products repo stands alone.
 

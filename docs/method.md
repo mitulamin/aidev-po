@@ -65,4 +65,4 @@ One shared, append-only register holds open questions, assumptions and decisions
 
 ## Sizing
 
-Not every product needs everything. A small internal tool gets a one-page PRD and a thin pass through the stages; a client platform gets the full FSD. `po` triages at the start and tells you what it chose, and you can change it.
+Not every product needs everything. A small internal tool gets a one-page PRD and a thin pass through the stages; a client platform gets the full FSD. `po` triages at the start and tells you what it chose, and you can change it. The choice is saved as `depth` (`thin` or `full`) in the product's `.po/state.json`, and every producer and reviewer brief follows it.

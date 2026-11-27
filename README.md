@@ -41,7 +41,7 @@ See [Philosophy](docs/philosophy.md) for the thinking behind this, and [How it f
 | Systems | C4 context (and containers if needed), integration register, EventStorming flow and hotspots, glossary and bounded contexts |
 | Scope | Appetite, impact mapping, story mapping, MoSCoW, non-goals |
 | Workshops | Planned by AI, run by a person; synthesis written back to the register |
-| Presentations | PR/FAQ, narrative memo, decision-led stakeholder presentation outline |
+| Presentations | PR/FAQ, narrative memo, decision-led stakeholder deck outline (text, not a designed deck) |
 | FSD | ISO/IEC/IEEE 29148 outline, INVEST, Given/When/Then, EARS, ISO/IEC 25010; handoff by gate PR |
 
 More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](docs/learning-loop.md). Product decisions are recorded in [Decisions](docs/decisions.md). The research behind the choices, with sources, is in [Research](docs/research.md).
@@ -51,7 +51,10 @@ More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](d
 ```
 git clone https://github.com/mitulamin/aidev-po.git
 cd aidev-po
+python3 -m pip install jsonschema   # optional: lets the checks validate every line against schemas/
 ```
+
+The scripts need only Python 3. With `jsonschema` installed they also check each file line against its schema; without it they say the schema checks were skipped.
 
 Open the folder in Cursor and run `/po-start` (every command starts with `/po-`: `/po-continue`, `/po-gate`, `/po-idea` to `/po-fsd`, and `/po-feedback`, `/po-rerun-from`, `/po-retro` for the learning loop), or tell your agent to follow [AGENTS.md](AGENTS.md) and act as `po`. `po` finds your products repo, lists your products, and asks whether to continue one or start a new one. Full steps in [docs/quick-start.md](docs/quick-start.md).
 
@@ -59,7 +62,7 @@ Open the folder in Cursor and run `/po-start` (every command starts with `/po-`:
 
 Product work does not live here. It lives in a **separate git repo that you own, always outside this checkout, private by default**, one per client or team. There is no default location.
 
-If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/aidev-products` or `../aidev-products`. Once you choose, and only with your OK, it runs `git init` with an initial commit (no remote), and saves the path in `aidev-po.local.json` (gitignored). `AIDEV_PO_PRODUCTS_DIR` overrides it. It then asks whether you want the repo on GitHub: if you say yes, it creates a **private** repo with `gh repo create <name> --private --source . --push` (or gives you the manual steps); if you say no, nothing else happens and you can add a remote later. `po` commits at stage gates only with your OK each time, and otherwise pushes only when you ask. Details in [docs/products-repo.md](docs/products-repo.md).
+If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/aidev-products` or `../aidev-products`. Once you choose, and only with your OK, it runs `git init` with an initial commit holding a short `README.md` and `.gitignore` (no remote), and saves the path in `aidev-po.local.json` (gitignored). `AIDEV_PO_PRODUCTS_DIR` overrides it. It then asks whether you want the repo on GitHub: if you say yes, it creates a **private** repo with `gh repo create <name> --private --source . --push` (or gives you the manual steps); if you say no, nothing else happens and you can add a remote later. `po` commits at stage gates only with your OK each time, and otherwise pushes only when you ask. Details in [docs/products-repo.md](docs/products-repo.md).
 
 ## Layout
 
@@ -68,7 +71,7 @@ If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/ai
 | `agents/`, `skills/`, `commands/` | Sources |
 | `.cursor/` | Generated from the sources by `python3 scripts/build-agents.py` |
 | `templates/` | Copyable stage and config templates (MIT) |
-| `schemas/` | JSON Schemas (drafts): register, trace, feedback, attribution, rerun, ledger and scorecard |
+| `schemas/` | JSON Schemas (drafts): register, trace, feedback, attribution, rerun, ledger, scorecard and product state |
 | `scripts/` | Tooling |
 | `docs/` | The documentation site (GitHub Pages, Markdown) |
 | `examples/` | The one worked example, a fictional demo (not live products) |
@@ -79,7 +82,7 @@ Your products repo is not part of this checkout.
 
 Same split as ai-sdlc-loop. This is not legal advice; the detail is in [NOTICE.md](NOTICE.md).
 
-- Code (`scripts/`, `schemas/`, workflows): GPL-3.0, [LICENSE](LICENSE)
+- Code (`scripts/`, `schemas/`, `tests/`, workflows): GPL-3.0, [LICENSE](LICENSE)
 - Writing and site content (agents, skills, commands, docs, the logo, examples, root markdown): CC BY-SA 4.0, [LICENSE-CONTENT](LICENSE-CONTENT), credited to Shravi Limited and contributors
 - `templates/`: MIT, [templates/LICENSE](templates/LICENSE)
 - Your products repo is yours and is not covered by any of these.

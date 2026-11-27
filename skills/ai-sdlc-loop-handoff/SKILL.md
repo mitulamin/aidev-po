@@ -23,6 +23,7 @@ Do:
   - Complete list of **Explicit Non-Goals** (`PARK-NNN` / `NG-NNN`) with revisit triggers so engineering does not accidentally build them
   - Numbered `AC-NNN` (`Given/When/Then`), `REQ-NNN` (EARS), and `NFR-NNN` (ISO 25010) summary/index for `ai-sdlc-loop`'s `1.2 spec-before-code` and `1.7 verifiable-goals`
   - **Gate PR checklist** for handing off into the target implementation repo (if a target engineering repo exists: propose opening a handoff PR into `docs/fsd/` or `specs/` there ONLY with user OK; otherwise prepare the gate bundle in the products repo for the user to link/open)
+  - A copy of `.po/register.jsonl` in the gate bundle (for example `docs/fsd/<slug>/register.jsonl`), and the exact command to start planning with it: `/plan <bundle>/08-handoff-gate.md --register <bundle>/register.jsonl`. `--register` makes ai-sdlc-loop's coordinator read the locked decisions, answers and open items from it and write its own entries there. Pass the copy, never the product's own register: ai-sdlc-loop's lines carry `phase`, not `stage`, and would fail `scripts/register.py check` in the products repo
 - Check `.po/register.jsonl` before handoff: zero unresolved P0/P1 findings and zero high-urgency open questions remain
 
 Don't:
@@ -46,4 +47,5 @@ Don't:
 
 - Fail (`P0`/`P1`) if any `urgency: "high"` open question in `.po/register.jsonl` remains unresolved at handoff.
 - Fail (`P1`) if `08-handoff-gate.md` omits Locked Decisions, Explicit Non-Goals, or numbered `Given/When/Then` criteria.
+- Fail (`P2`) if the `/plan` command in `08-handoff-gate.md` has no `--register` pointing at the register copy in the bundle, or points at the product's own `.po/register.jsonl`.
 - Fail (`P1`) if any handoff claim contradicts `08-fsd.md` or `05-scope.md`.

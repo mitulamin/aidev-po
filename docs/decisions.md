@@ -12,7 +12,7 @@ Product decisions for aidev-po, newest first. Each entry records what was decide
 - **Decided by:** Mitul Amin (Shravi Limited)
 - **Status:** Accepted
 - **Area:** Scope boundary for skill changes
-- **Refines and generalises:** retro proposal P-1 from the worked example (`examples/tool-library-loans/.po/retro/retro-20261118-01/`), where a late-returns rule (three late returns leading to the member being spoken to or suspended) had been written as an automatic suspension.
+- **Refines and generalises:** retro proposal P-1 from the worked example (`examples/.po/retro/retro-20261118-01/`), where a late-returns rule (three late returns leading to the member being spoken to or suspended) had been written as an automatic suspension.
 
 ### Decision
 
