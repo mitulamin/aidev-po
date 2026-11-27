@@ -32,12 +32,12 @@ See [Philosophy](docs/philosophy.md) for the thinking behind this, and [How it f
 | Stage | Main techniques |
 |-------|-----------------|
 | Idea | Problem framing, Jobs to be Done and the Mom Test, Lean Canvas, opportunity solution tree |
-| Audience | Mom Test evidence log, segments and early adopters, validation plan |
+| Audience | Mom Test evidence log, segments and early adopters, value proposition canvas, validation plan |
 | Actors | Power/interest stakeholder map, actor profiles, roles and permissions |
-| Systems | C4 context (and containers if needed), EventStorming flow and hotspots |
-| Scope | Impact mapping, story mapping, MoSCoW, non-goals |
+| Systems | C4 context (and containers if needed), integration register, EventStorming flow and hotspots, glossary and bounded contexts |
+| Scope | Appetite, impact mapping, story mapping, MoSCoW, non-goals |
 | Workshops | Planned by AI, run by a person; synthesis written back to the register |
-| Presentations | PR/FAQ, stakeholder presentation outline |
+| Presentations | PR/FAQ, narrative memo, decision-led stakeholder presentation outline |
 | FSD | ISO/IEC/IEEE 29148 outline, INVEST, Given/When/Then, EARS, ISO/IEC 25010; handoff by gate PR |
 
 More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](docs/learning-loop.md). The research behind the choices, with sources, is in [Research](docs/research.md).

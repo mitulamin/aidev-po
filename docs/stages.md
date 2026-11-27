@@ -40,6 +40,7 @@ Where a stage reviewer finds problems, the producer revises in a fresh context, 
 
 - **Target segments and early adopters**: frequency and trigger, current cost of the problem.
 - **Mom Test evidence log**: a real past instance for each segment, the workaround and the switching friction, what they already tried or paid for.
+- **Value Proposition Canvas**: per segment, the customer jobs, pains and gains, what relieves or creates them, and any feature that fixes no pain (cut or park it).
 - **Expanded Opportunity Solution Tree.**
 - **Discovery and validation plan**: each hypothesis, the research method (interview, observation, data) and what would pass or falsify it. Simulated-user gap checks may appear here, tagged Simulated.
 
@@ -59,17 +60,20 @@ Where a stage reviewer finds problems, the producer revises in a fresh context, 
 
 **File:** `04-systems.md`. **Goal:** the product's boundary, and everything it interacts with.
 
-- **C4 level 1, system context**: each element with its owner, protocol and data exchanged, and its trust boundary and failure fallback. For Shravi client work the aidev-platform contract is a known external system.
+- **C4 level 1, system context** as a Mermaid `C4Context` diagram. For Shravi client work the aidev-platform contract is a known external system.
+- **Integration register**: every arrow on the diagram has an owner and a row (direction, data, protocol, volume or SLA, failure behaviour). Unknown cells become open questions, never guesses.
 - **C4 level 2, containers**, only where needed for scope or risk.
 - **EventStorming flow**: commands, domain events, policies and external systems, step by step.
 - **EventStorming hotspots**: unknowns, risks and conflicts, which become [workshop](#6-workshops) agenda items.
+- **Glossary and bounded contexts**: one canonical definition per domain term, shared by the FSD and the code, with the synonyms to avoid.
 
-**Gate:** every element has an owner and the hotspots are listed.
+**Gate:** every arrow has an owner and a row in the integration register, and the hotspots are listed.
 
 ## 5. Scope
 
 **File:** `05-scope.md`. **Goal:** decide the first release and write down what is out, so scope stays tied to the outcome.
 
+- **Appetite**: the ceiling you set for release 1 (budget, effort band or timebox), with a one-line scope summary of in, out and later.
 - **Impact map**: goal, who, how their behaviour changes, what candidate deliverable. A deliverable with no path to the goal is cut.
 - **User story map**: a backbone of activities and tasks with release slices, the first being a walking skeleton.
 - **MoSCoW** for the first slice, with why each Must is essential and what the workaround is if dropped.
@@ -94,7 +98,8 @@ Where a stage reviewer finds problems, the producer revises in a fresh context, 
 **File:** `07-presentations.md`. **Goal:** tell the story so a stakeholder can decide, tailored to where they sit on the stakeholder map.
 
 - **PR/FAQ** (working backwards): a one-page press release, a customer FAQ and a hard-questions internal FAQ, answering for the first slice only.
-- **Stakeholder presentation outline**: slides with the target audience from the actor map and the key point of each.
+- **Narrative memo**: a short memo for high-power stakeholders (Manage Closely or Keep Satisfied on the actor map): the decision requested, the problem and cost of the status quo, the recommended slice 1 and appetite, and the non-goals and top risks. Every claim cites an ID.
+- **Stakeholder presentation outline**: decision-led, with one decision per deck and the answer first, tailored per audience from the same material. Each slide names its target audience from the actor map and its key point.
 
 **Gate:** the evidence auditor finds no claim without a source.
 
