@@ -75,7 +75,7 @@ When the FSD gate PR is approved, hand it to ai-sdlc-loop as the brief for plann
 
 ## See a worked example
 
-A fictional demo product will live under [examples/](https://github.com/mitulamin/aidev-po/tree/main/examples) in the aidev-po repo, written for this purpose with nothing confidential in it. It is not a live product and not a real client case. Your own products go in your private products repo, not in `examples/`.
+A fictional demo product lives under [examples/](https://github.com/mitulamin/aidev-po/tree/main/examples) in the aidev-po repo, written for this purpose with nothing confidential in it. It is not a live product and not a real client case. Your own products go in your private products repo, not in `examples/`.
 
 ## Not working yet?
 
