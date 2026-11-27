@@ -13,7 +13,7 @@ By contributing, you agree your contribution is licensed on the same split as th
 
 ## Products are private by default
 
-Never commit real product work to this repo. Products live in a separate git repo you own, mounted at `products/` (ignored by git here). See [docs/products-repo.md](docs/products-repo.md). The worked example lives in `examples/`, and only an example written for this purpose, with nothing confidential in it, belongs there.
+Never commit real product work to this repo. Products live in a separate git repo you own, outside this checkout (its path is recorded in the gitignored `aidev-po.local.json`). See [docs/products-repo.md](docs/products-repo.md). The worked example lives in `examples/`, and only an example written for this purpose, with nothing confidential in it, belongs there.
 
 ## Generated files
 

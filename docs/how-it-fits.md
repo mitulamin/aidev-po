@@ -58,6 +58,6 @@ Where the governance platform requires information from a product (for example c
 - **It does not run workshops.** AI plans them, a person runs them.
 - **It does not invent facts to fill gaps.** A gap becomes a question.
 - **It does not store your product work in this repo.** That lives in your private products repo. See [Your products repo](products-repo.md).
-- **It does not push or rewrite history.** It commits at stage gates only with your OK, and never pushes unless asked.
+- **It does not push or rewrite history.** It commits at stage gates only with your OK. It pushes only when you ask, or when you say yes to putting the new products repo on GitHub at setup.
 - **It does not set governance policy.** It records what the governance platform requires; it does not define it.
 - **It is not a project manager.** No plans, estimates or staffing. Scope uses an appetite you set, not a schedule it invents.

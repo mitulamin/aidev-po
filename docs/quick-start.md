@@ -21,11 +21,11 @@ Your product work does not live in aidev-po. It lives in a **separate git repo t
 
 You do not need to do this by hand. The first time you run `po` with nothing configured, it says so and suggests a location: `~/aidev-products`, `~/Documents/aidev-products`, or `../aidev-products` (next to the checkout). You pick one, and `po`:
 
-- offers to `git init` it and make an initial commit (no remote by default),
-- optionally offers a **private** GitHub repo through `gh` (or shows the manual steps), which you can decline and add later with `git remote add origin <url>`,
-- saves the path in `aidev-po.local.json` (gitignored), so it does not ask again.
+- with your OK, runs `git init` there with an initial commit (no remote at this point),
+- saves the path in `aidev-po.local.json` (gitignored), so it does not ask again,
+- then asks once whether you want the repo on GitHub. If you say yes, it creates a **private** repo and pushes with `gh repo create <name> --private --source . --push` (or gives you the manual steps if `gh` is not ready). If you say no, nothing else happens and you can add a remote later with `git remote add origin <url>`.
 
-`AIDEV_PO_PRODUCTS_DIR` overrides the saved path. `po` never pushes unless you ask. Details, including cloning an existing products repo, are on [Your products repo](products-repo.md).
+`AIDEV_PO_PRODUCTS_DIR` overrides the saved path. You can also do the setup yourself with `python3 scripts/products-dir.py --set <path> --init`. Apart from that GitHub yes, `po` never pushes unless you ask. Details, including cloning an existing products repo, are on [Your products repo](products-repo.md).
 
 To see what aidev-po currently finds:
 
@@ -49,7 +49,7 @@ At every stage gate you see what was produced, what the reviewer found, and the 
 
 ## 5. Commits
 
-`po` may commit your product changes at stage gates, once per gate, with a clear message naming the product and stage. It does so **only with your OK each time**. Say no and it leaves the changes for you. It never pushes unless you ask, and never rewrites history.
+`po` may commit your product changes at stage gates, once per gate, with a clear message naming the product and stage. It does so **only with your OK each time**. Say no and it leaves the changes for you. It never pushes unless you ask (the one exception is the GitHub yes at setup), and never rewrites history.
 
 ## 6. Give feedback
 

@@ -53,9 +53,9 @@ Open the folder in Cursor and run `/po-start`, or tell your agent to follow [AGE
 
 ## Your products live in their own repo
 
-Product work does not live here. It lives in a **separate git repo that you own, always outside this checkout, private by default**, one per client or team.
+Product work does not live here. It lives in a **separate git repo that you own, always outside this checkout, private by default**, one per client or team. There is no default location.
 
-If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/aidev-products` or `../aidev-products`. Once you choose, it offers to `git init` the folder with an initial commit (no remote by default), optionally to create a **private** GitHub repo with `gh` (or shows the manual steps; you can decline and add a remote later), and saves the path in `aidev-po.local.json` (gitignored). `AIDEV_PO_PRODUCTS_DIR` overrides it. `po` commits at stage gates only with your OK each time, and never pushes unless you ask. Details in [docs/products-repo.md](docs/products-repo.md).
+If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/aidev-products` or `../aidev-products`. Once you choose, and only with your OK, it runs `git init` with an initial commit (no remote), and saves the path in `aidev-po.local.json` (gitignored). `AIDEV_PO_PRODUCTS_DIR` overrides it. It then asks whether you want the repo on GitHub: if you say yes, it creates a **private** repo with `gh repo create <name> --private --source . --push` (or gives you the manual steps); if you say no, nothing else happens and you can add a remote later. `po` commits at stage gates only with your OK each time, and otherwise pushes only when you ask. Details in [docs/products-repo.md](docs/products-repo.md).
 
 ## Layout
 
@@ -69,7 +69,7 @@ If none is set up, `po` says so and suggests `~/aidev-products`, `~/Documents/ai
 | `docs/` | The documentation site (GitHub Pages, Markdown) |
 | `examples/` | The one worked example, a fictional demo (not live products) |
 
-There is no products folder in this repo.
+Your products repo is not part of this checkout.
 
 ## Licences
 

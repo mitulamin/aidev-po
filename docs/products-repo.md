@@ -4,7 +4,7 @@ title: Your products repo
 
 # Your products repo
 
-aidev-po is the tooling. Your product work (ideas, audiences, registers, decisions, workshops, the FSD) lives somewhere else: a **separate git repo that you own, always outside the aidev-po checkout, private by default**. This keeps client work out of a public repo and gives it its own history.
+aidev-po is the tooling. Your product work (ideas, audiences, registers, decisions, workshops, the FSD) lives somewhere else: a **separate git repo that you own, outside the aidev-po checkout, private by default**. This keeps client work out of a public repo and gives it its own history.
 
 One products repo per client or team. Each product is a folder in it:
 
@@ -16,88 +16,74 @@ One products repo per client or team. Each product is a folder in it:
 └── <another-product-slug>/
 ```
 
-aidev-po has no default location inside its own checkout, and nothing under it is ever committed to aidev-po. The only worked example, a fictional demo, lives in `examples/` in aidev-po and is not a live product.
+There is no default location. You choose one, once.
 
-## Where aidev-po looks
+## First run
 
-First match wins.
+When `po` finds no products repo, it asks you to create one or point to an existing one, and suggests three places:
 
-1. Environment variable `AIDEV_PO_PRODUCTS_DIR`. It overrides everything else.
-2. `products_dir` in `aidev-po.local.json` at the aidev-po root. This file is gitignored and is where `po` remembers your choice. You can write it yourself (copy `templates/aidev-po.local.example.json`).
-3. Nothing set. `po` asks you to choose a location (below).
+1. `~/aidev-products`
+2. `~/Documents/aidev-products`
+3. `../aidev-products` (next to your aidev-po checkout)
 
-A relative path is resolved from the aidev-po root; `~` is expanded.
+You can give any other path. Then, **only with your OK**, `po`:
 
-## When nothing is set
+1. Creates the folder if needed and runs a plain `git init` there, with an empty initial commit. **No remote is added.**
+2. Records the path (see below).
+3. Asks whether you want the repo on GitHub.
 
-`po` says so and suggests one of three locations, and you pick one or give your own:
+Doing it by hand is the same: `python3 scripts/products-dir.py --set ~/aidev-products --init`.
 
-| Suggestion | Meaning |
-|------------|---------|
-| `~/aidev-products` | In your home folder |
-| `~/Documents/aidev-products` | In your Documents folder |
-| `../aidev-products` | Next to your aidev-po checkout |
-
-Once you choose, `po` saves the path as `products_dir` in `aidev-po.local.json`, so it does not ask again. Set `AIDEV_PO_PRODUCTS_DIR` if you want a different path for one shell or machine.
-
-## Set it up
-
-`po` offers each step and waits for your answer. You can also do it yourself.
-
-### New products repo (the default)
-
-At the chosen path, `po` offers to:
-
-1. `git init` a new repo, and
-2. make an initial commit,
-
-and that is all. **No remote is created by default.** The repo is local until you decide otherwise.
-
-By hand:
-
-```
-git init ~/aidev-products
-cd ~/aidev-products
-git commit --allow-empty -m "Initial commit"
-```
-
-### Optional: a private GitHub remote
-
-`po` then asks whether you want a private GitHub repo for it. If you say yes and the GitHub CLI (`gh`) is installed and signed in, `po` can create it as **private**:
-
-```
-gh repo create your-org/acme-products --private --source ~/aidev-products --remote origin
-```
-
-That creates the repo and adds the `origin` remote. It does not push. (Do not add `--push` unless you want that.) It is never created public.
-
-No `gh`, or you prefer the website? Create an empty **private** repo yourself, then:
-
-```
-git -C ~/aidev-products remote add origin git@github.com:your-org/acme-products.git
-```
-
-### If you decline, add a remote later
-
-Saying no is fine. Whenever you want a remote, create a private repo and run the `git remote add origin ...` line above. Nothing else changes.
-
-### Pushing
-
-**`po` never pushes unless you ask.** Creating a remote and pushing are separate steps. When you want to push, ask `po` or run `git push -u origin HEAD` yourself.
-
-### Existing remote
-
-If the products repo already exists elsewhere, clone it into a missing or empty folder instead of starting a new one:
+An existing git repo is used as it is: nothing is re-initialised, and no commit is made if it already has any. To use a remote you already have, clone it first, wherever you like, and give `po` that path:
 
 ```
 git clone git@github.com:your-org/acme-products.git ~/aidev-products
 ```
 
-`po` offers this too and asks for the URL. Then, as above, `po` records the path in `aidev-po.local.json`.
+## Put it on GitHub (optional)
+
+`po` asks once, right after setup. It never pushes unless you ask.
+
+**Yes.** The repo is created **private**. If the GitHub CLI is installed and signed in (`gh auth status`), `po` runs this in the products folder, after confirming the repo name with you:
+
+```
+gh repo create <name> --private --source . --push
+```
+
+That creates the private repo, adds it as `origin`, and pushes the initial commit. Otherwise `po` gives you these steps:
+
+1. Create an empty **private** repository on GitHub (no README, no licence, no `.gitignore`).
+2. In the products folder:
+
+```
+git remote add origin git@github.com:<you>/<name>.git
+git push -u origin HEAD
+```
+
+**No.** Nothing else happens. You can add a remote any time later:
+
+```
+git remote add origin <url>
+```
+
+`po` never creates a remote on its own and never makes a public repo.
+
+## Where the path is recorded
+
+First match wins. `python3 scripts/products-dir.py` reports what it found.
+
+1. Environment variable `AIDEV_PO_PRODUCTS_DIR`. It overrides the recorded path, so you can switch clients per shell.
+2. `products_dir` in `aidev-po.local.json` at the aidev-po root. This file is gitignored. `po` writes it after you choose; you can also run `python3 scripts/products-dir.py --set PATH` (add `--init` to create the folder and `git init`), or copy `templates/aidev-po.local.example.json`.
+
+After that, `po` uses the recorded path on every run and does not ask again. To move to another products repo, run `--set` with the new path or set the environment variable.
+
+A relative path is resolved from the aidev-po root; `~` is expanded. If the path is inside the aidev-po checkout, add it to `.git/info/exclude`. A path outside needs nothing. `products/` at the root is ignored as a safety net, but it is not a default and is not looked at unless you point to it.
+
+Why not a default inside the checkout? A repo inside a repo is easy to commit by mistake, `git clone` into a non-empty folder fails, and one checkout of aidev-po then ties you to one client. Outside, each products repo stands alone.
 
 ## Commits
 
-After the initial commit, `po` may commit product changes at stage gates, once per gate, with a clear message that names the product and stage, **only with your OK each time**. If you prefer to commit yourself, say no and it leaves the working tree for you. It never rewrites history and never commits product work to aidev-po.
+`po` may commit product changes at stage gates, with a clear message per gate, **only with your OK each time**. It never pushes unless you ask. If you prefer to commit yourself, say no and it will leave the working tree for you.
 
 ## Licence
 

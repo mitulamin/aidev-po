@@ -18,11 +18,15 @@ Each stage has a producer and an adversarial reviewer, each in a fresh context (
 
 ## What `po` does on every start
 
-1. **Find the products repo.** Run `python3 scripts/products-dir.py`. Products live in a separate git repo that the user owns, private by default, mounted at `products/` or wherever `AIDEV_PO_PRODUCTS_DIR` or `aidev-po.local.json` says. One products repo per client or team. See [docs/products-repo.md](docs/products-repo.md).
-2. **If no products repo is set up** (state `missing`, `empty`, `not-git`), say so and offer, with the user choosing:
-   - `git init` a new repo at the products path, or
-   - `git clone` an existing remote into it (ask for the URL).
-   Never create a public remote. Never put product files inside aidev-po itself.
+1. **Find the products repo.** Run `python3 scripts/products-dir.py`. Products live in a separate git repo that the user owns, **outside the aidev-po checkout**, private by default, one per client or team. There is no default location. The path is read from `AIDEV_PO_PRODUCTS_DIR` (overrides) or `products_dir` in the gitignored `aidev-po.local.json`. See [docs/products-repo.md](docs/products-repo.md).
+2. **If the state is `unconfigured`** (no path recorded), ask the user to create a products repo or point to an existing one, and suggest three locations: `~/aidev-products`, `~/Documents/aidev-products`, or `../aidev-products` (next to this checkout). Any other path is fine. Do nothing on disk until the user says OK. Then:
+   1. Run `python3 scripts/products-dir.py --set <path> --init`. This creates the folder if needed, runs plain `git init` with an initial commit if it is not a git repo, and records the path in `aidev-po.local.json`. **No remote is added.** An existing git repo is used as it is.
+   2. Ask whether they want it on GitHub.
+   3. If yes, create a **private** repo. If the report shows `gh: ready`, confirm the repo name and run `gh repo create <name> --private --source . --push` in the products folder. Otherwise give the manual steps in [docs/products-repo.md](docs/products-repo.md). Never create a public repo.
+   4. If no, say a remote can be added later with `git remote add origin <url>`.
+   5. Never push unless the user asked.
+   From then on use the recorded path every run and do not ask again.
+   If the state is `missing`, `empty` or `not-git` for a recorded path, tell the user and offer the same `--init` step for that path; never guess a different path.
 3. **List the products** in that repo (one folder each) and ask: continue one, or start a new one.
 4. **New product:** ask for a slug, create `<products repo>/<slug>/`, start at Idea.
 5. **Existing product:** catch up before helping. Read the current stage, the register (open questions, assumptions, decisions), recent decisions and the last run, and tell the user where things stand. Then work on the current stage.
@@ -42,7 +46,7 @@ The products repo is the user's, and `po` treats it that way. (Behaviour arrives
 
 - `po` may commit at stage gates, once per gate, with a clear message that names the product and the stage and says what changed.
 - `po` commits **only with the user's OK each time**. If the user says no, it leaves the changes uncommitted.
-- `po` never pushes unless asked, never rewrites history, and never commits to aidev-po for product work.
+- `po` never pushes unless asked, never rewrites history, and never commits to aidev-po for product work. The setup commit in step 2 above is the only commit `po` makes without a stage gate, and only with the user's OK.
 
 ## Repo map
 
@@ -53,9 +57,9 @@ The products repo is the user's, and `po` treats it that way. (Behaviour arrives
 | `templates/` | Copyable stage and config templates (MIT). |
 | `schemas/` | JSON Schemas: register, plus stubs for scorecard, trace, feedback. |
 | `scripts/` | Tooling. `build-agents.py`, `products-dir.py`. |
-| `docs/` | Documentation (stub). |
+| `docs/` | Documentation site (Markdown, served by GitHub Pages from `/docs`). |
 | `examples/` | The one worked example (later PR). Not live products. |
-| `products/` | Ignored mount point for your products repo. |
+| (outside this checkout) | Your products repo. Its path is recorded in `aidev-po.local.json`. |
 
 ## Rules for agents
 
