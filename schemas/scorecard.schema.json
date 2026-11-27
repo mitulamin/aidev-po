@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/scorecard.schema.json",
+  "title": "Scorecard (stub)",
+  "description": "Stub. Follows ai-sdlc-loop's scorecard pattern: one row per skill, each run appended to runs, each criterion scored 0 to 2. The learning-loop additions (feedback per 100 items, recurring cause rate) arrive in a later PR; the fields below are the intended shape and may change.",
+  "x-status": "stub",
+  "type": "object",
+  "required": ["schema_version", "skills"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "note": { "type": "string" },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["skill_name", "stage", "runs"],
+        "properties": {
+          "skill_name": { "type": "string" },
+          "stage": { "type": "string" },
+          "runs": { "type": "array", "items": { "type": "object" } },
+          "verdict": { "type": ["string", "null"] }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

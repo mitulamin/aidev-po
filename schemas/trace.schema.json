@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/trace.schema.json",
+  "title": "Trace entry (stub)",
+  "description": "Stub. Where one output item came from, so feedback can be walked back to the step that caused it. One JSON Lines entry per output item. The full learning loop, with required fields and the tracer's use of them, arrives in a later PR; the fields below are the intended shape and may change.",
+  "x-status": "stub",
+  "type": "object",
+  "required": ["item_id", "run", "stage", "agent"],
+  "properties": {
+    "item_id": { "type": "string", "description": "Stable ID of the output item." },
+    "run": { "type": "string", "description": "Run identifier." },
+    "stage": { "type": "string" },
+    "agent": { "type": "string" },
+    "step": { "type": "string" },
+    "skill_versions": { "type": "object", "additionalProperties": { "type": "string" } },
+    "template_versions": { "type": "object", "additionalProperties": { "type": "string" } },
+    "upstream_ids": { "type": "array", "items": { "type": "string" } },
+    "evidence_tag": { "type": "string" },
+    "register_refs": { "type": "array", "items": { "type": "string" }, "description": "Register ids of the user's answers and decisions this item rests on." }
+  },
+  "additionalProperties": true
+}

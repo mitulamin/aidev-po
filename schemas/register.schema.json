@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mitulamin/aidev-po/schemas/register.schema.json",
+  "title": "Shared register line",
+  "description": "One line of a product's register: open questions, assumptions and decisions. JSON Lines, UTF-8, append-only, one object per line, stored in the product folder (default .po/register.jsonl). Never edit or delete a line; a change of state is a new update line. Same shape as ai-sdlc-loop's surface register, with decision added and blocker left out (a blocker is a question with urgency high). Validate each line against this schema.",
+  "x-status": "draft",
+  "oneOf": [
+    { "$ref": "#/$defs/declare" },
+    { "$ref": "#/$defs/update" }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^r-[0-9]{14}-[0-9a-f]{4}$"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC, RFC 3339, for example 2026-11-27T22:30:00Z"
+    },
+    "stage": {
+      "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"]
+    },
+    "level": {
+      "enum": ["low", "medium", "high"]
+    },
+    "status": {
+      "enum": ["open", "surfaced", "answered", "dismissed", "duplicate", "decided", "superseded"],
+      "description": "open: declared, not yet looked at. surfaced: put in front of the user. answered: the user answered, or confirmed or rejected the assumption. dismissed: settled from the evidence, reason in note. duplicate: same as the entry in ref. decided: a decision in force. superseded: a decision replaced by a later one, named in ref."
+    },
+    "declare": {
+      "type": "object",
+      "required": ["id", "event", "ts", "agent", "stage", "type", "text", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "event": { "const": "declare" },
+        "ts": { "$ref": "#/$defs/ts" },
+        "agent": { "type": "string", "minLength": 1 },
+        "stage": { "$ref": "#/$defs/stage" },
+        "type": {
+          "enum": ["assumption", "question", "decision"],
+          "description": "assumption: decided without being able to confirm it. question: could not settle it, wants an answer, ideally with a recommended answer in text. decision: a choice made, by the user or by po on the user's behalf, including a user overruling the challenger."
+        },
+        "text": { "type": "string", "minLength": 1, "description": "One-line statement, verbatim from the agent's register request." },
+        "status": { "const": "open" },
+        "impact": { "$ref": "#/$defs/level", "description": "What goes wrong if this is wrong." },
+        "urgency": { "$ref": "#/$defs/level", "description": "How soon the user's view is needed." },
+        "recommendation": { "type": "string" },
+        "item_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Stable IDs of the output items this entry is about, so traces can link to it (trace.schema.json)."
+        },
+        "via": { "enum": ["agent", "coordinator"] }
+      }
+    },
+    "update": {
+      "type": "object",
+      "required": ["id", "event", "ts", "agent", "stage", "ref", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "event": { "const": "update" },
+        "ts": { "$ref": "#/$defs/ts" },
+        "agent": { "type": "string", "minLength": 1 },
+        "stage": { "$ref": "#/$defs/stage" },
+        "ref": { "$ref": "#/$defs/id", "description": "The id of the entry this line changes." },
+        "status": { "$ref": "#/$defs/status" },
+        "note": { "type": "string" },
+        "answer": { "type": "string" },
+        "by": { "enum": ["coordinator", "user"] },
+        "impact": { "$ref": "#/$defs/level" },
+        "urgency": { "$ref": "#/$defs/level" }
+      }
+    }
+  }
+}
