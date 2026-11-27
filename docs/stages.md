@@ -8,124 +8,119 @@ Every product moves through the same stages, in order:
 
 **Idea, Audience, Actors, Systems, Scope, Workshops, Presentations, FSD.**
 
-Each stage has a producer and an adversarial reviewer in fresh contexts, ends at a gate where you decide, and writes into your product folder. The techniques below are the established methods each stage draws on; sources are on [Research](research.md). General rules (evidence tags, challenger, questions) are on [Method](method.md).
+Each stage has a producer (`<stage>-producer`) and an adversarial reviewer (`<stage>-reviewer`) in fresh contexts. Before the gate, `evidence-auditor` and `challenger` also run. At the gate you decide. Run or re-run a stage with `/po-idea`, `/po-audience`, `/po-actors`, `/po-systems`, `/po-scope`, `/po-workshops`, `/po-presentations` or `/po-fsd`, and run the gate with `/po-gate`. General rules (evidence tags, challenger, questions) are on [Method](method.md); sources for the techniques are on [Research](research.md).
+
+## What every stage file has
+
+Each stage writes one numbered file in your product folder (`01-idea.md` to `08-fsd.md`, plus `08-handoff-gate.md`), copied from a template in the repo's `templates/`. They share this shape:
+
+- Items in tables with a **stable ID** (`IDEA-001`, `AUD-001`, `ACT-001`, `SYS-001`, `SCP-001`, `WKS-001`, `PRS-001`, `FSD-001`, and `US-`, `REQ-`, `NFR-`, `AC-` in the FSD), an **evidence tag** and source, and **upstream IDs** that say what each item was derived from. These feed the [learning loop](learning-loop.md).
+- **Stage exit criteria** written as Given/When/Then.
+- A **decision sheet** of locked decisions (`DEC-001` and so on): choice, who decided, why.
+- **Parked items and non-goals** (`PARK-001`...), each with a concrete revisit trigger.
+- An **Assumptions and open questions** block that goes into the register.
+
+Where a stage reviewer finds problems, the producer revises in a fresh context, up to three attempts. After three failures `po` stops and asks you about the approach.
 
 ## 1. Idea
 
-**Goal:** turn a rough idea into a problem, an outcome and a list of the riskiest assumptions. Most ideas arrive as a solution; the first job is the problem underneath.
+**File:** `01-idea.md`. **Goal:** turn a rough idea into a problem, an outcome and the riskiest assumptions. Most ideas arrive as a solution; the first job is the problem underneath.
 
-- **Double Diamond** discipline: diverge then converge on the problem before any solution talk. No feature is recorded until the problem statement is locked.
-- **Lean Canvas**: one page that makes you state problem, customer, alternatives, value proposition and key metric. Each box is tagged Stated, Inferred or Missing, and only Missing boxes get questions.
-- **Opportunity Solution Tree**: one measurable outcome at the root, opportunities (needs) under it, solutions under those. Every later feature must hang off a branch.
-- **Assumption mapping** (desirability, viability, feasibility): the top assumptions go in the register as things to test.
+- **Problem framing and status quo**: the core problem, and what happens if nothing is built (the current workaround and its cost).
+- **Jobs to be Done and the Mom Test**: job statements ("When ..., I want to ..., so I can ...") with the last real instance or past workaround. Opinions and hypotheticals are not evidence.
+- **Lean Canvas**: every box tagged, so gaps are visible.
+- **Opportunity Solution Tree (seed)**: one desired outcome, opportunities under it, candidate solutions and an assumption test.
+- **Riskiest assumptions**: the top three, in the register.
 
-**Produces:** idea brief with a one-sentence problem, outcome and metric, Lean Canvas, tree root, top assumptions.
-**Gate:** you lock the problem and outcome; riskiest assumptions are recorded.
+**Gate:** you lock the problem and outcome; the riskiest assumptions are recorded.
 
 ## 2. Audience
 
-**Goal:** name the first customer segment and the job they are trying to get done, with evidence rather than opinion.
+**File:** `02-audience.md`. **Goal:** name the first customer segment and the evidence behind it.
 
-- **Jobs to be Done**: job statements and job stories ("When ..., I want to ..., so I can ...") plus the current workaround.
-- **The Mom Test**: interview guides use past behaviour and specifics; no "would you", no pitching. Every question bank is checked against these rules.
-- **Value Proposition Canvas**: jobs, pains and gains matched to relievers and creators, which exposes features that fix no pain.
-- Personas are built on validated jobs, never invented first.
+- **Target segments and early adopters**: frequency and trigger, current cost of the problem.
+- **Mom Test evidence log**: a real past instance for each segment, the workaround and the switching friction, what they already tried or paid for.
+- **Expanded Opportunity Solution Tree.**
+- **Discovery and validation plan**: each hypothesis, the research method (interview, observation, data) and what would pass or falsify it. Simulated-user gap checks may appear here, tagged Simulated.
 
-**Produces:** audience pack with segments, first-customer choice, job statements, value proposition canvas, and interview guides for real people.
-**Gate:** first customer chosen; each job tagged as hypothesis or validated.
+**Gate:** first customer chosen; each claim tagged, with real-person evidence marked Validated.
 
 ## 3. Actors
 
-**Goal:** list every human and system actor, and every stakeholder with power over or interest in the product.
+**File:** `03-actors.md`. **Goal:** every human and system actor, and every stakeholder with power over or interest in the product.
 
-- **Actor modelling** (primary, supporting, offstage): a fixed checklist of actor types finds the ones people forget: admins, support, auditors, payers, people affected but not using.
-- **Power/interest map**: each stakeholder placed on the grid with an engagement plan (manage closely, keep satisfied, keep informed, monitor). This drives who is invited to workshops and who gets which presentation.
-- Goals, frequency and permissions per actor.
-- Optionally, simulated users to find gaps. Everything they produce is tagged Simulated and a person must confirm it.
+- **Power/interest stakeholder map**: role type (buyer, decision maker, gatekeeper, user, operator), power, interest and the quadrant strategy (manage closely, keep satisfied, keep informed, monitor).
+- **Actor and user profiles**: goals, context and frequency, accessibility and device constraints, trust level and permission boundary.
+- **Roles, permissions and decision rights**: who can view, create or edit, approve, and what is forbidden.
 
-**Produces:** actor catalogue, stakeholder map and engagement plan, personas grounded in jobs.
-**Gate:** you confirm the list is complete; no actor without a goal.
+**Gate:** you confirm the list is complete.
 
 ## 4. Systems
 
-**Goal:** draw the product's boundary and list every external system, data flow and owner.
+**File:** `04-systems.md`. **Goal:** the product's boundary, and everything it interacts with.
 
-- **C4 system context diagram**, written as diagram code (Mermaid) so it can be diffed and reviewed. The aidev-platform contract appears as a known external system for Shravi client work.
-- **Integration register**: direction, data, protocol, owner, volume and failure behaviour for each interface. Unknown cells become questions, never guesses.
-- **EventStorming** (big picture): a strawman event timeline from what is known; hotspots (disagreements, unknowns) become workshop agenda items.
-- Glossary and bounded contexts, so the FSD and the code share one language.
+- **C4 level 1, system context**: each element with its owner, protocol and data exchanged, and its trust boundary and failure fallback. For Shravi client work the aidev-platform contract is a known external system.
+- **C4 level 2, containers**, only where needed for scope or risk.
+- **EventStorming flow**: commands, domain events, policies and external systems, step by step.
+- **EventStorming hotspots**: unknowns, risks and conflicts, which become [workshop](#6-workshops) agenda items.
 
-**Produces:** context diagram, integration register, event timeline with hotspots, glossary.
-**Gate:** every arrow on the diagram has an owner and a row in the integration register.
+**Gate:** every element has an owner and the hotspots are listed.
 
 ## 5. Scope
 
-**Goal:** decide the first release and write down what is out, so scope stays tied to the outcome.
+**File:** `05-scope.md`. **Goal:** decide the first release and write down what is out, so scope stays tied to the outcome.
 
-- **Impact mapping** (goal, actors, impacts, deliverables): every deliverable must trace to an actor behaviour change that moves the goal. Orphans are cut.
-- **Story mapping**: a backbone of activities with stories beneath, sliced into a thin end-to-end first release.
-- **MoSCoW** with an explicit Won't-this-time list. Musts are capped and any Must without a reason is challenged.
-- **Non-goals** as a first-class section, each with a revisit trigger, plus an appetite (how much we are willing to spend) that you set.
+- **Impact map**: goal, who, how their behaviour changes, what candidate deliverable. A deliverable with no path to the goal is cut.
+- **User story map**: a backbone of activities and tasks with release slices, the first being a walking skeleton.
+- **MoSCoW** for the first slice, with why each Must is essential and what the workaround is if dropped.
+- **Explicit non-goals and parked scope**, each with who might want it and a revisit trigger.
+- **Candidate acceptance criteria** in Given/When/Then.
 
-**Produces:** scope statement (in, out, later), impact map, story map with the release 1 slice, MoSCoW list, non-goals, appetite.
-**Gate:** release 1 and non-goals locked; every Must traces to a goal and an actor.
+**Gate:** release 1 and non-goals locked.
 
 ## 6. Workshops
 
-**Goal:** plan the sessions that confirm, correct and enrich what the agents drafted, then turn the results back into the register.
+**File:** `06-workshops.md`. **Goal:** settle the riskiest open assumptions and conflicts with real people.
 
-**AI plans, a person runs.** The agents prepare the session and write up the result; a human facilitates. Decisions lock only after you confirm the write-up.
+**AI plans, a person runs.** The agents never pretend a workshop happened. If it has not been run, Part B stays pending and `po` asks whether you want to run it now, bring notes, or waive or park it.
 
-- Plans per session: objective, invitees (from the power/interest map), agenda and timings, pre-read, question bank, capture template.
-- Formats picked to fit the goal: Design Sprint for a big risky question, EventStorming with a pre-filled strawman so the room corrects instead of starting blank, Liberating Structures for getting every voice heard, Example Mapping to turn stories into rules and examples, and a pre-mortem in the first stakeholder session.
-- After the session: synthesis from your notes or transcript, covering decisions, conflicts, new questions and register updates.
+- **Part A, before the workshop (AI prepares):** the objective and the register items to settle, participants and roles drawn from the actor map, a timeboxed agenda with non-leading prompts, and a capture sheet.
+- **Part B, after the workshop (AI synthesises from your notes):** session details, findings tagged Stated or Validated, which register items were confirmed or refuted, new questions and decisions, and what must change in earlier artefacts.
 
-**Produces:** workshop plans and post-session syntheses.
-**Gate:** you confirm the synthesis before decisions lock.
+**Gate:** you confirm the write-up before decisions lock.
 
 ## 7. Presentations
 
-**Goal:** tell the story so a stakeholder can decide, tailored to where they sit on the stakeholder map.
+**File:** `07-presentations.md`. **Goal:** tell the story so a stakeholder can decide, tailored to where they sit on the stakeholder map.
 
-- **PR/FAQ** (working backwards): a one-page future press release plus external and internal FAQs, drafted early and revised at each gate.
-- A **narrative memo** for high-power stakeholders, then **decision-led decks**: one decision per deck, answer first, one deck per audience from the same source material.
-- A **one-page PRD** as the cover of the FSD and the summary slide.
-- Every claim cites a register or artefact ID.
+- **PR/FAQ** (working backwards): a one-page press release, a customer FAQ and a hard-questions internal FAQ, answering for the first slice only.
+- **Stakeholder presentation outline**: slides with the target audience from the actor map and the key point of each.
 
-**Produces:** PR/FAQ, memo, audience decks, one-page PRD.
 **Gate:** the evidence auditor finds no claim without a source.
 
 ## 8. FSD
 
-**Goal:** the full functional design specification, ready for ai-sdlc-loop.
+**Files:** `08-fsd.md` and `08-handoff-gate.md`. **Goal:** the full functional specification, ready for [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop).
 
-The skeleton follows **ISO/IEC/IEEE 29148**, with a one-page PRD on top and testable requirement formats inside:
+`08-fsd.md` follows **ISO/IEC/IEEE 29148**, with a one-page PRD on top:
 
-1. Summary: the one-page PRD (problem, outcome, metrics, non-goals)
-2. Background and problem, with the PR/FAQ attached
-3. Users, actors and stakeholders
-4. System context and external interfaces
-5. Scope, non-goals, assumptions, constraints, dependencies
-6. Functional requirements by capability
-7. Domain model and glossary
-8. Quality requirements
-9. Governance, compliance and data protection
-10. Release slicing
-11. Decisions log and open questions
-12. Traceability matrix and verification approach
+0. One-page PRD (executive summary)
+1. Purpose and scope
+2. Product perspective
+3. User characteristics and roles
+4. Constraints, assumptions and dependencies
+5. Specific functional requirements: user stories checked against **INVEST**, each with **Given/When/Then** acceptance criteria, and **EARS** statements for system and edge-case behaviour
+6. Non-functional requirements as an **ISO/IEC 25010** quality matrix (a target and verification method per characteristic, or `N/A` with a reason)
+7. Verification and traceability matrix
+8. Decision sheet
+9. Parked items and non-goals
 
-Inside it:
+Every item carries its evidence tag and upstream IDs, so each requirement traces back to a goal, an actor and a source.
 
-- **User stories checked against INVEST** (independent, negotiable, valuable, estimable, small, testable).
-- **Given/When/Then** acceptance criteria that ai-sdlc-loop can turn into tests, seeded from the workshops' example mapping.
-- **EARS** sentence patterns for system behaviour, to remove ambiguity.
-- **ISO/IEC 25010** quality sweep: performance, reliability, security, usability, compatibility, maintainability, portability, safety, and the rest of the model.
-- A requirements smell check (vague words, compound requirements, missing actor, untestable criteria) and a consistency check across the spec, glossary and diagrams.
-- Every requirement traces to a goal, an actor and a source.
+**Handoff:** `08-handoff-gate.md` is the brief for ai-sdlc-loop's `/plan`. It has a readiness checklist (reviewer, evidence auditor and challenger all clear, no high-urgency open questions), the goal and slice 1 scope, the locked decisions, the non-goals, an index of acceptance criteria, and the plan for the **gate PR**. No PR is opened and nothing is pushed in an engineering repo without your explicit OK.
 
-**Handoff:** by a gate PR. You review and approve the FSD there, and it becomes the brief for ai-sdlc-loop's planning.
-**Gate:** you approve the gate PR.
+**Gate:** you approve the FSD and the gate PR plan.
 
-## Sizing the FSD
+## Sizing
 
-The depth is sized by triage at the start: a one-page PRD plus the essentials for a small internal tool, the full outline for a client platform.
+Depth is sized by triage at the start of a product: a thin pass plus the one-page PRD for a small internal tool, the full FSD for a client platform. `po` tells you what it chose and you can override it.

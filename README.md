@@ -31,13 +31,13 @@ See [Philosophy](docs/philosophy.md) for the thinking behind this, and [How it f
 
 | Stage | Main techniques |
 |-------|-----------------|
-| Idea | Double Diamond, Lean Canvas, opportunity solution tree, assumption mapping |
-| Audience | Jobs to be Done, the Mom Test, value proposition canvas |
-| Actors | Actor modelling, power/interest stakeholder map |
-| Systems | C4 context, EventStorming, integration register, glossary |
+| Idea | Problem framing, Jobs to be Done and the Mom Test, Lean Canvas, opportunity solution tree |
+| Audience | Mom Test evidence log, segments and early adopters, validation plan |
+| Actors | Power/interest stakeholder map, actor profiles, roles and permissions |
+| Systems | C4 context (and containers if needed), EventStorming flow and hotspots |
 | Scope | Impact mapping, story mapping, MoSCoW, non-goals |
 | Workshops | Planned by AI, run by a person; synthesis written back to the register |
-| Presentations | PR/FAQ, narrative memo, decision-led decks, one-page PRD |
+| Presentations | PR/FAQ, stakeholder presentation outline |
 | FSD | ISO/IEC/IEEE 29148 outline, INVEST, Given/When/Then, EARS, ISO/IEC 25010; handoff by gate PR |
 
 More in [Method](docs/method.md), [Stages](docs/stages.md) and [Learning loop](docs/learning-loop.md). The research behind the choices, with sources, is in [Research](docs/research.md).
@@ -49,7 +49,7 @@ git clone https://github.com/mitulamin/aidev-po.git
 cd aidev-po
 ```
 
-Open the folder in Cursor and run `/po-start`, or tell your agent to follow [AGENTS.md](AGENTS.md) and act as `po`. `po` finds your products repo, lists your products, and asks whether to continue one or start a new one. Full steps in [docs/quick-start.md](docs/quick-start.md).
+Open the folder in Cursor and run `/po-start` (every command starts with `/po-`: `/po-continue`, `/po-gate`, `/po-idea` to `/po-fsd`, and `/po-feedback`, `/po-rerun-from`, `/po-retro` for the learning loop), or tell your agent to follow [AGENTS.md](AGENTS.md) and act as `po`. `po` finds your products repo, lists your products, and asks whether to continue one or start a new one. Full steps in [docs/quick-start.md](docs/quick-start.md).
 
 ## Your products live in their own repo
 

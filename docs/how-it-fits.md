@@ -42,9 +42,9 @@ Where the governance platform requires information from a product (for example c
 
 - Takes a rough idea and finds the problem underneath it.
 - Works out the audience, the jobs they are trying to get done, every actor and every stakeholder.
-- Maps the product's boundary: external systems, data flows, events, terms.
+- Maps the product's boundary: external systems, data flows and domain events.
 - Shapes scope: what is in the first release, what is out, and when to revisit.
-- Plans workshops and writes up their results, and drafts the narrative (PR/FAQ, memo, decks).
+- Plans workshops and writes up their results, and drafts the narrative (PR/FAQ and a stakeholder presentation outline).
 - Writes the FSD, with testable requirements and quality requirements.
 - Keeps a register of questions, assumptions and decisions, and tags every item with its evidence.
 - Challenges your assumptions, and records it when you overrule.

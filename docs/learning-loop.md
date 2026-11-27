@@ -4,7 +4,7 @@ title: Learning loop
 
 # Learning loop
 
-You can give feedback on any output, and the system traces it back to where it went wrong, so the next run is better. This reuses the Learn phase of [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop) (`/retro`, `learn-producer`, `learn-reviewer`, the register, the scorecard) and adds what it lacks: an explicit trail from every output item to the agent step, skill version, evidence and user answers it came from.
+You can give feedback on any output, and the system traces it back to where it went wrong, so the next run is better. This reuses the Learn phase of [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop) (its `/retro` flow, `learn-producer`, `learn-reviewer`, the register, the scorecard) and adds what it lacks: an explicit trail from every output item to the agent step, skill version, evidence and user answers it came from.
 
 > The JSON Schemas for trace, feedback and scorecard are stubs in [schemas/](https://github.com/mitulamin/aidev-po/tree/main/schemas) until the learning loop lands. Field names below are the design, and the schemas are the source of truth once they are filled in.
 
@@ -28,7 +28,7 @@ The model follows W3C PROV (entity, activity, agent) and OpenTelemetry GenAI spa
 
 ## 2. Feedback
 
-Give feedback with `/feedback` in chat, or as a pull request review comment on the artefact Markdown. It can point at a run, an artefact, a section, an item, or a quoted sentence inside an item.
+Give feedback with `/po-feedback` in chat, or as a pull request review comment on the artefact Markdown. It can point at a run, an artefact, a section, an item, or a quoted sentence inside an item.
 
 **Severity:**
 
@@ -51,7 +51,7 @@ Give feedback with `/feedback` in chat, or as a pull request review comment on t
 8. Process (too many questions, a leading question, a skipped gate)
 9. Not sure (the tracer asks one follow-up)
 
-Feedback is recorded in the register straight away and processed in a batch at `/retro`.
+Feedback is recorded in the register straight away and processed in a batch at `/po-retro`.
 
 ## 3. The tracer
 
@@ -72,13 +72,13 @@ The `tracer` agent walks from the item back to **where it first went wrong**.
 
 Why record the trail up front: automatic failure attribution from raw logs is weak (in the Who&When benchmark the best method found the responsible agent about half the time and the exact step about a quarter). Recorded upstream IDs, honest confidence and your confirmation do the heavy lifting.
 
-## 4. `/rerun-from`
+## 4. `/po-rerun-from`
 
-Fix the output now. `/rerun-from` re-runs the pipeline from the traced step with the correction, so downstream items are rebuilt rather than patched by hand.
+Fix the output now. `/po-rerun-from` re-runs the pipeline from the traced step with the correction, so downstream items are rebuilt rather than patched by hand.
 
-## 5. `/retro`
+## 5. `/po-retro`
 
-Fix the process for next time. At `/retro`:
+Fix the process for next time. At `/po-retro`:
 
 1. `learn-producer` groups the attributed feedback by cause and asks blameless "why" questions that lead to conditions, not agents.
 2. It proposes the **smallest edit to one surface**: a skill rule, a reviewer check or mechanical lint, a template, a question bank, an agent brief, or a client preference.
@@ -106,4 +106,4 @@ The scorecard reuses ai-sdlc-loop's per-skill scoring (triggered, followed, revi
 
 ## What is reused and what is new
 
-Reused from ai-sdlc-loop: `/retro`, `learn-producer` and `learn-reviewer`, the register format (with `feedback` and attribution entries added), the scorecard, held-out acceptance, human approval, the ledger, applying approved edits next run. New in aidev-po: item IDs and traces, `/feedback`, the `tracer`, `/rerun-from`, client preference profiles and held-out example products.
+Reused from ai-sdlc-loop: the `/retro` flow (here `/po-retro`), `learn-producer` and `learn-reviewer`, the register format (with `feedback` and attribution entries added), the scorecard, held-out acceptance, human approval, the ledger, applying approved edits next run. New in aidev-po: item IDs and traces, `/po-feedback`, the `tracer`, `/po-rerun-from`, client preference profiles and held-out example products.

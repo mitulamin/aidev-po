@@ -12,6 +12,8 @@ Two caveats. The research was a desk study; it has not been tested against real 
 
 ### Techniques that fit each stage
 
+This is what the research recommends. The stage templates use a subset of it; the [Stages](stages.md) page says exactly what each stage file contains.
+
 | Stage | Techniques chosen | Why |
 |-------|-------------------|-----|
 | Idea | Double Diamond, Lean Canvas, Opportunity Solution Tree, assumption mapping | Forces the problem to be stated before any solution, and shows gaps on one page |
@@ -47,7 +49,7 @@ Two caveats. The research was a desk study; it has not been tested against real 
 | Simulated users treated as evidence | Simulated tag; Validated needs a real person |
 | Question overload | Rounds of at most five, each with a recommended answer and Park |
 | Spec bloat | One-pager and PR/FAQ first; FSD depth sized to the product |
-| Drift between artefacts | Consistency check before each gate |
+| Drift between artefacts | Decision sheets, upstream IDs on every item, and the reviewer and evidence audit at each gate |
 
 ### Learning and attribution
 

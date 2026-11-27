@@ -75,7 +75,7 @@ aidev, ai-sdlc-loop, aidev-platform and the governance platform. What aidev-po d
 </div>
 <div class="lp-card" markdown="1">
 ### [Learning loop](learning-loop.md)
-IDs and traces, feedback, the tracer, `/rerun-from`, `/retro` and the scorecard.
+IDs and traces, feedback, the tracer, `/po-rerun-from`, `/po-retro` and the scorecard.
 </div>
 <div class="lp-card" markdown="1">
 ### [Your products repo](products-repo.md)

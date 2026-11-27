@@ -55,13 +55,13 @@ A separate agent in a fresh context, judged on the issues it finds. It works thr
 When `po` needs answers it asks in layers:
 
 - At most **five** questions per round, ranked by impact times uncertainty.
-- Each has a **recommended answer**, so you can say "yes, that" in a word.
-- Each has a **Park** option, which moves it into the register as an open question instead of blocking the stage.
+- Each has a **recommended answer** first, with the trade-offs, so you can say "yes, that" in a word.
+- Each has a **Park** option with a concrete revisit trigger, which moves it into the register as an open question instead of blocking the stage.
 - Questions follow the Mom Test rules: past behaviour and specifics, no pitching, no leading.
 
 ## The register
 
-One shared, append-only register holds open questions, assumptions and decisions, one JSON line per event, in your product's `.po/` folder. Its shape is in [schemas/](https://github.com/mitulamin/aidev-po/tree/main/schemas) and follows the surface register in ai-sdlc-loop. Decisions are locked there, and a consistency check before each gate looks for drift between artefacts.
+One shared, append-only register holds open questions, assumptions and decisions, one JSON line per event, in `<product>/.po/register.jsonl`. Its shape is in [schemas/](https://github.com/mitulamin/aidev-po/tree/main/schemas) and follows the surface register in ai-sdlc-loop. Before each gate `po` curates it: duplicates marked, answered items dismissed, the rest rated by impact and urgency. Locked decisions also go on each stage file's decision sheet. A stage reviewer that fails a stage three times in a row stops the loop and the question comes to you.
 
 ## Sizing
 

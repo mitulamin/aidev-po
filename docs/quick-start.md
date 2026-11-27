@@ -43,9 +43,23 @@ Open the folder in Cursor and run `/po-start`, or tell the agent "act as `po`". 
 - for a **new** product, asks for a short slug, creates `<products repo>/<slug>/` and starts at Idea;
 - for an **existing** product, catches up first (current stage, register, recent decisions, last run) and tells you where things stand before it helps.
 
+### Commands
+
+Every command starts with `/po-`. Cursor generates one per command source, and each one just asks `po` to do the thing.
+
+| Command | What it does |
+|---------|--------------|
+| `/po-start` | Start or continue: find the products repo (first-run setup if needed), list products, continue one or start a new one |
+| `/po-continue` | Catch up on an existing product (stage, register, decisions, open questions, last run) and resume its current stage |
+| `/po-gate` | Run the current stage's reviewer, evidence audit and challenger, then consult you and optionally commit on approval |
+| `/po-idea`, `/po-audience`, `/po-actors`, `/po-systems`, `/po-scope`, `/po-workshops`, `/po-presentations`, `/po-fsd` | Run or re-run that stage through `po` |
+| `/po-feedback`, `/po-rerun-from`, `/po-retro` | The [learning loop](learning-loop.md): give feedback, rebuild from the traced step, turn findings into reviewed edits |
+
+You can also just talk to `po` in plain words; the commands are shortcuts. In a harness without slash commands, ask `po` for the same thing by name.
+
 ## 4. Work through the gates
 
-At every stage gate you see what was produced, what the reviewer found, and the open questions (at most five at a time, each with a recommended answer and a Park option). Approve, answer, send back, or park. See [Method](method.md) and [Stages](stages.md).
+At every stage gate (`/po-gate` runs it) you see what was produced, what the reviewer found, and the open questions (at most five at a time, each with a recommended answer and a Park option). Approve, answer, send back, or park. See [Method](method.md) and [Stages](stages.md).
 
 ## 5. Commits
 
@@ -53,7 +67,7 @@ At every stage gate you see what was produced, what the reviewer found, and the 
 
 ## 6. Give feedback
 
-Use `/feedback` on anything that is wrong, or comment on the artefact in a pull request. Then `/rerun-from` to rebuild from the traced step, and `/retro` to turn the findings into reviewed edits. See [Learning loop](learning-loop.md).
+Use `/po-feedback` on anything that is wrong, or comment on the artefact in a pull request. Then `/po-rerun-from` to rebuild from the traced step, and `/po-retro` to turn the findings into reviewed edits. See [Learning loop](learning-loop.md).
 
 ## 7. Hand off
 
