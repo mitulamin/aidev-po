@@ -9,6 +9,7 @@ Usage:
   scripts/traces.py chain ITEM_ID [--feedback FB-n | --rev N] [--json]   WHERE
   scripts/traces.py downstream ITEM_ID... [--register-ref r-...] [--json]   WHERE
   scripts/traces.py locate FILE (--line N | --quote TEXT)   WHERE
+  scripts/traces.py open-feedback [--json]    WHERE | --all [--repo PATH]   feedback with no attribution yet
   scripts/traces.py check                     WHERE | --all [--repo PATH]
 
   WHERE is --product SLUG (a folder in the products repo), or --dir PATH (a product folder
@@ -861,6 +862,30 @@ def all_products(repo):
             if d.is_dir() and not d.name.startswith(".")} if repo.is_dir() else {}
 
 
+def cmd_open_feedback(args):
+    """Feedback that has no tracer attribution (and is not withdrawn): what /po-retro must trace first."""
+    if args.all:
+        products = all_products(repo_for(args))
+    else:
+        p = Product(product_dir(args))
+        products = {p.slug: p}
+    rows = []
+    for slug, p in products.items():
+        for fb_id, (_, fb) in p.feedback.items():
+            if p.feedback_status(fb_id) != "open":
+                continue
+            target = fb.get("target") or {}
+            rows.append({"product": slug, "id": fb_id, "severity": fb.get("severity"), "category": fb.get("category"),
+                         "item_ids": target.get("item_ids") or [], "text": fb.get("text")})
+    if args.json:
+        print(json.dumps(rows, indent=2))
+        return 0
+    for r in rows:
+        print(f"{r['product']}/{r['id']}\t{r['severity']}\t{r['category']}\t{','.join(r['item_ids']) or '-'}\t{r['text']}")
+    print(f"{len(rows)} feedback line(s) with no attribution")
+    return 0
+
+
 def cmd_check(args):
     issues = []
     if args.all:
@@ -921,12 +946,16 @@ def main(argv):
     g.add_argument("--line", type=int)
     g.add_argument("--quote")
     where(sp)
+    sp = sub.add_parser("open-feedback")
+    sp.add_argument("--all", action="store_true", help="every product in the products repo")
+    sp.add_argument("--json", action="store_true")
+    where(sp)
     sp = sub.add_parser("check")
     sp.add_argument("--all", action="store_true", help="every product in the products repo, and the ledger")
     where(sp)
     args = ap.parse_args(argv)
     return {"new-run": cmd_new_run, "versions": cmd_versions, "next-id": cmd_next_id, "add": cmd_add,
-            "chain": cmd_chain, "downstream": cmd_downstream, "locate": cmd_locate, "check": cmd_check}[args.cmd](args)
+            "chain": cmd_chain, "downstream": cmd_downstream, "open-feedback": cmd_open_feedback, "locate": cmd_locate, "check": cmd_check}[args.cmd](args)
 
 
 if __name__ == "__main__":

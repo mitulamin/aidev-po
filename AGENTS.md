@@ -28,7 +28,7 @@ Commands are typed as `/po-<name>`; their sources are in `commands/`.
 | `/po-gate` | Take the current stage through its gate with the user. |
 | `/po-feedback` | Learning loop: record feedback (P0 to P3, nine categories) from chat or pull request comments, and trace it with the `tracer`. |
 | `/po-rerun-from` | Learning loop: rebuild from the traced step, after showing what is invalidated and getting the user's OK. |
-| `/po-retro` | Learning loop: turn traced feedback into small, tested edits the user approves; ledger and scorecard. |
+| `/po-retro` | Learning loop: trace any still-untraced feedback (with the user's OK), then turn it into small, tested edits the user approves; ledger and scorecard. |
 
 Agents' sources are in `agents/`. `po` starts every agent except itself in a fresh context.
 
@@ -95,6 +95,7 @@ Every output item (a requirement, an actor row, a slide, an agenda item) gets a 
 
 - `/po-feedback`: record feedback (severity P0 to P3, one of nine what's-wrong categories), from chat or pull request comments in the products repo, and trace it with the `tracer`.
 - `/po-rerun-from`: rebuild from the traced step, after showing what is invalidated and getting the user's OK.
+- Feedback left untraced at `/po-feedback` is traced at the start of `/po-retro`, with the user's OK, so nothing is skipped.
 - `/po-retro`: turn traced feedback into small, tested edits the user approves (`learn-producer`, `learn-reviewer`), logged in the ledger, and update the scorecard.
 
 `po` follows skill `learning-loop`. Tools: `scripts/traces.py` and `scripts/scorecard.py`; formats in `schemas/`.

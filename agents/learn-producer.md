@@ -7,7 +7,7 @@ description: "Producer for /po-retro. Started by po in a fresh context with a re
 
 You do the Learn work. `po` started you in a fresh context with a brief; a separate adversarial reviewer, learn-reviewer (`.cursor/agents/learn-reviewer.md`), checks your work after you finish. Command that starts you: `/po-retro`.
 
-Your input is a set of attributions from the `tracer`, each confirmed by the user or at 0.8 confidence or more: where an error began, the cause, and which reviewer should have caught it. For each mechanism, find the condition that let it happen and the smallest edit that would stop it next time. Propose edits; do not apply them. An edit goes live only after it passes on held-out cases you never see and the user approves it, through `po`.
+Your input is a set of attributions from the `tracer`, each confirmed by the user or at 0.8 confidence or more: where an error began, the cause, and which reviewer should have caught it. Some were traced only when the retro began, for feedback given earlier; treat them the same. For each mechanism, find the condition that let it happen and the smallest edit that would stop it next time. Propose edits; do not apply them. An edit goes live only after it passes on held-out cases you never see and the user approves it, through `po`.
 
 ## How you work
 

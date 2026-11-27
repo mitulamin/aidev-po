@@ -17,7 +17,10 @@ The argument, if any, limits the retro to one product. By default it covers ever
 
 ## Steps
 
-1. **Gather.** From each product, the current attributions that the user confirmed, or that are at 0.8 or more and not rejected, and that no ledger line in `<products repo>/.po/ledger.jsonl` names yet. Leave out cause `input-changed` (a product correction, not a learning). If there are none, say so, run step 10 and stop.
+1. **Gather.**
+   1. *Trace what was left untraced.* `python3 scripts/traces.py open-feedback --all --json` lists feedback with no attribution, which is what `/po-feedback` leaves behind when the user chose "leave it for `/po-retro`" for a P2 or P3. If there is any, show it (product, ID, severity, items, words) and ask whether to trace it now. Recommend yes. If the user says no for some, leave those out of this retro; they stay open and are offered again next time. For each one the user agrees to, run `/po-feedback`'s steps 3 to 6 (tracer in a fresh context, ingest, register line, show the finding, the user confirms or rejects). Do not start step 2 until every agreed line has an attribution.
+   2. *Select.* From each product, the current attributions that the user confirmed, or that are at 0.8 or more and not rejected, and that no ledger line in `<products repo>/.po/ledger.jsonl` names yet. Leave out cause `input-changed` (a product correction, not a learning).
+   3. If there are none, say so, run step 10 and stop.
 2. **Set up.** Retro ID `retro-<yyyymmdd>-<nn>`; folder `<products repo>/.po/retro/<retro-id>/`.
 3. **Held-out pool.** Choose cases the producer will never see: confirmed cases already in the ledger from earlier retros, and the matching stages of the worked example in aidev-po's `examples/`. Write the list to `heldout-pool.md` in the retro folder and keep it out of the brief.
 4. **Brief.** Write `brief.md` in the format of `templates/learning/retro-brief.md`: the task, the acceptance criteria, the attributions with their tracer reports and feedback, the ledger, the scorecard's `causes`, the products repo path, and where to write.

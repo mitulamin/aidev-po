@@ -3,7 +3,7 @@ import json
 import shutil
 import unittest
 
-from helpers import FIXTURE, append_jsonl, copy_fixture, read_jsonl, run
+from helpers import FIXTURE, ROOT, append_jsonl, copy_fixture, read_jsonl, run
 
 import traces
 
@@ -222,6 +222,32 @@ class Add(unittest.TestCase):
         code, _, err = run("traces.py", "add", "ledger", "--repo", self.repo, "--json", json.dumps(le))
         self.assertEqual(code, 1)
         self.assertIn("held-in cases did not improve", err)
+
+
+class OpenFeedback(unittest.TestCase):
+    """What /po-retro traces first: feedback with no attribution."""
+
+    def test_fixture_gap(self):
+        code, out, err = run("traces.py", "open-feedback", "--all", "--json", "--repo", FIXTURE)
+        self.assertEqual(code, 0, err)
+        self.assertEqual([(r["product"], r["id"], r["severity"]) for r in json.loads(out)], [("clinic-booking", "FB-002", "P3")])
+
+    def test_traced_and_withdrawn_are_not_open(self):
+        product = copy_fixture()
+        self.addCleanup(shutil.rmtree, product.parent)
+        fb = read_jsonl(product / "clinic-booking" / ".po" / "feedback.jsonl")[1]
+        append_jsonl(product / "clinic-booking" / ".po" / "feedback.jsonl", dict(fb, ts="2026-12-30T09:00:00Z", withdrawn=True))
+        code, out, _ = run("traces.py", "open-feedback", "--all", "--json", "--repo", product)
+        self.assertEqual(json.loads(out), [])
+
+    def test_one_product(self):
+        code, out, _ = run("traces.py", "open-feedback", "--dir", FIXTURE / "team-rota")
+        self.assertIn("0 feedback line(s)", out)
+
+    def test_retro_traces_open_feedback_first(self):
+        text = (ROOT / "commands" / "retro.md").read_text()
+        self.assertIn("traces.py open-feedback", text)
+        self.assertLess(text.index("open-feedback"), text.index("**Set up.**"))
 
 
 class Walks(unittest.TestCase):

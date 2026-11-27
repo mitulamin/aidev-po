@@ -2,7 +2,7 @@
 
 ## Task
 
-Turn the attributions below into proposed learned edits: one surface per edit, smallest change that would have stopped the failure, each with a held-in baseline. Propose only.
+Turn the attributions below (including any traced at the start of this retro for earlier untraced feedback) into proposed learned edits: one surface per edit, smallest change that would have stopped the failure, each with a held-in baseline. Propose only.
 
 ## Acceptance criteria
 

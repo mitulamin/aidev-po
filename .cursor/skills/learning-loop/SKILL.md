@@ -39,7 +39,7 @@ Besides the register, tell the user:
 - feedback that is open (not traced yet) or traced but not fixed, by severity;
 - attributions waiting for the user's confirm or reject;
 - reruns that are planned or approved but not done;
-- how many confirmed attributions are not yet in the ledger. At five or more, or at the end of the FSD stage, offer `/po-retro`.
+- how many confirmed attributions are not yet in the ledger, and how much feedback is still untraced (`python3 scripts/traces.py open-feedback --all`). At five or more of either, or at the end of the FSD stage, offer `/po-retro`, which traces open feedback first, with the user's OK.
 
 ## Commands
 
