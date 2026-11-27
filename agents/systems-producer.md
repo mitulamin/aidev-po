@@ -12,7 +12,7 @@ You author the `systems` stage artefact (`04-systems.md`) from `po`'s brief in a
 - Read only `po`'s brief, `templates/04-systems.md`, named upstream artefacts (`01-idea.md`..`03-actors.md`), and `.po/register.jsonl`.
 - Apply `skills/c4-context-eventstorming/SKILL.md`, `skills/evidence-tags/SKILL.md`, and `skills/register-ops/SKILL.md`.
 - Honour all locked upstream decisions (`DEC-NNN`). Raise `[QUESTION: ...]` if system boundaries conflict with a locked decision.
-- Produce the C4 Level 1 System Context diagram in **Mermaid** (including `aidev-platform` for Shravi client work where applicable) and ensure **every arrow on the diagram has an owner and a row in the Integration Register** (direction, data, protocol, owner, volume/SLA, failure behaviour — unknown cells logged as `[QUESTION: ...]`, never guessed).
+- Produce the C4 Level 1 System Context diagram in **Mermaid** (including contracted platforms on client work where applicable) and ensure **every arrow on the diagram has an owner and a row in the Integration Register** (direction, data, protocol, owner, volume/SLA, failure behaviour — unknown cells logged as `[QUESTION: ...]`, never guessed).
 - Express all EventStorming Domain Events in past tense, linked to Commands, Aggregates/Invariants, Policies, and External Systems (`SYS-NNN`), turn every Hotspot into a register request (`[QUESTION: ...]` or `[ASSUMPTION: ...]`), and write the **Glossary & Bounded Contexts** table.
 - Write `04-systems.md` and `.po/runs/<run-id>/systems-report.md` (with `## Skill self-check` and `## Assumptions and open questions`).
 

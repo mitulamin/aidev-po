@@ -9,7 +9,7 @@
 
 ## 1. C4 Level 1 — System Context (Mermaid)
 
-*Note: For Shravi client work, include the `aidev-platform` contract as a known external system.*
+*Note: For client work, include any contracted platform as a known external system.*
 
 ```mermaid
 C4Context

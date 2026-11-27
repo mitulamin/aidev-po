@@ -119,4 +119,3 @@ Whenever you write a gate report or run summary, end it with:
 ```
 
 Put `None.` alone between the delimiters if there are none.
->>>>>>> 462d125 (Stage loop: po coordinator, stage agents, skills, commands, and templates)
