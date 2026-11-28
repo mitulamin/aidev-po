@@ -39,7 +39,7 @@ Feedback severities (P0 to P3), evidence tags and item IDs are not register fiel
 - `scripts/register.py merge --from <bundle>/register.jsonl` brings ai-sdlc-loop's entries back into the product register: it appends only lines the product lacks, and writes nothing if any line fails. `po` shows entries whose `phase` is not a stage as engineering's questions and blockers, and the user decides which are feedback.
 - `scripts/register.py migrate --write` rewrites a register written before this decision (`stage` to `phase`, `by: "user"` to `"human"`). It is the one change to a register that is not an append. The worked example and the test fixtures are migrated.
 - `tests/test_shared_register.py` runs a vendored copy of ai-sdlc-loop's checker (`tests/vendor/ai-sdlc-loop/`) on every aidev-po register, runs aidev-po's checker on lines ai-sdlc-loop writes, round-trips a register through a gate bundle, and fails if the two taxonomies drift.
-- ai-sdlc-loop accepts the extension through a change to its contract (`register.extensions`, schema 1.2.0) proposed in a pull request there. Until that merges, ai-sdlc-loop's released checker passes the baseline lines of an aidev-po register but not its decision, feedback and attribution lines.
+- ai-sdlc-loop accepts the extension through a change to its contract (`register.extensions`, schema 1.2.0) proposed in [mitulamin/ai-sdlc-loop#29](https://github.com/mitulamin/ai-sdlc-loop/pull/29). Until that merges, ai-sdlc-loop's released checker passes the baseline lines of an aidev-po register but not its decision, feedback and attribution lines.
 
 ### Why
 
@@ -47,7 +47,7 @@ The handoff is only as good as what crosses it. Locked decisions have to reach a
 
 ### Follow-up
 
-- Re-pin `tests/vendor/ai-sdlc-loop/` to ai-sdlc-loop main once its extension pull request merges.
+- Re-pin `tests/vendor/ai-sdlc-loop/` to ai-sdlc-loop main once [ai-sdlc-loop#29](https://github.com/mitulamin/ai-sdlc-loop/pull/29) merges.
 
 ## DEC-001: Say who decides before an undoable change ships
 

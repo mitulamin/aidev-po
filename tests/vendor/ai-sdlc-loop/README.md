@@ -10,7 +10,7 @@ ai-sdlc-loop's register checker and contract data, copied unchanged, so `tests/t
 ## Pin
 
 - **Base:** [mitulamin/ai-sdlc-loop@9f49094](https://github.com/mitulamin/ai-sdlc-loop/commit/9f4909455e8a51c38b59b5321782acffc02aeab9) (main on 27 November 2026).
-- **Plus:** the change that adds the optional aidev-po extension to the register contract (schema 1.2.0, `register.extensions`). It is proposed in an ai-sdlc-loop pull request that is **not merged yet** and waits for approval: PR link and head SHA to be added here once it is open.
+- **Plus:** the change that adds the optional aidev-po extension to the register contract (schema 1.2.0, `register.extensions`), from [mitulamin/ai-sdlc-loop#29](https://github.com/mitulamin/ai-sdlc-loop/pull/29) at head [9c72807](https://github.com/mitulamin/ai-sdlc-loop/commit/9c72807d534f45e0eb4569f257a2608e7ca64eb8). That pull request is **not merged yet** and waits for approval.
 - **SHA-256:** `scripts/register.py` `c9518ca44662b87a724279cbfc0def88b0daf8d1a9557a41c1d83f61baf791c6`, `data/agent-contract.json` `53735c45e71f1edd0e983c226651958b383db8df4067595dafa9b73d01138947`.
 
 Without the extension, ai-sdlc-loop's checker still passes the baseline lines of an aidev-po register (`phase`, `blocker`, `by: human`), but not its decision, feedback and attribution lines. The test checks both.
