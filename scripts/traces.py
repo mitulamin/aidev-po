@@ -577,7 +577,31 @@ def version_of(rel):
     return sha
 
 
+def cmd_versions_installed(args):
+    """Versions when this script was installed by scripts/bootstrap.sh: every file is stamped with the
+    aidev-po commit recorded in .aidev-po/install.json, since there is no git history to ask."""
+    try:
+        sha = json.loads((ROOT / "install.json").read_text(encoding="utf-8"))["source"]["sha"][:7]
+    except (OSError, ValueError, KeyError):
+        sha = "unknown"
+    skills_dir = ROOT.parent / ".cursor" / "skills"
+    names = [s for s in (args.skills or "").split(",") if s] or sorted(
+        p.name for p in skills_dir.iterdir() if (p / "SKILL.md").exists())
+    for name in names:
+        if not (skills_dir / name / "SKILL.md").exists():
+            raise SystemExit(f"no skill or command named {name!r}")
+    templates = [t for t in (args.templates or "").split(",") if t]
+    for rel in templates:
+        if not (ROOT / "templates" / rel).exists():
+            raise SystemExit(f"no template templates/{rel}")
+    print(json.dumps({"aidev_po": sha, "skill_versions": {n: sha for n in names},
+                      "template_versions": {t: sha for t in templates}}, indent=2))
+    return 0
+
+
 def cmd_versions(args):
+    if ROOT.name == ".aidev-po":
+        return cmd_versions_installed(args)
     skills_dir, templates_dir = ROOT / "skills", ROOT / "templates"
     names = [s for s in (args.skills or "").split(",") if s] or sorted(
         p.name for p in skills_dir.iterdir() if (p / "SKILL.md").exists())

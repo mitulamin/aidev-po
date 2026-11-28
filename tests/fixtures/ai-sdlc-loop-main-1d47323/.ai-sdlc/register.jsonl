@@ -1,0 +1,2 @@
+{"id":"REG-001","event":"declare","type":"assumption","phase":"plan","agent":"plan-producer","text":"Fixture assumption, so the append-only register has content that must survive."}
+{"id":"REG-002","event":"declare","type":"question","phase":"plan","agent":"plan-producer","text":"Second line, no trailing surprises."}

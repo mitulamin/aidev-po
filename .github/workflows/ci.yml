@@ -13,6 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check out ai-sdlc-loop (for the bootstrap interop tests)
+        uses: actions/checkout@v4
+        with:
+          repository: mitulamin/ai-sdlc-loop
+          ref: 1d473234a504e587cfc1c4f53dafe03775fd3cb7
+          path: ai-sdlc-loop
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -30,5 +36,7 @@ jobs:
           for f in examples/*/.po/register.jsonl; do python scripts/register.py check --register "$f"; done
           python scripts/scorecard.py check --repo examples
           python scripts/traces.py open-feedback --all --repo examples
-      - name: Tests
+      - name: Tests (includes bootstrap: fresh, add-on to ai-sdlc-loop, second run)
+        env:
+          AI_SDLC_LOOP_DIR: ${{ github.workspace }}/ai-sdlc-loop
         run: python -m unittest discover -s tests -t tests -v

@@ -17,6 +17,8 @@ Optional: `python3 -m pip install jsonschema`. The scripts need only Python 3; w
 
 The generated agents in `.cursor/` are committed, so there is nothing to build to use it. (Only if you change a source in `agents/`, `skills/` or `commands/`, run `python3 scripts/build-agents.py`.)
 
+Want `po` inside a project of your own, next to other tools such as ai-sdlc-loop? Run `./scripts/bootstrap.sh` instead; see [Bootstrap](bootstrap.md).
+
 ## 2. Set up your products repo
 
 Your product work does not live in aidev-po. It lives in a **separate git repo that you own, outside the aidev-po checkout, private by default**, one per client or team.
