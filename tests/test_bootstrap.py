@@ -10,10 +10,13 @@ checkout of it; CI sets it. Without it they are skipped.
 import hashlib
 import json
 import os
+import pty
+import select
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -63,6 +66,43 @@ class BootstrapCase(unittest.TestCase):
 
     def new_project(self, target, *args):
         return self.run_cmd(NEW_PROJECT, *args, target)
+
+    def run_tty(self, *cmd, stdin="", **extra_env):
+        """Run a command with a terminal, so bootstrap.sh treats the wizard as interactive."""
+        master, slave = pty.openpty()
+        proc = subprocess.Popen([str(c) for c in cmd], stdin=slave, stdout=slave, stderr=slave,
+                                cwd=self.tmp, env=self.env(**extra_env), close_fds=True)
+        os.close(slave)
+        if stdin:
+            os.write(master, stdin.encode())
+        chunks = []
+        deadline = time.time() + 30
+
+        def drain(wait):
+            ready, _, _ = select.select([master], [], [], wait)
+            if not ready:
+                return False
+            try:
+                data = os.read(master, 65536)
+            except OSError:
+                return False
+            if data:
+                chunks.append(data)
+            return bool(data)
+
+        while time.time() < deadline:
+            if drain(0.5):
+                continue
+            if proc.poll() is not None:
+                while drain(0.2):
+                    pass
+                break
+        if proc.poll() is None:
+            proc.kill()
+        code = proc.wait()
+        os.close(master)
+        text = b"".join(chunks).decode("utf-8", "replace")
+        return code, text, text
 
     def copy_fixture(self, name="project"):
         target = self.tmp / name
@@ -126,7 +166,7 @@ class FreshInstall(BootstrapCase):
         target = self.tmp / "repo"
         target.mkdir()
         subprocess.run(["git", "init", "-q", "-b", "trunk"], cwd=target, check=True, env=self.env())
-        self.assertEqual(self.new_project(target)[0], 0)
+        self.assertEqual(self.new_project(target, "--yes", "--git-init")[0], 0)
         head = subprocess.run(["git", "-C", target, "symbolic-ref", "HEAD"], capture_output=True, text=True).stdout.strip()
         self.assertEqual(head, "refs/heads/trunk")
 
@@ -172,6 +212,9 @@ class FreshInstall(BootstrapCase):
         code, out, _ = self.run_cmd(NEW_PROJECT, "--help")
         self.assertEqual(code, 0)
         self.assertIn("--harness", out)
+        self.assertIn("--yes", out)
+        self.assertIn("--git-init", out)
+        self.assertIn("--no-git-init", out)
         self.assertIn("cursor", out)
 
     def test_harness_data_lists_cursor(self):
@@ -187,7 +230,7 @@ class AddOnToSdlc(BootstrapCase):
         project = self.copy_fixture()
         before = snapshot(project)
         self.assertIn(".ai-sdlc/register.jsonl", before)
-        code, out, err = self.new_project(project)
+        code, out, err = self.new_project(project, "--yes")
         self.assertEqual(code, 0, err)
         self.assertIn("Found ai-sdlc-loop already registered here (legacy format", out)
         self.assertIn("Left untouched", out)
@@ -196,17 +239,38 @@ class AddOnToSdlc(BootstrapCase):
         after = snapshot(project)
         self.assertTrue(all(r.startswith((".aidev-po/", ".cursor/")) for r in set(after) - set(before)))
 
-    def test_no_git_init_on_an_existing_project_without_a_repo(self):
+    def test_non_empty_folder_without_yes_is_refused(self):
         project = self.tmp / "plain"
         shutil.copytree(FIXTURE, project)
-        code, out, _ = self.new_project(project)
-        self.assertEqual(code, 0)
-        self.assertFalse((project / ".git").exists())
-        self.assertIn("not a git repository", out)
+        before = snapshot(project)
+        code, _, err = self.new_project(project)
+        self.assertNotEqual(code, 0)
+        self.assertIn("There are files in", err)
+        self.assertIn("Nothing was written", err)
+        self.assertIn("--yes", err)
+        self.assertEqual(snapshot(project), before)
+        self.assertFalse((project / ".aidev-po").exists())
+
+    def test_git_init_is_the_default_and_no_git_init_leaves_the_folder(self):
+        project = self.tmp / "plain"
+        shutil.copytree(FIXTURE, project)
+        code, out, err = self.new_project(project, "--yes")
+        self.assertEqual(code, 0, err)
+        self.assertTrue((project / ".git").exists())
+        self.assertIn("Ran git init", out)
+        head = subprocess.run(["git", "-C", project, "symbolic-ref", "HEAD"], capture_output=True, text=True).stdout.strip()
+        self.assertEqual(head, "refs/heads/main")
+        left = self.tmp / "left"
+        shutil.copytree(FIXTURE, left)
+        code, out, err = self.new_project(left, "--yes", "--no-git-init")
+        self.assertEqual(code, 0, err)
+        self.assertFalse((left / ".git").exists())
+        self.assertIn("without a Git repository", out)
+        self.assert_registered(left)
 
     def test_both_tools_agents_coexist_with_distinct_names(self):
         project = self.copy_fixture()
-        self.assertEqual(self.new_project(project)[0], 0)
+        self.assertEqual(self.new_project(project, "--yes")[0], 0)
         agents = project / ".cursor" / "agents"
         self.assertIn("ai-sdlc-loop", (agents / "learn-reviewer.md").read_text())
         self.assertIn("aidev-po", (agents / "po-learn-reviewer.md").read_text() + "aidev-po")
@@ -222,7 +286,7 @@ class AddOnToSdlc(BootstrapCase):
         (project / ".cursor" / "rules").mkdir(parents=True)
         (project / ".cursor" / "rules" / "other-tool-bootstrap.mdc").write_text("---\nalwaysApply: true\n---\nOther.\n")
         before = snapshot(project)
-        code, out, err = self.new_project(project)
+        code, out, err = self.new_project(project, "--yes")
         self.assertEqual(code, 0, err)
         self.assertIn("Found other-tool already registered here (manifest format", out)
         self.assert_untouched(before, project)
@@ -232,7 +296,7 @@ class AddOnToSdlc(BootstrapCase):
         project = self.copy_fixture()
         (project / ".ai-sdlc" / "install.json").write_text(json.dumps({"tool": "ai-sdlc-loop", "files": {}}) + "\n")
         before = snapshot(project)
-        code, out, _ = self.new_project(project)
+        code, out, _ = self.new_project(project, "--yes")
         self.assertEqual(code, 0)
         self.assertIn("ai-sdlc-loop", out)
         self.assert_untouched(before, project)
@@ -260,7 +324,7 @@ class AddOnToSdlc(BootstrapCase):
                 shutil.copy(path, project / rel)
         sdlc = snapshot(FIXTURE)
         mid = snapshot(project)
-        code, out, err = self.new_project(project)
+        code, out, err = self.new_project(project, "--yes")
         self.assertEqual(code, 0, err)
         self.assertIn("Found ai-sdlc-loop", out)
         self.assertEqual(snapshot(project), mid, "the second aidev-po run changed something")
@@ -273,7 +337,7 @@ class Idempotent(BootstrapCase):
         target = self.tmp / "p"
         self.assertEqual(self.new_project(target)[0], 0)
         before, times = snapshot(target), mtimes(target)
-        code, out, err = self.new_project(target)
+        code, out, err = self.new_project(target, "--yes")
         self.assertEqual(code, 0, err)
         self.assertIn("Nothing changed", out)
         self.assertEqual(snapshot(target), before)
@@ -283,9 +347,9 @@ class Idempotent(BootstrapCase):
 
     def test_second_run_on_an_sdlc_project_is_a_no_op(self):
         project = self.copy_fixture()
-        self.assertEqual(self.new_project(project)[0], 0)
+        self.assertEqual(self.new_project(project, "--yes")[0], 0)
         before, times = snapshot(project), mtimes(project)
-        code, out, _ = self.new_project(project)
+        code, out, _ = self.new_project(project, "--yes")
         self.assertEqual(code, 0)
         self.assertIn("Nothing changed", out)
         self.assertEqual(snapshot(project), before)
@@ -293,11 +357,11 @@ class Idempotent(BootstrapCase):
 
     def test_second_run_after_a_commit_leaves_the_working_tree_clean(self):
         project = self.copy_fixture()
-        self.assertEqual(self.new_project(project)[0], 0)
+        self.assertEqual(self.new_project(project, "--yes")[0], 0)
         git = ["git", "-c", "user.name=T", "-c", "user.email=t@example.com", "-C", str(project)]
         subprocess.run([*git, "add", "-A"], check=True, env=self.env())
         subprocess.run([*git, "commit", "-qm", "both tools"], check=True, env=self.env())
-        self.assertEqual(self.new_project(project)[0], 0)
+        self.assertEqual(self.new_project(project, "--yes")[0], 0)
         status = subprocess.run([*git, "status", "--porcelain"], capture_output=True, text=True, env=self.env()).stdout
         self.assertEqual(status, "")
 
@@ -308,7 +372,7 @@ class Safety(BootstrapCase):
         rule = project / ".cursor" / "rules" / "aidev-po-bootstrap.mdc"
         rule.parent.mkdir(parents=True)
         rule.write_text("someone else's file\n")
-        code, _, err = self.new_project(project)
+        code, _, err = self.new_project(project, "--yes")
         self.assertNotEqual(code, 0)
         self.assertIn("Refusing to overwrite", err)
         self.assertIn("aidev-po-bootstrap.mdc", err)
@@ -321,7 +385,7 @@ class Safety(BootstrapCase):
         agent = project / ".cursor" / "agents" / "po.md"
         agent.parent.mkdir(parents=True)
         agent.write_text("my own po\n")
-        self.assertNotEqual(self.new_project(project)[0], 0)
+        self.assertNotEqual(self.new_project(project, "--yes")[0], 0)
         self.assertEqual(agent.read_text(), "my own po\n")
         self.assertFalse((project / ".aidev-po").exists())
 
@@ -331,9 +395,13 @@ class Safety(BootstrapCase):
         rule = project / ".cursor" / "rules" / "aidev-po-bootstrap.mdc"
         rule.write_text(rule.read_text() + "\nMy own addition.\n")
         edited = rule.read_bytes()
-        code, _, err = self.new_project(project)
+        code, _, err = self.new_project(project, "--yes")
         self.assertNotEqual(code, 0)
-        self.assertIn("Refusing to overwrite", err)
+        self.assertIn("detected local edits", err)
+        self.assertIn("own files", err)
+        self.assertIn("halted rather than overwrite", err)
+        self.assertIn("nothing was written", err)
+        self.assertIn(".cursor/rules/aidev-po-bootstrap.mdc", err)
         self.assertEqual(rule.read_bytes(), edited)
 
     def test_an_unedited_older_aidev_po_file_is_updated_and_a_retired_one_removed(self):
@@ -349,7 +417,7 @@ class Safety(BootstrapCase):
         manifest["files"][".aidev-po/templates/retired.md"] = hashlib.sha256(retired.read_bytes()).hexdigest()
         manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
         before = snapshot(project)
-        code, out, err = self.new_project(project)
+        code, out, err = self.new_project(project, "--yes")
         self.assertEqual(code, 0, err)
         self.assertEqual(old.read_bytes(), (ROOT / "templates" / "01-idea.md").read_bytes())
         self.assertFalse(retired.exists())
@@ -370,9 +438,9 @@ class Safety(BootstrapCase):
         self.assertEqual((with_overlay / "docs" / "team-notes.md").read_text(), "extra\n")
         manifest = self.assert_registered(with_overlay)
         self.assertIn("docs/team-notes.md", manifest["files"])
-        self.assertEqual(self.new_project(with_overlay, "--overlay", overlay)[0], 0)
+        self.assertEqual(self.new_project(with_overlay, "--yes", "--overlay", overlay)[0], 0)
         (with_overlay / "docs" / "team-notes.md").write_text("mine\n")
-        code, _, err = self.new_project(with_overlay, "--overlay", overlay)
+        code, _, err = self.new_project(with_overlay, "--yes", "--overlay", overlay)
         self.assertNotEqual(code, 0)
         self.assertEqual((with_overlay / "docs" / "team-notes.md").read_text(), "mine\n")
 
@@ -405,6 +473,93 @@ class Safety(BootstrapCase):
                                  capture_output=True, text=True, env=self.env())
         self.assertEqual(ignored.returncode, 0 if (project / ".git").exists() else 1)
 
+    def test_no_git_init_on_a_new_folder_and_both_flags_refused(self):
+        target = self.tmp / "fresh"
+        code, out, err = self.new_project(target, "--no-git-init")
+        self.assertEqual(code, 0, err)
+        self.assertFalse((target / ".git").exists())
+        self.assert_registered(target)
+        self.assertIn("without a Git repository", out)
+        code, _, err = self.new_project(self.tmp / "both", "--git-init", "--no-git-init")
+        self.assertNotEqual(code, 0)
+        self.assertIn("only one", err)
+        self.assertFalse((self.tmp / "both").exists())
+        via_env = self.tmp / "via-env"
+        code, out, err = self.run_cmd(NEW_PROJECT, via_env, AIDEV_PO_BOOTSTRAP_GIT_INIT="0")
+        self.assertEqual(code, 0, err)
+        self.assertFalse((via_env / ".git").exists())
+        self.assertIn("without a Git repository", out)
+        code, _, err = self.run_cmd(NEW_PROJECT, "--git-init", self.tmp / "clash-env", AIDEV_PO_BOOTSTRAP_GIT_INIT="0")
+        self.assertNotEqual(code, 0)
+        self.assertIn("conflicts with --git-init", err)
+        self.assertFalse((self.tmp / "clash-env").exists())
+
+    def test_bootstrap_names_each_local_edit_and_writes_nothing(self):
+        target = self.tmp / "edited"
+        self.assertEqual(self.new_project(target)[0], 0)
+        rule = target / ".cursor" / "rules" / "aidev-po-bootstrap.mdc"
+        agent = target / ".cursor" / "agents" / "po.md"
+        rule.write_text(rule.read_text() + "\nLocal rule note.\n")
+        agent.write_text(agent.read_text() + "\nLocal agent note.\n")
+        after_edit = snapshot(target)
+        code, _, err = self.run_cmd(BOOTSTRAP, "--yes", str(target))
+        self.assertNotEqual(code, 0)
+        self.assertIn("detected local edits", err)
+        self.assertIn("own files", err)
+        self.assertIn("halted rather than overwrite", err)
+        self.assertIn("nothing was written", err)
+        self.assertIn(".cursor/rules/aidev-po-bootstrap.mdc", err)
+        self.assertIn(".cursor/agents/po.md", err)
+        self.assertEqual(snapshot(target), after_edit)
+
+    def test_installed_copy_contains_the_texts_and_their_licences(self):
+        target = self.tmp / "standalone"
+        self.assertEqual(self.new_project(target)[0], 0)
+        for rel in (
+            ".aidev-po/LICENSE",
+            ".aidev-po/LICENSE-CONTENT",
+            ".aidev-po/NOTICE.md",
+            ".aidev-po/templates/LICENSE",
+            ".aidev-po/examples/tool-library-loans/01-idea.md",
+            ".aidev-po/docs/products-repo.md",
+        ):
+            path = target / rel
+            self.assertTrue(path.is_file(), rel)
+            self.assertFalse(path.is_symlink(), rel)
+        self.assertEqual((target / ".aidev-po/examples/tool-library-loans/01-idea.md").read_bytes(),
+                         (ROOT / "examples/tool-library-loans/01-idea.md").read_bytes())
+        notice = (target / ".aidev-po/NOTICE.md").read_text()
+        self.assertIn("GPL-3.0", notice)
+        self.assertIn("CC BY-SA 4.0", notice)
+        self.assertIn("MIT", notice)
+        self.assertNotIn("github.com/mitulamin/aidev-po", (target / ".aidev-po/docs/products-repo.md").read_text())
+        retro = (target / ".cursor/skills/po-retro/SKILL.md").read_text()
+        self.assertIn(".aidev-po/examples/", retro)
+        self.assertNotIn("worktree", retro)
+        self.assertNotIn("aidev-po checkout", retro)
+        tracer = (target / ".cursor/agents/tracer.md").read_text()
+        self.assertNotIn("git show", tracer)
+        self.assertIn(".cursor/skills/", tracer)
+        po = (target / ".cursor/agents/po.md").read_text()
+        self.assertIn(".cursor/skills/learning-loop/SKILL.md", po)
+        self.assertNotIn("`aidev-po` checkout", po)
+        loop = (target / ".cursor/skills/learning-loop/SKILL.md").read_text()
+        self.assertIn(".cursor/skills/po-retro/SKILL.md", loop)
+        # install.json records the source commit for version stamps. products-dir.py credits
+        # aidev-po in the products-repo README it writes. Schema $id values are identifiers.
+        # The worked example is copied as it stands, including one historical pull-request URL
+        # in its ledger. None of these is fetched to read an agent, skill, rule, template or script.
+        allowed = {".aidev-po/install.json", ".aidev-po/scripts/products-dir.py"}
+        for path in target.rglob("*"):
+            self.assertFalse(path.is_symlink(), path)
+            if not path.is_file():
+                continue
+            rel = path.relative_to(target).as_posix()
+            if rel in allowed or rel.startswith((".aidev-po/schemas/", ".aidev-po/examples/")):
+                continue
+            if rel.startswith((".cursor/", ".aidev-po/")):
+                self.assertNotIn(b"github.com/mitulamin/aidev-po", path.read_bytes(), rel)
+
     def test_installed_scripts_run_from_the_project(self):
         project = self.tmp / "project"
         self.assertEqual(self.new_project(project)[0], 0)
@@ -427,8 +582,12 @@ class Wizard(BootstrapCase):
         self.assertIn("aidev-po is ready in", out)
         self.assertIn("/po-start", out)
         self.assert_registered(target)
-        code, out, _ = self.run_cmd(BOOTSTRAP, target)
-        self.assertEqual(code, 0)
+        code, _, err = self.run_cmd(BOOTSTRAP, target, stdin="y\n")
+        self.assertNotEqual(code, 0)
+        self.assertIn("There are files in", err)
+        self.assertIn("--yes", err)
+        code, out, err = self.run_cmd(BOOTSTRAP, "--yes", target)
+        self.assertEqual(code, 0, err)
         self.assertIn("Nothing changed", out)
 
     def test_environment_variables_skip_the_questions(self):
@@ -442,7 +601,11 @@ class Wizard(BootstrapCase):
     def test_environment_variables_add_on_to_an_existing_project(self):
         project = self.copy_fixture("existing")
         before = snapshot(project)
-        code, out, err = self.run_cmd(BOOTSTRAP, AIDEV_PO_BOOTSTRAP_LOCATION=str(self.tmp), AIDEV_PO_BOOTSTRAP_NAME="existing")
+        code, _, err = self.run_cmd(BOOTSTRAP, AIDEV_PO_BOOTSTRAP_LOCATION=str(self.tmp), AIDEV_PO_BOOTSTRAP_NAME="existing", stdin="y\n")
+        self.assertNotEqual(code, 0)
+        self.assertIn("There are files in", err)
+        self.assertEqual(snapshot(project), before)
+        code, out, err = self.run_cmd(BOOTSTRAP, AIDEV_PO_BOOTSTRAP_LOCATION=str(self.tmp), AIDEV_PO_BOOTSTRAP_NAME="existing", AIDEV_PO_BOOTSTRAP_YES="1")
         self.assertEqual(code, 0, err)
         self.assertIn("Found ai-sdlc-loop", out)
         self.assert_untouched(before, project)
@@ -455,13 +618,37 @@ class Wizard(BootstrapCase):
         self.assert_registered(self.home / "answered")
         self.assertTrue((self.home / "answered" / ".git").exists())
 
-    def test_interactive_add_on_asks_first_and_no_changes_nothing(self):
+    def test_piped_add_on_does_not_ask_and_changes_nothing(self):
         project = self.copy_fixture("existing")
         before = snapshot(project)
-        code, out, err = self.run_cmd(BOOTSTRAP, stdin="1\nexisting\nn\n", HOME=str(self.tmp))
+        code, out, err = self.run_cmd(BOOTSTRAP, stdin="1\nexisting\ny\n", HOME=str(self.tmp))
         self.assertNotEqual(code, 0)
-        self.assertIn("Add aidev-po to it?", out)
+        self.assertNotIn("Are you sure you want me to work", out + err)
+        self.assertIn("There are files in", err)
+        self.assertIn("--yes", err)
         self.assertEqual(snapshot(project), before)
+
+    def test_tty_add_on_asks_and_honours_the_answer(self):
+        project = self.copy_fixture("existing")
+        before = snapshot(project)
+        code, out, _ = self.run_tty(BOOTSTRAP, stdin="1\nexisting\nn\n", HOME=str(self.tmp))
+        self.assertEqual(code, 0, out)
+        self.assertIn("There are files in", out)
+        self.assertIn("Are you sure you want me to work in this folder? [y/N]", out)
+        self.assertIn("Stopped without changing anything", out)
+        self.assertEqual(snapshot(project), before)
+        code, out, _ = self.run_tty(BOOTSTRAP, stdin="1\nexisting\ny\n", HOME=str(self.tmp))
+        self.assertEqual(code, 0, out)
+        self.assert_registered(project)
+
+    def test_tty_can_decline_git_init(self):
+        code, out, _ = self.run_tty(BOOTSTRAP, stdin="1\nnogit\nn\n", HOME=str(self.home))
+        self.assertEqual(code, 0, out)
+        self.assertIn("This folder isn't a Git repository. Initialise one? [Y/n]", out)
+        project = self.home / "nogit"
+        self.assert_registered(project)
+        self.assertFalse((project / ".git").exists())
+        self.assertIn("without a Git repository", out)
 
     def test_no_answers_stops_without_changing_anything(self):
         code, _, err = self.run_cmd(BOOTSTRAP, stdin="")
@@ -478,6 +665,9 @@ class Wizard(BootstrapCase):
         code, out, _ = self.run_cmd(BOOTSTRAP, "--help")
         self.assertEqual(code, 0)
         self.assertIn("AIDEV_PO_BOOTSTRAP_LOCATION", out)
+        self.assertIn("--yes", out)
+        self.assertIn("--git-init", out)
+        self.assertIn("--no-git-init", out)
         self.assertIn("ai-sdlc-loop", out)
 
 
@@ -495,13 +685,13 @@ class RealAiSdlcLoop(BootstrapCase):
         project = self.sdlc_bootstrap("sdlc-first")
         before = snapshot(project)
         self.assertIn(".cursor/rules/ai-sdlc-bootstrap.mdc", before)
-        code, out, err = self.new_project(project)
+        code, out, err = self.new_project(project, "--yes")
         self.assertEqual(code, 0, err)
         self.assertIn("Found ai-sdlc-loop already registered here", out)
         self.assert_untouched(before, project)
         self.assert_registered(project)
         mid, times = snapshot(project), mtimes(project)
-        self.assertEqual(self.new_project(project)[0], 0)
+        self.assertEqual(self.new_project(project, "--yes")[0], 0)
         self.assertEqual(snapshot(project), mid)
         self.assertEqual(mtimes(project), times)
 
