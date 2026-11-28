@@ -50,7 +50,7 @@ Not every node in the tree is the same sort of claim, and I try not to treat the
 
 Nodes about how the world works need evidence: observation, not deduction (Minoura, as the research page notes, says people answer from deduction and end up confused about which cause matters). I tag them Stated, Inferred or Assumed, as in [Philosophy](../philosophy.md). That page lists five tags, so Simulated and Validated also exist; Validated means I have checked it against something observed, so I use it only when I have.
 
-Value leaves need honesty, not proof. "I prefer readability" is not something I can test in a lab. What I can do is say it truthfully and not dress it up as a fact about the world.
+Value leaves need honesty, not proof. "I would rather protect the next person to change the code" is not something I can test in a lab. What I can do is say it truthfully and not dress it up as a fact about the world.
 
 ## Deciding at the leaf, and turning it into a rule
 
@@ -68,11 +68,12 @@ Here is one from my own preferences, as an illustration. The starting want: *I p
       - **Why does that matter?** Because I would rather ownership of the code was shared. *Leaf: a value, shared ownership.*
   - **Why?** Because when I read compact, clever code I slow down and trust it less.
     - **Why does that matter?** Because I make fewer mistakes changing code I understood in one pass.
-      - **Why does that matter?** Because I weigh being clear above being short. *Leaf: a bias, towards readability over complexity.*
+      - **Why does that matter?** Because compact, clever code hides its assumptions, and the reader fills them in without noticing. Whoever changes it later, maybe at midnight with something broken, pays for any wrong guess.
+        - **Why does that matter?** Because I would rather pay for a few extra lines now than hand the next person a hidden risk. *Leaf: a value, protecting whoever changes the code next.*
 
-Two branches, two different leaves. One is a value about how a team should work. The other is a bias about my own reading. Neither is wrong, but they are different kinds of thing, and I would handle them differently.
+Two branches, two different leaves. One is about how a team should work: shared ownership. The other is about who carries the risk: the next person to change the code. Both are values, and they usually agree, but they would not always. Shared ownership can be met with good documentation, while protecting the next person asks for clarity in the code itself.
 
-The decision: yes, I am biased towards readability over complexity, and therefore I prefer verbose code if it makes understanding easier. The cost is more lines to read through, and I accept that. As a rule, it is "prefer readability over complexity". If I caught myself writing compact code in a throwaway script, I would ask whether that was a mood or a finer distinction. If it was a finer distinction, the rule would get more precise.
+The decision: yes, I will spend extra lines to make assumptions visible, because I would rather pay that cost now than leave the risk with whoever changes the code next. The cost is more lines to read through, and I accept that. As a rule, it is "make assumptions visible, even if it takes more lines". If I caught myself writing compact code in a throwaway script, I would ask whether that was a mood or a finer distinction. A throwaway script may have no next person, and if so the rule gets more precise: "make assumptions visible in code someone else will change".
 
 ## When two leaves conflict
 
