@@ -175,6 +175,7 @@ What aidev-po takes from this: five is a rule of thumb and not a rule (Serrat), 
 - [TextGrad (2024)](https://arxiv.org/abs/2406.07496), arXiv.
 - [Postmortem culture: learning from failure](https://sre.google/sre-book/postmortem-culture/), Google SRE. Blameless postmortems.
 - [5 Whys analysis](https://www.atlassian.com/team-playbook/plays/5-whys), Atlassian.
+- [Asking why until you hit a value: my take on the 5 whys](research/five-whys-tree.md), Mitul Amin. A branching tree of whys that ends at values, preferences and biases.
 
 ### Root-cause questioning (5 whys)
 
