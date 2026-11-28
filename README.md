@@ -58,7 +58,7 @@ The scripts need only Python 3. With `jsonschema` installed they also check each
 
 Open the folder in Cursor and run `/po-start` (every command starts with `/po-`: `/po-continue`, `/po-gate`, `/po-idea` to `/po-fsd`, and `/po-feedback`, `/po-rerun-from`, `/po-retro` for the learning loop), or tell your agent to follow [AGENTS.md](AGENTS.md) and act as `po`. `po` finds your products repo, lists your products, and asks whether to continue one or start a new one. Full steps in [docs/quick-start.md](docs/quick-start.md).
 
-To install aidev-po into a project of your own, a new one or one that already uses ai-sdlc-loop, run `./scripts/bootstrap.sh [project-folder]`. It adds aidev-po alongside whatever is there and changes nothing that is already there; running it again changes nothing. See [docs/bootstrap.md](docs/bootstrap.md).
+To install aidev-po into a project of your own, a new one or one that already uses ai-sdlc-loop, run `./scripts/bootstrap.sh [project-folder]`. A folder that already has files is confirmed first (`--yes` when you are not asked). It adds aidev-po alongside whatever is there and changes nothing that is already there; running it again changes nothing. See [docs/bootstrap.md](docs/bootstrap.md).
 
 ## Your products live in their own repo
 

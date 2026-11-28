@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "note": "Where scripts/install-harness.py puts aidev-po in a project, per coding harness. The same shape as ai-sdlc-loop's data/harnesses.json. Cursor is the only harness today (scripts/build-agents.py generates only .cursor/); another harness is another entry here plus its generator.",
+  "note": "Where scripts/install-harness.py puts aidev-po in a project, per coding harness. The same shape as ai-sdlc-loop's data/harnesses.json. Cursor is the only harness today (scripts/build-agents.py generates only .cursor/); another harness is another entry here plus its generator. The installer copies the texts into the project. It does not symlink them and it does not point the installed agents at this checkout.",
   "shared_dir": ".aidev-po",
   "attribution": "aidev-po",
   "repo_url": "https://github.com/mitulamin/aidev-po",

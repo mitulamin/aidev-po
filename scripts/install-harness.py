@@ -30,8 +30,15 @@ first. It never touches AGENTS.md, .ai-sdlc/ (the register included), another to
 MCP configuration, hooks, or editor settings.
 
 Idempotent. A file that is already there with the same bytes is skipped. A file aidev-po wrote earlier
-and has not been edited since is updated. Any other existing file is a clash: the installer refuses and
-writes nothing at all. Files aidev-po wrote before, that are no longer part of it and are unedited, are removed.
+and has not been edited since is updated. A file aidev-po wrote that has since been edited is a local
+edit: the installer stops, names each edited path, and writes nothing. Any other existing file is a
+clash: the installer refuses and writes nothing at all. Files aidev-po wrote before, that are no longer
+part of it and are unedited, are removed.
+
+The copy is self-contained. Agents, skills, the rule, templates, scripts, schemas, the two docs and the
+worked example are written into the project as ordinary files. Nothing is a symlink, and the installed
+text does not point at the aidev-po checkout to read those texts. Licence texts are copied with them:
+GPL-3.0 for scripts and schemas, CC BY-SA 4.0 for the writing, MIT for templates and the rule.
 """
 import hashlib
 import json
@@ -53,6 +60,56 @@ SDLC_LEGACY_RULE = ".cursor/rules/ai-sdlc-bootstrap.mdc"
 SDLC_PROVENANCE = "<!-- Installed from ai-sdlc-loop"
 RENAME_SKIP_AFTER = "ai-sdlc-loop's "
 TEXT_SUFFIXES = {".md", ".mdc"}
+SOURCE_NOTICE_URL = "https://github.com/mitulamin/aidev-po/blob/main/NOTICE.md"
+# Installed copies read the texts in the project. These replacements run before path rewriting.
+LOCALISE = (
+    ("outside the `aidev-po` checkout", "outside this project"),
+    ("inside the `aidev-po` checkout", "inside this project"),
+    ("Never store product files inside `aidev-po` itself", "Never store product files inside this project"),
+    (
+        "`git show <version>:skills/<name>/SKILL.md` in the aidev-po checkout.",
+        "the copies in this project (`.cursor/skills/<name>/SKILL.md`, `.cursor/agents/<name>.md`, "
+        "`.aidev-po/templates/`). Their version is `source.sha` in `.aidev-po/install.json`.",
+    ),
+    (
+        "never in the products repo or the live aidev-po checkout.",
+        "never in the products repo. Use a scratch copy of the files in this project.",
+    ),
+    (
+        "a scratch git worktree of aidev-po with the diff applied; never the live checkout or the products repo",
+        "a scratch copy of the worked example in `.aidev-po/examples/`, with the diff applied; never the products repo",
+    ),
+    (
+        "in the aidev-po checkout, on a new branch `learn/<retro-id>`, make the edit to the source in "
+        "`agents/`, `skills/`, `commands/`, `templates/` or `scripts/`, run `python3 scripts/build-agents.py` "
+        "and the tests, and commit only with the user's OK. The commit message describes the change, never "
+        "the client or product. Never push unless asked; the user opens a pull request to aidev-po if they "
+        "want it upstream.",
+        "edit the copies installed in this project (`.cursor/agents/`, `.cursor/skills/`, "
+        "`.aidev-po/templates/` and `.aidev-po/scripts/`), and commit only with the user's OK. The commit "
+        "message describes the change, never the client or product. Never push unless asked. The texts "
+        "this project runs are these copies.",
+    ),
+    ("outside the aidev-po checkout", "outside this project"),
+    (
+        "Change aidev-po itself only for an accepted global edit, on a new branch, with the user's OK to "
+        "commit. Never put client words or product names in an aidev-po commit.",
+        "A global edit changes the copies installed in this project (`.cursor/` and `.aidev-po/`), and only "
+        "with the user's OK to commit. Never put client words or product names in that commit.",
+    ),
+)
+INSTALLED_NOTICE = """# Licences for the files this install copied
+
+aidev-po copied these files into this project. The copies keep the licences they have in aidev-po. Nothing here relicensed them, and nothing here covers files aidev-po did not install. Your own project files, and your products repo, stay yours.
+
+| Installed paths | Licence | Text |
+|-----------------|---------|------|
+| `.aidev-po/scripts/`, `.aidev-po/schemas/` | GPL-3.0 | [LICENSE](LICENSE) |
+| `.cursor/agents/`, `.cursor/skills/`, `.aidev-po/docs/`, `.aidev-po/examples/` | CC BY-SA 4.0, copyright Shravi Limited and contributors | [LICENSE-CONTENT](LICENSE-CONTENT) |
+| `.aidev-po/templates/`, `.cursor/rules/aidev-po-bootstrap.mdc` | MIT | [templates/LICENSE](templates/LICENSE) |
+
+`.aidev-po/aidev-po.local.json` (or `AIDEV_PO_PRODUCTS_DIR`) records where your products repo is. It is not used to read the texts above.
+"""
 
 
 def load_harnesses():
@@ -130,18 +187,35 @@ class Installer:
             return names[m.group(1)]
         return pattern.sub(sub, text)
 
+    def localise(self, text):
+        """Point the installed copy at the texts in this project, not at an aidev-po checkout."""
+        for old, new in LOCALISE:
+            text = text.replace(old, new)
+        return text
+
     def rewrite_paths(self, text):
-        """Point scripts/, schemas/ and templates/ (and two docs) at the installed copies in .aidev-po/."""
+        """Point scripts/, schemas/, templates/, docs, examples and skills at the installed copies."""
         rw = self.h["rewrite"]
         text = re.sub(r"(?<![\w/.-])(" + "|".join(map(re.escape, rw["dirs"])) + r")/", rf"{self.shared}/\1/", text)
         docs = "|".join(map(re.escape, rw["docs"]))
         text = re.sub(rf"(?<![\w/.-])docs/({docs})", rf"{self.shared}/docs/\1", text)
-        return re.sub(r"(?<![\w/.-])examples/", f"{self.doc['repo_url']}/tree/{self.ref}/examples/", text)
+        text = re.sub(r"(?<![\w/.-])examples/", f"{self.shared}/examples/", text)
+        text = re.sub(r"(?<![\w/.-])skills/", ".cursor/skills/", text)
+        commands = ROOT / "commands"
+        if commands.is_dir():
+            for path in sorted(commands.glob("*.md")):
+                if path.name == "README.md":
+                    continue
+                text = text.replace(f"commands/{path.name}", f".cursor/skills/po-{path.stem}/SKILL.md")
+        return text
 
     def harness_copy(self, text):
         """Rename and rewrite paths, except on the GENERATED marker line, which stays as it is."""
         lines = text.split("\n")
-        return "\n".join(l if l.startswith(MARKER_PREFIX) else self.rewrite_paths(self.rename(l)) for l in lines)
+        return "\n".join(
+            line if line.startswith(MARKER_PREFIX) else self.rewrite_paths(self.rename(self.localise(line)))
+            for line in lines
+        )
 
     def plan(self):
         """{project-relative path: bytes} for everything this harness installs."""
@@ -171,11 +245,24 @@ class Installer:
         for sub in ("schemas", "templates"):
             for path in sorted(p for p in (ROOT / sub).rglob("*") if p.is_file()):
                 rel = path.relative_to(ROOT / sub).as_posix()
-                if sub == "templates" and (rel.startswith("bootstrap/") or rel == "LICENSE"):
+                if sub == "templates" and rel.startswith("bootstrap/"):
                     continue
+                # Copy bytes, including through a source symlink, and never store a link.
                 files[f"{self.shared}/{sub}/{rel}"] = path.read_bytes()
         for name in rt["docs"]:
-            files[f"{self.shared}/docs/{name}"] = (ROOT / "docs" / name).read_bytes()
+            text = (ROOT / "docs" / name).read_text(encoding="utf-8")
+            text = text.replace(SOURCE_NOTICE_URL, "../NOTICE.md")
+            files[f"{self.shared}/docs/{name}"] = text.encode("utf-8")
+        examples = ROOT / "examples"
+        if examples.is_dir():
+            for path in sorted(p for p in examples.rglob("*") if p.is_file()):
+                rel = path.relative_to(examples).as_posix()
+                if ".git" in Path(rel).parts:
+                    continue
+                files[f"{self.shared}/examples/{rel}"] = path.read_bytes()
+        files[f"{self.shared}/LICENSE"] = (ROOT / "LICENSE").read_bytes()
+        files[f"{self.shared}/LICENSE-CONTENT"] = (ROOT / "LICENSE-CONTENT").read_bytes()
+        files[f"{self.shared}/NOTICE.md"] = INSTALLED_NOTICE.encode("utf-8")
         files[f"{self.shared}/.gitignore"] = b"# Where the products repo is, on this machine only.\naidev-po.local.json\n"
 
         if self.overlay:
@@ -225,25 +312,41 @@ def install(project, harness_id, overlay=None):
 
     previous = read_manifest(root, inst.shared)
     others = detect_tools(root)
-    clashes, writes, unchanged = [], {}, []
+    edited, clashes, writes, unchanged = [], [], {}, []
     for rel, data in sorted(files_with_manifest.items()):
-        path = (root / rel).resolve()
-        if not path.is_relative_to(root):
+        dest = root / rel
+        owned = rel in previous and rel != manifest_rel
+        if dest.is_symlink():
+            (edited if owned else clashes).append(rel)
+            continue
+        if not dest.resolve().is_relative_to(root):
             raise SystemExit(f"{rel} is outside {project}")
-        if path.is_symlink() or (path.exists() and not path.is_file()):
-            clashes.append(rel)
-        elif not path.exists():
+        if dest.exists() and not dest.is_file():
+            (edited if owned else clashes).append(rel)
+        elif not dest.exists():
             writes[rel] = data
-        elif path.read_bytes() == data:
+        elif dest.read_bytes() == data:
             unchanged.append(rel)
-        elif rel in previous and sha256(path.read_bytes()) == previous[rel]:
+        elif rel in previous and sha256(dest.read_bytes()) == previous[rel]:
             writes[rel] = data
         elif rel == manifest_rel and previous:
             writes[rel] = data
+        elif owned:
+            edited.append(rel)
         else:
             clashes.append(rel)
-    if clashes:
-        raise SystemExit("Refusing to overwrite files that are not aidev-po's, so I have changed nothing: " + ", ".join(clashes))
+    if edited or clashes:
+        parts = []
+        if edited:
+            parts.append(
+                "I detected local edits to aidev-po's own files. "
+                "I halted rather than overwrite them, and nothing was written:\n" + "\n".join(edited)
+            )
+        if clashes:
+            parts.append(
+                "Refusing to overwrite files that are not aidev-po's, so I have changed nothing: " + ", ".join(clashes)
+            )
+        raise SystemExit("\n".join(parts))
 
     stale = [rel for rel, digest in previous.items() if rel not in files_with_manifest
              and (root / rel).is_file() and sha256((root / rel).read_bytes()) == digest]
