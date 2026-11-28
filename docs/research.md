@@ -60,7 +60,11 @@ This is what the research recommends. The stage templates use a subset of it; th
 
 ### Root-cause questioning: the 5 whys
 
-The 5 whys is the habit of asking "why" of each answer until you reach a cause you can act on. aidev-po borrows it in two places: the `learn-edits` skill runs five whys to a condition at `/po-retro`, and product discovery uses the same questioning to get from a stated want to the need and values behind it (see [Philosophy](philosophy.md)). The Toyota sources below describe it for finding the cause of a failure; asking it of a want is aidev-po's adaptation, not Toyota's.
+The 5 whys is the habit of asking "why" of each answer. The Toyota sources below describe it for finding the cause of a failure. Asking it of a want, to reach the need and values behind it, is aidev-po's adaptation, not Toyota's, and it has a different stopping rule.
+
+**Two stopping rules**
+
+Ohno stops at a cause you can fix. The tree essay ([Asking why until you hit a value](research/five-whys-tree.md)) stops at a value, preference or bias you can own. These are different stopping rules, and aidev-po uses each one where it fits: the first for faults, the second for wants. The `learn-edits` skill already uses the first, running five whys to a condition at `/po-retro`. Where the second fits into the stages is not settled yet; the essay says so too. See [Philosophy](philosophy.md).
 
 **Where it comes from**
 
@@ -79,13 +83,23 @@ The 5 whys is the habit of asking "why" of each answer until you reach a cause y
 
 | Limit | What the sources say |
 |-------|----------------------|
-| One causal chain | Card (2017): it forces one analytical pathway and one root cause. In his wristband example another team could produce "five wholly different and equally valid" whys, and a causal tree found over 75 causes and contributing factors against the one or two a chain would find. Card's target is healthcare incident analysis, where he argues it should be dropped; he still sees value as a teaching example. |
-| Stops at what the asker knows | Serrat (2009): critics cite investigators who stop at symptoms and who cannot "cast their minds beyond current information and knowledge". |
-| Results differ between people | Serrat: different teams have come up with different causes for the same problem. Card makes the same point. |
+| One causal chain | Card (2017): it forces one analytical pathway and one root cause (see "Chain or tree" below for how far that holds). In his wristband example another team could produce "five wholly different and equally valid" whys, and a causal tree found over 75 causes and contributing factors against the one or two a chain would find. Card's target is healthcare incident analysis, where he argues it should be dropped; he still sees value as a teaching example. |
+| Stops at what the asker knows | Serrat (2009): critics cite investigators who stop at symptoms and who cannot "cast their minds beyond current information and knowledge". That is investigator bias: the chain can only hold causes the asker already thinks to look for. The name is ours; Serrat does not use it. |
+| Results differ between people | Serrat: different teams have come up with different causes for the same problem. Card makes the same point. A likely ingredient is confirmation bias: an asker tends to accept the answers that fit the cause they already suspect, so two people who start from different suspicions end at different roots. That is our reading; none of the sources opened names it. |
 | Deduction instead of observation | Minoura (2003) says the method works less well than it should because people answer from deduction, "reel off five causes as quick as a flash", and then so many causes come back that "you end up totally confused as to which of them is important". His remedy is on-the-spot observation and training, not dropping the method. |
 | Drift into blame | Serrat notes that when a problem appears "the temptation is strong to blame others or external events". Atlassian's 5 whys play opens the session with "We're here to investigate, not to blame", and Google SRE's postmortem practice is explicitly blameless. I found no study that measures this drift for the 5 whys, so treat it as a recognised risk and a convention. |
 
-What aidev-po takes from this: five is a habit and not a rule (Serrat, the Lean Enterprise Institute), so branch and stop when the answer is something you can act on; check each answer against the evidence and tag it (Stated, Inferred, Assumed) instead of deducing; let someone other than the asker review the chain in a fresh context; and end on a condition, never a person.
+**Chain or tree**
+
+- The single-chain problem comes from Ohno's published examples and from common practice, not from every account of the method. The examples I could open are single chains: Toyota's welding robot, and the stopped machine the Lean Enterprise Institute cites from Ohno 1988, p. 17. Atlassian's play collects several answers at each step but has the team choose one to carry forward, so it ends as a single chain. Card says the two-pathway practice he describes "is not how use of the tool has generally been taught in the healthcare industry". I could not open Ohno's book, so I cannot say it never branches.
+- Serrat (2009) already branches. His process has the team record every sensible answer to the first why ("There will probably be three or four sensible answers") and ask the next why "for every statement", posting each answer near its parent and following up "all plausible answers". Minoura describes the same at Toyota: he asks "five whys again for each of the causes they came up with", and finds that so many causes come back that it is hard to tell which matters. His worked example, the Amazon conveyor case, is still a single chain.
+
+**Depth is not the target**
+
+- Card (2017) says the fifth, most distal why is not automatically the best place to intervene. He says there is "no logical reason to assume that this is always the most effective or most efficient target for intervention", and that "Appropriate targets for intervention may occur anywhere along the causal continuum". His example is a proximate fix, a forcing function on the wristband check, that would make the distal causes moot. He also says distal causes can be worth acting on, for culture or as quick wins. His subject is fixing faults.
+- For discovery that carries over as our inference, not Card's claim: a need halfway down the tree may be the real requirement, not only the leaf. The leaf says what the asker values or prefers; the requirement may sit higher up. Which one to build from is a decision, and the register should record it as one.
+
+What aidev-po takes from this: five is a rule of thumb and not a rule (Serrat), so branch, and stop where the stopping rule for that kind of question says to; check each answer against the evidence and tag it (Stated, Inferred, Assumed) instead of deducing; let someone other than the asker review the chain or tree in a fresh context, which is the main guard against investigator and confirmation bias; and never end on a person, only on a condition or a value.
 
 ## Sources
 
@@ -164,7 +178,7 @@ What aidev-po takes from this: five is a habit and not a rule (Serrat, the Lean 
 
 ### Root-cause questioning (5 whys)
 
-- [Toyota Production System: Beyond Large-Scale Production](https://archive.org/details/toyotaproduction0000onot), Taiichi Ohno, Productivity Press, Cambridge, MA, 1988, ISBN 0-915299-14-3. Internet Archive record. Lending-only; not opened. Cited through Card (p. 123) and the Lean Enterprise Institute (p. 17).
+- [Toyota Production System: Beyond Large-Scale Production](https://archive.org/details/toyotaproduction0000onot), Taiichi Ohno, Productivity Press, Cambridge, MA, 1988, ISBN 0-915299-14-3 (Card's citation gives Portland, OR). Internet Archive record, which gives Cambridge, Mass. Lending-only; not opened. Cited through Card (p. 123) and the Lean Enterprise Institute (p. 17).
 - [トヨタ生産方式: 脱規模の経営をめざして](https://ndlsearch.ndl.go.jp/books/R100000002-I000001376735), 大野耐一 (Taiichi Ohno), Diamond-sha, 1978. National Diet Library catalogue record for the Japanese original.
 - ["Ask 'why' five times about every matter."](http://web.archive.org/web/20190326100957/https://www.toyota-global.com/company/toyota_traditions/quality/mar_apr_2006.html), Toyota Traditions, Toyota Motor Corporation, March 2006. Archived copy; the original address now redirects to Toyota's company page. The welding-robot example.
 - [The Story of Sakichi Toyoda](https://www.toyota-industries.com/company/history/toyoda_sakichi/), Toyota Industries Corporation. His looms, and the 1935 Toyoda Precepts.
