@@ -27,6 +27,7 @@ End both `01-idea.md` and your report with:
 === REGISTER REQUESTS ===
 [ASSUMPTION: <one-line statement>]
 [QUESTION: <one-line statement (include recommended answer)>]
+[BLOCKER: <one-line statement>]
 [DECISION: <one-line statement>]
 === END REGISTER REQUESTS ===
 ```

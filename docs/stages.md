@@ -125,7 +125,7 @@ Where a stage reviewer finds problems, the producer revises in a fresh context, 
 
 Every item carries its evidence tag and upstream IDs, so each requirement traces back to a goal, an actor and a source.
 
-**Handoff:** `08-handoff-gate.md` is the brief for ai-sdlc-loop's `/plan`. It has a readiness checklist (reviewer, evidence auditor and challenger all clear, no high-urgency open questions), the goal and slice 1 scope, the locked decisions, the non-goals, an index of acceptance criteria, the `/plan` command with `--register` pointing at a copy of the product's register in the gate bundle (so locked decisions carry over), and the plan for the **gate PR**. No PR is opened and nothing is pushed in an engineering repo without your explicit OK.
+**Handoff:** `08-handoff-gate.md` is the brief for ai-sdlc-loop's `/plan`. It has a readiness checklist (reviewer, evidence auditor and challenger all clear, no open blockers or high-urgency open questions), the goal and slice 1 scope, the locked decisions, the non-goals, an index of acceptance criteria, the `/plan` command with `--register` pointing at a copy of the product's register in the gate bundle (so locked decisions carry over; the register format is shared with ai-sdlc-loop, and engineering's entries are merged back with `scripts/register.py merge`), and the plan for the **gate PR**. No PR is opened and nothing is pushed in an engineering repo without your explicit OK.
 
 **Gate:** you approve the FSD and the gate PR plan.
 

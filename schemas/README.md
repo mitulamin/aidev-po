@@ -4,7 +4,7 @@ JSON Schema (draft 2020-12) for the files agents write into a product folder. Co
 
 | Schema | Status | File | What |
 |--------|--------|------|------|
-| [register.schema.json](register.schema.json) | draft | `<product>/.po/register.jsonl` | The shared register: open questions, assumptions, decisions, and feedback and attribution entries. |
+| [register.schema.json](register.schema.json) | draft | `<product>/.po/register.jsonl` | The shared register: open questions, assumptions, blockers, decisions, and feedback and attribution entries. One taxonomy with ai-sdlc-loop (DEC-002). |
 | [trace.schema.json](trace.schema.json) | draft | `<product>/.po/traces.jsonl` | Where each output item came from: write, review and remove lines. |
 | [feedback.schema.json](feedback.schema.json) | draft | `<product>/.po/feedback.jsonl` | User feedback on an output: severity P0 to P3, nine categories. |
 | [attribution.schema.json](attribution.schema.json) | draft | `<product>/.po/attributions.jsonl` | The tracer's finding: origin, carriers, cause, confidence, alternatives. |
@@ -13,7 +13,24 @@ JSON Schema (draft 2020-12) for the files agents write into a product folder. Co
 | [scorecard.schema.json](scorecard.schema.json) | draft | `<products repo>/.po/scorecard.json` | Per-skill scores and per-run measures. |
 | [product-state.schema.json](product-state.schema.json) | draft | `<product>/.po/state.json` | Where a product stands: depth (`thin` or `full`), current and completed stages, last run. |
 
-All `.jsonl` files are JSON Lines, UTF-8 and append-only: never edit or delete a line. The register follows [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop)'s surface register: declare and update lines, ids `r-<UTC timestamp>-<4 hex>`, current status is the latest update for an id. Feedback, attribution, rerun and ledger files keep the latest line for an id as its current state; a change is a full new line with the same id.
+All `.jsonl` files are JSON Lines, UTF-8 and append-only: never edit or delete a line. The register follows [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop)'s surface register: declare and update lines, ids `r-<UTC timestamp>-<4 hex>`, current status is the latest update for an id.
+
+## The shared register taxonomy
+
+aidev-po and ai-sdlc-loop use one register taxonomy, so a register goes to ai-sdlc-loop in the gate bundle and comes back, and both checkers pass it ([DEC-002](../docs/decisions.md)). ai-sdlc-loop's contract (`data/agent-contract.json`, `register`) is the baseline; aidev-po's additions are the optional **aidev-po extension**, listed in `register.extensions` there and in `x-extension` here.
+
+| What | Shared baseline | aidev-po extension |
+|------|-----------------|--------------------|
+| Field for where a line belongs | `phase`, any non-empty string | aidev-po writes its stage, lower case: `idea` ... `fsd`. ai-sdlc-loop writes `Plan`, `Design`, ... or `all`. |
+| `type` | `assumption`, `question`, `blocker` | `decision`, `feedback`, `attribution` |
+| `status` | `open`, `surfaced`, `answered`, `dismissed`, `duplicate` | `decided`, `superseded` |
+| `by` on an update | `coordinator`, `human` (the user) | none |
+| Optional declare fields | `impact`, `urgency`, `recommendation`, `via` | `item_ids` (array), `record` (`FB-`/`AT-` id, required for feedback and attribution) |
+| Optional update fields | `note`, `answer`, `by`, `impact`, `urgency` | none |
+| `id`, `ts`, `impact`, `urgency`, `via` | same in both | none |
+| Register-request block | `ASSUMPTION`, `QUESTION`, `BLOCKER` lines between the same delimiters | `DECISION` lines (aidev-po agents only) |
+
+`scripts/register.py merge --from <bundle>/register.jsonl` brings engineering's lines back into a product register; `scripts/register.py migrate --write` rewrites a register written before DEC-002 (`stage` to `phase`, `by: "user"` to `"human"`). `tests/test_shared_register.py` runs a vendored copy of ai-sdlc-loop's checker (`tests/vendor/ai-sdlc-loop/`) on every register here, and aidev-po's checker on lines ai-sdlc-loop writes. Feedback, attribution, rerun and ledger files keep the latest line for an id as its current state; a change is a full new line with the same id.
 
 ## IDs
 

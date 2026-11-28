@@ -2,8 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/mitulamin/aidev-po/schemas/register.schema.json",
   "title": "Shared register line",
-  "description": "One line of a product's register: open questions, assumptions and decisions. JSON Lines, UTF-8, append-only, one object per line, stored in the product folder (default .po/register.jsonl). Never edit or delete a line; a change of state is a new update line. Same shape as ai-sdlc-loop's surface register, with decision added and blocker left out (a blocker is a question with urgency high). Validate each line against this schema.",
+  "description": "One line of a product's register: open questions, assumptions, blockers and decisions. JSON Lines, UTF-8, append-only, one object per line, stored in the product folder (default .po/register.jsonl). Never edit or delete a line; a change of state is a new update line. One taxonomy with ai-sdlc-loop's shared surface register (DEC-002 in docs/decisions.md): the baseline is the register section of ai-sdlc-loop's data/agent-contract.json, and everything aidev-po adds is the optional aidev-po extension, marked x-extension below, which ai-sdlc-loop's checker accepts too. So a register can be handed to ai-sdlc-loop and back, and both checkers pass it. Validate each line against this schema.",
   "x-status": "draft",
+  "x-baseline": "https://github.com/mitulamin/ai-sdlc-loop/blob/main/data/agent-contract.json (register)",
+  "x-extension": {
+    "name": "aidev-po",
+    "types": ["decision", "feedback", "attribution"],
+    "statuses": ["decided", "superseded"],
+    "declare_fields": ["item_ids", "record"]
+  },
   "oneOf": [
     { "$ref": "#/$defs/declare" },
     { "$ref": "#/$defs/update" }
@@ -16,21 +23,25 @@
     "ts": {
       "type": "string",
       "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
       "description": "UTC, RFC 3339, for example 2026-11-27T22:30:00Z"
     },
-    "stage": {
-      "enum": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd"]
+    "phase": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The part of the work the line belongs to. aidev-po writes its stage here, as the lower-case stage name: idea, audience, actors, systems, scope, workshops, presentations or fsd. ai-sdlc-loop writes its phase name (for example Plan or Build, or all on a coordinator update). Any non-empty string is valid, so lines from either tool pass.",
+      "examples": ["idea", "audience", "actors", "systems", "scope", "workshops", "presentations", "fsd", "Plan", "all"]
     },
     "level": {
       "enum": ["low", "medium", "high"]
     },
     "status": {
       "enum": ["open", "surfaced", "answered", "dismissed", "duplicate", "decided", "superseded"],
-      "description": "open: declared, not yet looked at. surfaced: put in front of the user. answered: the user answered, or confirmed or rejected the assumption. dismissed: settled from the evidence, reason in note. duplicate: same as the entry in ref. decided: a decision in force. superseded: a decision replaced by a later one, named in ref."
+      "description": "Baseline: open: declared, not yet looked at. surfaced: put in front of the human. answered: the human answered, or confirmed or rejected the assumption. dismissed: settled from the evidence, reason in note. duplicate: same as the entry in ref. aidev-po extension: decided: a decision in force. superseded: a decision replaced by a later one, named in ref."
     },
     "declare": {
       "type": "object",
-      "required": ["id", "event", "ts", "agent", "stage", "type", "text", "status"],
+      "required": ["id", "event", "ts", "agent", "phase", "type", "text", "status"],
       "additionalProperties": false,
       "if": { "properties": { "type": { "enum": ["feedback", "attribution"] } } },
       "then": { "required": ["record"] },
@@ -39,44 +50,44 @@
         "event": { "const": "declare" },
         "ts": { "$ref": "#/$defs/ts" },
         "agent": { "type": "string", "minLength": 1 },
-        "stage": { "$ref": "#/$defs/stage" },
+        "phase": { "$ref": "#/$defs/phase" },
         "type": {
-          "enum": ["assumption", "question", "decision", "feedback", "attribution"],
-          "description": "assumption: decided without being able to confirm it. question: could not settle it, wants an answer, ideally with a recommended answer in text. decision: a choice made, by the user or by po on the user's behalf, including a user overruling the challenger. feedback: the user's feedback on an output (learning loop), full record in .po/feedback.jsonl, named in record. attribution: the tracer's finding for a feedback line, full record in .po/attributions.jsonl, named in record; answered with answer confirmed or rejected once the user has seen it."
+          "enum": ["assumption", "question", "blocker", "decision", "feedback", "attribution"],
+          "description": "Baseline: assumption: decided without being able to confirm it. question: could not settle it, wants an answer, ideally with a recommended answer in text. blocker: stops the work, or stops it being done correctly, until resolved. aidev-po extension: decision: a choice made, by the user or by po on the user's behalf, including a user overruling the challenger; binding downstream. feedback: the user's feedback on an output (learning loop), full record in .po/feedback.jsonl, named in record. attribution: the tracer's finding for a feedback line, full record in .po/attributions.jsonl, named in record; answered with answer confirmed or rejected once the user has seen it."
         },
         "record": {
           "type": "string",
           "pattern": "^(FB|AT)-[0-9]{3,}$",
-          "description": "For types feedback and attribution: the id of the full record."
+          "description": "aidev-po extension. For types feedback and attribution (required for them): the id of the full record."
         },
         "text": { "type": "string", "minLength": 1, "description": "One-line statement, verbatim from the agent's register request." },
         "status": { "const": "open" },
         "impact": { "$ref": "#/$defs/level", "description": "What goes wrong if this is wrong." },
-        "urgency": { "$ref": "#/$defs/level", "description": "How soon the user's view is needed." },
+        "urgency": { "$ref": "#/$defs/level", "description": "How soon the human's view is needed." },
         "recommendation": { "type": "string" },
         "item_ids": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Stable IDs of the output items this entry is about, so traces can link to it (trace.schema.json)."
+          "items": { "type": "string", "minLength": 1 },
+          "description": "aidev-po extension. Stable IDs of the output items this entry is about (trace.schema.json)."
         },
         "via": { "enum": ["agent", "coordinator"] }
       }
     },
     "update": {
       "type": "object",
-      "required": ["id", "event", "ts", "agent", "stage", "ref", "status"],
+      "required": ["id", "event", "ts", "agent", "phase", "ref", "status"],
       "additionalProperties": false,
       "properties": {
         "id": { "$ref": "#/$defs/id" },
         "event": { "const": "update" },
         "ts": { "$ref": "#/$defs/ts" },
         "agent": { "type": "string", "minLength": 1 },
-        "stage": { "$ref": "#/$defs/stage" },
+        "phase": { "$ref": "#/$defs/phase" },
         "ref": { "$ref": "#/$defs/id", "description": "The id of the entry this line changes." },
         "status": { "$ref": "#/$defs/status" },
         "note": { "type": "string" },
         "answer": { "type": "string" },
-        "by": { "enum": ["coordinator", "user"] },
+        "by": { "enum": ["coordinator", "human"], "description": "human is the person aidev-po calls the user." },
         "impact": { "$ref": "#/$defs/level" },
         "urgency": { "$ref": "#/$defs/level" }
       }

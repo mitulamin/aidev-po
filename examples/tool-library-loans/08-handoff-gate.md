@@ -14,7 +14,7 @@
 - [x] `fsd-reviewer`: `Verdict: PASS` (zero P0/P1 findings), first on 2026-11-03 and again after rerun RR-001 on 2026-11-12
 - [x] `evidence-auditor`: `Verdict: PASS` (zero untagged or unsourced claims)
 - [x] `challenger`: all challenges resolved or recorded as decisions
-- [x] `.po/register.jsonl`: zero `open` or `surfaced` high-urgency questions (`scripts/register.py list --open`)
+- [x] `.po/register.jsonl`: zero `open` or `surfaced` blockers or high-urgency questions (`scripts/register.py list --open`)
 
 ## 2. Brief for `ai-sdlc-loop` `/plan`
 

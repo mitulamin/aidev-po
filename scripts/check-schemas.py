@@ -16,16 +16,22 @@ STATUSES = {"draft", "stub", "stable"}
 
 REGISTER_OK = [
     {"id": "r-20261127223000-ab12", "event": "declare", "ts": "2026-11-27T22:30:00Z", "agent": "audience-producer",
-     "stage": "audience", "type": "question", "text": "Who pays? Recommend: the clinic manager.", "status": "open"},
+     "phase": "audience", "type": "question", "text": "Who pays? Recommend: the clinic manager.", "status": "open"},
     {"id": "r-20261127223100-cd34", "event": "update", "ts": "2026-11-27T22:31:00Z", "agent": "po",
-     "stage": "audience", "ref": "r-20261127223000-ab12", "status": "answered", "answer": "Clinic manager.", "by": "user"},
+     "phase": "audience", "ref": "r-20261127223000-ab12", "status": "answered", "answer": "Clinic manager.", "by": "human"},
+    {"id": "r-20261126223000-4f2a", "event": "declare", "ts": "2026-11-26T22:30:00Z", "agent": "plan-reviewer",
+     "phase": "Plan", "type": "blocker", "text": "No sample CSV in the repo.", "status": "open", "via": "coordinator"},
+    {"id": "r-20261126224500-9c1d", "event": "update", "ts": "2026-11-26T22:45:00Z", "agent": "coordinator",
+     "phase": "all", "ref": "r-20261126223000-4f2a", "status": "surfaced", "by": "coordinator", "impact": "medium"},
 ]
 REGISTER_BAD = [
     {"id": "r-1", "event": "declare"},
     {"id": "r-20261127223000-ab12", "event": "declare", "ts": "2026-11-27T22:30:00Z", "agent": "a",
-     "stage": "build", "type": "question", "text": "x", "status": "open"},
+     "stage": "idea", "type": "question", "text": "x", "status": "open"},
     {"id": "r-20261127223000-ab12", "event": "declare", "ts": "2026-11-27T22:30:00Z", "agent": "a",
-     "stage": "idea", "type": "blocker", "text": "x", "status": "open"},
+     "phase": "idea", "type": "guess", "text": "x", "status": "open"},
+    {"id": "r-20261127223100-cd34", "event": "update", "ts": "2026-11-27T22:31:00Z", "agent": "po",
+     "phase": "audience", "ref": "r-20261127223000-ab12", "status": "answered", "by": "user"},
 ]
 
 

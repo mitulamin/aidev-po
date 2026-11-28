@@ -154,4 +154,4 @@ The scorecard reuses ai-sdlc-loop's per-skill scoring (triggered, followed, revi
 
 ## What is reused and what is new
 
-Reused from ai-sdlc-loop: the `/retro` flow (here `/po-retro`), `learn-producer` and `learn-reviewer`, the register format (with `feedback` and attribution entries added), the scorecard, held-out acceptance, human approval, the ledger, applying approved edits next run. New in aidev-po: item IDs and traces, `/po-feedback`, the `tracer`, `/po-rerun-from`, client preference profiles and held-out example products.
+Reused from ai-sdlc-loop: the `/retro` flow (here `/po-retro`), `learn-producer` and `learn-reviewer`, the register format (one shared taxonomy, with decision, `feedback` and attribution entries as the optional aidev-po extension, DEC-002), the scorecard, held-out acceptance, human approval, the ledger, applying approved edits next run. New in aidev-po: item IDs and traces, `/po-feedback`, the `tracer`, `/po-rerun-from`, client preference profiles and held-out example products.

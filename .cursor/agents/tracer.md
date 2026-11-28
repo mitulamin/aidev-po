@@ -73,6 +73,7 @@ End your report with a section headed `## Assumptions and open questions` holdin
 === REGISTER REQUESTS ===
 [ASSUMPTION: <one-line statement>]
 [QUESTION: <one-line statement, with your recommended answer>]
+[BLOCKER: <one-line statement>]
 === END REGISTER REQUESTS ===
 ```
 

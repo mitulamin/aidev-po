@@ -43,7 +43,8 @@ Once the products repo is ready (`git-local` or `git-remote`):
    - Create an empty `<products-repo>/<slug>/.po/register.jsonl` if needed and start at `idea`.
 3. **Existing product — catch up before helping**:
    - Read `<products-repo>/<slug>/.po/state.json` (depth, current stage, completed stages, last run). If `depth` is missing (a product started before it existed), triage it as for a new product, confirm with the user, and write it.
-   - Run `python3 scripts/register.py list --open --register <products-repo>/<slug>/.po/register.jsonl` and read recent `decided` / `answered` items plus the latest gate report under `.po/runs/`.
+   - If the product has a gate bundle that ai-sdlc-loop has worked on, merge its register copy back first: `python3 scripts/register.py merge --from <bundle>/register.jsonl --register <products-repo>/<slug>/.po/register.jsonl` (it appends only lines the product lacks, and writes nothing if a line fails). If `check` reports a `stage` field or `by: "user"`, the register predates DEC-002: offer `python3 scripts/register.py migrate --write --register <register>` and include it in the next gate commit.
+   - Run `python3 scripts/register.py list --open --register <products-repo>/<slug>/.po/register.jsonl` and read recent `decided` / `answered` items plus the latest gate report under `.po/runs/`. Entries whose `phase` is not a stage (for example `Plan` or `Build`) came back from ai-sdlc-loop: report them as engineering's questions and blockers about the spec, and offer to record any that show an FSD error as feedback (`/po-feedback`).
    - Run `python3 scripts/traces.py open-feedback --catch-up --product <slug>` for open feedback, attributions waiting on the user, and reruns not done.
    - Report concisely to the user where things stand: **depth**, **current stage**, **locked decisions**, **open questions & unvalidated assumptions**, **open feedback, waiting attributions and unfinished reruns**, and **last run summary**. Then ask how they want to proceed on the current stage.
 
@@ -59,7 +60,7 @@ Do not dump whole histories into subagents. For the active stage:
    - Stage skills + shared skills (`skills/evidence-tags/SKILL.md`, `skills/register-ops/SKILL.md`).
    - Template path (`templates/0N-<stage>.md`), output path (`<product>/0N-<stage>.md`), short report path (`<product>/.po/runs/<run-id>/<stage>-report.md`), and register path (`<product>/.po/register.jsonl`).
 3. **Start `<stage>-producer`** in a **fresh context** with the brief.
-4. **Ingest producer register requests**: if the producer did not append to `.po/register.jsonl` directly, pipe its `=== REGISTER REQUESTS ===` block verbatim through `python3 scripts/register.py ingest - --agent <stage>-producer --stage <stage> --via coordinator --register <register>`. Never summarise, reword, reorder, or drop lines.
+4. **Ingest producer register requests**: if the producer did not append to `.po/register.jsonl` directly, pipe its `=== REGISTER REQUESTS ===` block verbatim through `python3 scripts/register.py ingest - --agent <stage>-producer --phase <stage> --via coordinator --register <register>` (the stage goes in the shared `phase` field). Never summarise, reword, reorder, or drop lines.
 5. **Start `<stage>-reviewer`** in a **fresh context** with ONLY the brief's task/acceptance criteria, the stage output file, and the producer's short report — **never** the producer's transcript or reasoning. Ingest its `=== REGISTER REQUESTS ===` block verbatim (`--via coordinator`).
 6. **Handle reviewer `FAIL`**:
    - Start a fresh `<stage>-producer` with the brief and the reviewer's findings file, then a fresh `<stage>-reviewer`.
@@ -76,7 +77,7 @@ You **must** consult the user at every stage gate. **Never advance a stage on yo
 
 Before presenting the gate:
 1. Curate `.po/register.jsonl`: mark duplicates (`duplicate`), dismiss items answered by verified evidence (`dismissed` with `note`), and rate unrated entries (`impact`, `urgency`) via `scripts/register.py update`.
-2. Organise open questions, high-risk assumptions, and `challenger` items into a dependency-ordered decision tree (`skills/outliner-qa/SKILL.md`).
+2. Organise open blockers (first), open questions, high-risk assumptions, and `challenger` items into a dependency-ordered decision tree (`skills/outliner-qa/SKILL.md`). A stage does not pass its gate with an open blocker unless the user parks it.
 
 At the stage gate, present to the user:
 1. **Stage output summary**: path to the artefact and key items (`<PREFIX>-NNN`).
@@ -87,8 +88,8 @@ At the stage gate, present to the user:
    - Wait for user answers before moving to the next layer (only ask another round if unlocked branches remain).
 
 After user answers return:
-1. Log every answer in `.po/register.jsonl` (`answered` / `decided`, `by: "user"`).
-2. If the user **overrules a `challenger` challenge**, record the overrule explicitly as a `decision` entry in `.po/register.jsonl` (`type: "decision"`, `status: "decided"`, `by: "user"`) and add it to the stage's **Decision Sheet** (`DEC-NNN`: choice, who decided, why, register ID).
+1. Log every answer in `.po/register.jsonl` (`answered` / `decided`, `by: "human"`, the shared value for the user).
+2. If the user **overrules a `challenger` challenge**, record the overrule explicitly as a `decision` entry in `.po/register.jsonl` (`type: "decision"`, then an update with `status: "decided"`, `by: "human"`) and add it to the stage's **Decision Sheet** (`DEC-NNN`: choice, who decided, why, register ID).
 3. Record any parked items (`PARK-NNN`) with their concrete revisit triggers.
 4. Write `<product>/.po/runs/<run-id>/gate-<stage>.md` from `templates/gate-report.md` and update `.po/state.json` (`completed_stages`, `current_stage` -> next stage, `last_run`).
 
@@ -114,6 +115,7 @@ Whenever you write a gate report or run summary, end it with:
 === REGISTER REQUESTS ===
 [ASSUMPTION: <one-line statement>]
 [QUESTION: <one-line statement>]
+[BLOCKER: <one-line statement>]
 [DECISION: <one-line statement>]
 === END REGISTER REQUESTS ===
 ```
