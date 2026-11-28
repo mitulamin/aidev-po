@@ -58,6 +58,49 @@ This is what the research recommends. The stage templates use a subset of it; th
 - Prompt optimisers (DSPy, GEPA, Reflexion, TextGrad) can propose wording, but in aidev-po they stay proposers inside the held-out test and human approval gate that ai-sdlc-loop already uses.
 - The trace model follows W3C PROV and OpenTelemetry GenAI fields so it can be exported to Langfuse or LangSmith later.
 
+### Root-cause questioning: the 5 whys
+
+The 5 whys is the habit of asking "why" of each answer. The Toyota sources below describe it for finding the cause of a failure. Asking it of a want, to reach the need and values behind it, is aidev-po's adaptation, not Toyota's, and it has a different stopping rule.
+
+**Two stopping rules**
+
+Ohno stops at a cause you can fix. The tree essay ([Asking why until you hit a value](research/five-whys-tree.md)) stops at a value, preference or bias you can own. These are different stopping rules, and aidev-po uses each one where it fits: the first for faults, the second for wants. The `learn-edits` skill already uses the first, running five whys to a condition at `/po-retro`. Where the second fits into the stages is not settled yet; the essay says so too. See [Philosophy](philosophy.md).
+
+**Where it comes from**
+
+- Toyota's own account credits Taiichi Ohno, "pioneer of the Toyota Production System in the 1950s". He told staff to "Observe the production floor without preconceptions" and "Ask 'why' five times about every matter" (Toyota Traditions, March 2006).
+- In Ohno's book the method is "the basis of Toyota's scientific approach": "ask why five times whenever we find a problem … By repeating why five times, the nature of the problem as well as its solution becomes clear" (Ohno 1988, p. 123, as quoted by Card 2017). The book is lending-only at the Internet Archive and was not opened for this page; the passage is taken from Card. The book was first published in Japanese in 1978.
+- Toyota's example is a welding robot that stops. The chain runs from a blown fuse, through locked bearings, a pump that is not circulating enough oil and a pump intake clogged with metal shavings, to "there is no filter on the pump". The fifth answer is the one a person can fix. The Lean Enterprise Institute cites an older version in Ohno 1988, p. 17 (a stopped machine; the last answer is that no strainer was attached) and adds: "The specific number five is not the point."
+- Minoura, who worked under Ohno, recalls Ohno ordering the question because "that way you'll find the root cause, and if you get rid of that it'll never happen again" (Toyota, 2003).
+
+**Who started it**
+
+- Sakichi Toyoda is credited with originating the method (for example, Serrat 2009 says it "was developed by Sakichi Toyoda for the Toyota Industries Corporation", with no source). In the sources opened for this page the written record comes from Ohno and Toyota, not from Toyoda; none of them contains a text by Toyoda on the method.
+- Toyota's Production System page traces its roots to Toyoda's automatic loom and says jidoka was born there. His page at Toyota Industries describes his looms and the company. Neither mentions asking why.
+- The Toyoda Precepts (1935) are the closest thing to a founding text. They are not by Toyoda: five years after his death in 1930, the top management of the Toyoda companies "assembled" them "to clearly crystallize the spirit of Sakichi Toyoda" (Toyota Industries). They call for being faithful to duty, "studious and creative", practical, warm at work, and respectful of spiritual matters and grateful. They say nothing about questioning or root causes.
+
+**Limits and criticisms**
+
+| Limit | What the sources say |
+|-------|----------------------|
+| One causal chain | Card (2017): it forces one analytical pathway and one root cause (see "Chain or tree" below for how far that holds). In his wristband example another team could produce "five wholly different and equally valid" whys, and a causal tree found over 75 causes and contributing factors against the one or two a chain would find. Card's target is healthcare incident analysis, where he argues it should be dropped; he still sees value as a teaching example. |
+| Stops at what the asker knows | Serrat (2009): critics cite investigators who stop at symptoms and who cannot "cast their minds beyond current information and knowledge". That is investigator bias: the chain can only hold causes the asker already thinks to look for. The name is ours; Serrat does not use it. |
+| Results differ between people | Serrat: different teams have come up with different causes for the same problem. Card makes the same point. A likely ingredient is confirmation bias: an asker tends to accept the answers that fit the cause they already suspect, so two people who start from different suspicions end at different roots. That is our reading; none of the sources opened names it. |
+| Deduction instead of observation | Minoura (2003) says the method works less well than it should because people answer from deduction, "reel off five causes as quick as a flash", and then so many causes come back that "you end up totally confused as to which of them is important". His remedy is on-the-spot observation and training, not dropping the method. |
+| Drift into blame | Serrat notes that when a problem appears "the temptation is strong to blame others or external events". Atlassian's 5 whys play opens the session with "We're here to investigate, not to blame", and Google SRE's postmortem practice is explicitly blameless. I found no study that measures this drift for the 5 whys, so treat it as a recognised risk and a convention. |
+
+**Chain or tree**
+
+- The single-chain problem comes from Ohno's published examples and from common practice, not from every account of the method. The examples I could open are single chains: Toyota's welding robot, and the stopped machine the Lean Enterprise Institute cites from Ohno 1988, p. 17. Atlassian's play collects several answers at each step but has the team choose one to carry forward, so it ends as a single chain. Card says the two-pathway practice he describes "is not how use of the tool has generally been taught in the healthcare industry". I could not open Ohno's book, so I cannot say it never branches.
+- Serrat (2009) already branches. His process has the team record every sensible answer to the first why ("There will probably be three or four sensible answers") and ask the next why "for every statement", posting each answer near its parent and following up "all plausible answers". Minoura describes the same at Toyota: he asks "five whys again for each of the causes they came up with", and finds that so many causes come back that it is hard to tell which matters. His worked example, the Amazon conveyor case, is still a single chain.
+
+**Depth is not the target**
+
+- Card (2017) says the fifth, most distal why is not automatically the best place to intervene. He says there is "no logical reason to assume that this is always the most effective or most efficient target for intervention", and that "Appropriate targets for intervention may occur anywhere along the causal continuum". His example is a proximate fix, a forcing function on the wristband check, that would make the distal causes moot. He also says distal causes can be worth acting on, for culture or as quick wins. His subject is fixing faults.
+- For discovery that carries over as our inference, not Card's claim: a need halfway down the tree may be the real requirement, not only the leaf. The leaf says what the asker values or prefers; the requirement may sit higher up. Which one to build from is a decision, and the register should record it as one.
+
+What aidev-po takes from this: five is a rule of thumb and not a rule (Serrat), so branch, and stop where the stopping rule for that kind of question says to; check each answer against the evidence and tag it (Stated, Inferred, Assumed) instead of deducing; let someone other than the asker review the chain or tree in a fresh context, which is the main guard against investigator and confirmation bias; and never end on a person, only on a condition or a value.
+
 ## Sources
 
 ### Idea and Audience
@@ -133,6 +176,18 @@ This is what the research recommends. The stage templates use a subset of it; th
 - [Postmortem culture: learning from failure](https://sre.google/sre-book/postmortem-culture/), Google SRE. Blameless postmortems.
 - [5 Whys analysis](https://www.atlassian.com/team-playbook/plays/5-whys), Atlassian.
 
+### Root-cause questioning (5 whys)
+
+- [Toyota Production System: Beyond Large-Scale Production](https://archive.org/details/toyotaproduction0000onot), Taiichi Ohno, Productivity Press, Cambridge, MA, 1988, ISBN 0-915299-14-3 (Card's citation gives Portland, OR). Internet Archive record, which gives Cambridge, Mass. Lending-only; not opened. Cited through Card (p. 123) and the Lean Enterprise Institute (p. 17).
+- [トヨタ生産方式: 脱規模の経営をめざして](https://ndlsearch.ndl.go.jp/books/R100000002-I000001376735), 大野耐一 (Taiichi Ohno), Diamond-sha, 1978. National Diet Library catalogue record for the Japanese original.
+- ["Ask 'why' five times about every matter."](http://web.archive.org/web/20190326100957/https://www.toyota-global.com/company/toyota_traditions/quality/mar_apr_2006.html), Toyota Traditions, Toyota Motor Corporation, March 2006. Archived copy; the original address now redirects to Toyota's company page. The welding-robot example.
+- [The Story of Sakichi Toyoda](https://www.toyota-industries.com/company/history/toyoda_sakichi/), Toyota Industries Corporation. His looms, and the 1935 Toyoda Precepts.
+- [Toyota Production System](https://global.toyota/en/company/vision-and-philosophy/production-system/), Toyota Motor Corporation. Roots in Sakichi Toyoda's loom and jidoka; Ohno's role.
+- [The "Thinking" Production System: TPS as a winning strategy for developing people in the global manufacturing environment (2003)](https://web.archive.org/web/20201121032113/https://media.toyota.co.uk/wp-content/files_mf/1323862732essenceTPS.pdf), Toyota Motor Corporation. Teruyuki Minoura's 2003 talk, in Toyota's write-up. Archived copy.
+- [The problem with '5 whys' (2017)](https://doi.org/10.1136/bmjqs-2016-005849), Alan J. Card, BMJ Quality & Safety 26(8):671-677. Single chain, single root cause, differing results.
+- [The Five Whys Technique (2009)](https://www.adb.org/publications/five-whys-technique), Olivier Serrat, Knowledge Solutions 30, Asian Development Bank. Process, and the list of criticisms.
+- [5 Whys](https://www.lean.org/lexicon-terms/5-whys/), Lean Lexicon, Lean Enterprise Institute. Ohno's stopped-machine example (1988, p. 17); "The specific number five is not the point."
+
 ### Sibling project
 
 - [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop), GitHub. Coordinator, producer plus reviewer, register, Learn phase, scorecard.
@@ -141,4 +196,4 @@ This is what the research recommends. The stage templates use a subset of it; th
 - [ai-sdlc-loop learn-producer](https://github.com/mitulamin/ai-sdlc-loop/blob/main/agents/learn-producer.md), GitHub.
 - [ai-sdlc-loop testing the skills (scorecard rules)](https://github.com/mitulamin/ai-sdlc-loop/blob/main/guides/developer/testing-the-skills.md), GitHub.
 
-Links come from the research pass. The arXiv and project links were spot-checked and open; a few publisher sites (Wiley, Agile Business Consortium) refuse automated requests, so check them in a browser if one does not load.
+Links come from the research pass. The arXiv and project links were spot-checked and open; a few publisher sites (Wiley, Agile Business Consortium) refuse automated requests, so check them in a browser if one does not load. The 5 whys sources were each opened and read, except Ohno's book (lending-only). Card's BMJ page and DOI refuse automated requests, so its text was read through a page-text fetch; check the BMJ page in a browser.
