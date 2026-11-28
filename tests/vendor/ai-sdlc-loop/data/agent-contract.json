@@ -1,0 +1,152 @@
+{
+  "schema_version": "1.2.0",
+  "note": "The output field every agent must declare, the register-request block it is written in, and the format of the shared surface register. scripts/build-agents.py renders these into agents/, commands/ and the agents page, and scripts/build-agents.py --check and scripts/check-skills.py fail if an agent lacks the field or the instruction. scripts/register.py parses the block.",
+  "output_field": {
+    "key": "assumptions_and_open_questions",
+    "heading": "Assumptions and open questions",
+    "none_text": "None.",
+    "rule": "It is required. An explicit None. is allowed when there are none; leaving the section out is not.",
+    "request_block": {
+      "header": "=== REGISTER REQUESTS ===",
+      "footer": "=== END REGISTER REQUESTS ===",
+      "placeholder": "<one-line statement>",
+      "line_rule": "One line per entry: the type in capitals, a colon, a space and a one-line statement, all inside square brackets. TYPE is any type in register.types, upper-cased, so adding a type to register.types is a data change only. Put None. alone between the delimiters when there are no entries.",
+      "verbatim_rule": "The block is identical whoever writes the register. Whoever writes it out copies each statement exactly: no summarising, merging, rewording, reordering or dropping.",
+      "tag_meaning": {
+        "assumption": "something you decided without being able to confirm it, and carried on with",
+        "question": "something you could not settle yourself and want answered, ideally with your recommended answer in the statement",
+        "blocker": "something that stops you finishing, or finishing correctly, until it is resolved"
+      },
+      "cannot_write_instruction": "Agents that cannot write to the register themselves must emit the register-request block in their transcript. Any coordinator invoking such an agent must take those register requests as-is and write them out verbatim.",
+      "line_format": "[TYPE: one-line statement]"
+    }
+  },
+  "register": {
+    "flag": "--register",
+    "default_path": ".ai-sdlc/register.jsonl",
+    "format": "JSON Lines: one JSON object per line, UTF-8, append-only. Never edit or delete a line; a change of state is a new line.",
+    "id_pattern": "^r-[0-9]{14}-[0-9a-f]{4}$",
+    "timestamp_format": "UTC, RFC 3339, for example 2026-11-26T22:30:00Z",
+    "events": {
+      "declare": {
+        "purpose": "An agent declares an assumption it made, a question it could not answer, or a blocker. The text is the statement from its register-request block, verbatim.",
+        "required": [
+          "id",
+          "event",
+          "ts",
+          "agent",
+          "phase",
+          "type",
+          "text",
+          "status"
+        ],
+        "optional": [
+          "impact",
+          "urgency",
+          "recommendation",
+          "via"
+        ]
+      },
+      "update": {
+        "purpose": "The coordinator or the human changes the state of an earlier entry, or rates it.",
+        "required": [
+          "id",
+          "event",
+          "ts",
+          "agent",
+          "phase",
+          "ref",
+          "status"
+        ],
+        "optional": [
+          "note",
+          "answer",
+          "by",
+          "impact",
+          "urgency"
+        ]
+      }
+    },
+    "types": [
+      "assumption",
+      "question",
+      "blocker"
+    ],
+    "impact": {
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "meaning": "what goes wrong if the assumption or the recommended answer is wrong: low is cosmetic or easy to undo, medium is rework in one phase, high is a wrong product, security or data risk, or rework across phases. Optional: a block line carries no rating, so an entry is unrated until the coordinator rates it with an update line"
+    },
+    "urgency": {
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "meaning": "how soon the human's view is needed: low can wait for the end of the cycle, medium is needed before later phases rely on it, high blocks the work. Optional, like impact"
+    },
+    "statuses": {
+      "values": [
+        "open",
+        "surfaced",
+        "answered",
+        "dismissed",
+        "duplicate"
+      ],
+      "meaning": {
+        "open": "Declared, not yet looked at.",
+        "surfaced": "Put in front of the human.",
+        "answered": "The human answered, or confirmed or rejected the assumption.",
+        "dismissed": "Settled from the repo or the brief, with the reason in note.",
+        "duplicate": "Same as the entry in ref."
+      },
+      "rule": "An entry is declared with status open. Its current status is the status of the latest update line whose ref is its id."
+    },
+    "by": [
+      "coordinator",
+      "human"
+    ],
+    "via": {
+      "values": [
+        "agent",
+        "coordinator"
+      ],
+      "meaning": "who wrote the line: the agent itself, or the coordinator mirroring the agent's register-request block verbatim"
+    },
+    "extensions": {
+      "aidev-po": {
+        "purpose": "aidev-po (https://github.com/mitulamin/aidev-po) defines the product upstream and writes this same register. Its lines use the baseline above plus the values and fields below, so a register goes to ai-sdlc-loop in an aidev-po gate bundle and comes back again, and both checkers pass it. ai-sdlc-loop's agents do not write these values, and they are not register-request block types. A register that uses none of them is a plain baseline register.",
+        "phase_values": "aidev-po writes its stage in phase, in lower case: idea, audience, actors, systems, scope, workshops, presentations or fsd.",
+        "types": {
+          "decision": "a choice the human made, or aidev-po's coordinator made on the human's behalf, while defining the product. It is binding downstream: follow it, and raise a question rather than override it",
+          "feedback": "the human's feedback on an aidev-po output; the full record is in the product's .po/feedback.jsonl, named in record",
+          "attribution": "aidev-po's tracer's finding for a feedback entry; the full record is in the product's .po/attributions.jsonl, named in record"
+        },
+        "statuses": {
+          "decided": "A decision in force.",
+          "superseded": "A decision replaced by a later one, named in ref."
+        },
+        "fields": {
+          "item_ids": {
+            "event": "declare",
+            "kind": "string-array",
+            "meaning": "stable IDs of the output items the entry is about, such as REQ-012 or AC-003"
+          },
+          "record": {
+            "event": "declare",
+            "kind": "string",
+            "pattern": "^(FB|AT)-[0-9]{3,}$",
+            "required_for_types": [
+              "feedback",
+              "attribution"
+            ],
+            "meaning": "the id of the full feedback or attribution record"
+          }
+        }
+      }
+    }
+  }
+}
