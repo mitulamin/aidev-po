@@ -61,7 +61,7 @@ When `po` needs answers it asks in layers:
 
 ## The register
 
-One shared, append-only register holds open questions, assumptions and decisions, one JSON line per event, in `<product>/.po/register.jsonl`. Its shape is in [schemas/](https://github.com/mitulamin/aidev-po/tree/main/schemas) and follows the surface register in ai-sdlc-loop. Before each gate `po` curates it: duplicates marked, answered items dismissed, the rest rated by impact and urgency. Locked decisions also go on each stage file's decision sheet. A stage reviewer that fails a stage three times in a row stops the loop and the question comes to you.
+One shared, append-only register holds open questions, assumptions, blockers and decisions, one JSON line per event, in `<product>/.po/register.jsonl`. Its shape is in [schemas/](https://github.com/mitulamin/aidev-po/tree/main/schemas). It is the same taxonomy as ai-sdlc-loop's surface register, with the stage in its `phase` field and aidev-po's additions (decisions, feedback and attribution entries) as an optional extension that both tools' checkers accept ([DEC-002](decisions.md#dec-002-aidev-po-and-ai-sdlc-loop-share-one-register-taxonomy-so-handoffs-work-in-both-directions)). So the register goes to ai-sdlc-loop with the FSD, and engineering's questions and blockers come back in it. Before each gate `po` curates it: duplicates marked, answered items dismissed, the rest rated by impact and urgency. Locked decisions also go on each stage file's decision sheet. A stage reviewer that fails a stage three times in a row stops the loop and the question comes to you.
 
 ## Sizing
 

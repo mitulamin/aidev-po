@@ -30,6 +30,8 @@ Shravi sells and delivers consulting through a system with three parts.
 
 The FSD is handed over by a gate PR: the FSD goes up for approval by the user, and once approved it becomes the brief for ai-sdlc-loop's planning. aidev-po's job ends at an approved FSD. Acceptance criteria are written as Given/When/Then so ai-sdlc-loop can turn them into tests.
 
+The register travels with it, in both directions. The two tools share one register taxonomy ([DEC-002](decisions.md#dec-002-aidev-po-and-ai-sdlc-loop-share-one-register-taxonomy-so-handoffs-work-in-both-directions)): aidev-po writes its stage in the shared `phase` field, and its decisions, feedback and attribution entries are an optional extension that ai-sdlc-loop's checker accepts. The gate bundle carries a copy of the product's register, and `/plan --register` points ai-sdlc-loop at it, so the locked decisions carry over. ai-sdlc-loop writes its own questions and blockers about the spec to that copy, and `po` merges them back into the product (`scripts/register.py merge`), where you decide which are feedback on the FSD.
+
 ### aidev-platform in the Systems stage
 
 For Shravi client work, the aidev-platform contract is a known external system. It appears on every system context diagram, so the FSD already accounts for how the thing will be deployed.
@@ -46,7 +48,7 @@ Where the governance platform requires information from a product (for example c
 - Shapes scope: what is in the first release, what is out, and when to revisit.
 - Plans workshops and writes up their results, and drafts the narrative (PR/FAQ and a stakeholder presentation outline).
 - Writes the FSD, with testable requirements and quality requirements.
-- Keeps a register of questions, assumptions and decisions, and tags every item with its evidence.
+- Keeps a register of questions, assumptions, blockers and decisions, in the same format as ai-sdlc-loop's, and tags every item with its evidence.
 - Challenges your assumptions, and records it when you overrule.
 - Learns from feedback, with a person approving every change.
 

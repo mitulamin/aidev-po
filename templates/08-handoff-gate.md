@@ -12,7 +12,8 @@
 - [ ] `fsd-reviewer`: `Verdict: PASS` (zero P0/P1 findings)
 - [ ] `evidence-auditor`: `Verdict: PASS` (zero untagged/unsourced claims)
 - [ ] `challenger`: all challenges resolved or recorded as decisions
-- [ ] `.po/register.jsonl`: zero `open` or `surfaced` high-urgency questions (`scripts/register.py list --open`)
+- [ ] `.po/register.jsonl`: zero `open` or `surfaced` blockers or high-urgency questions (`scripts/register.py list --open`)
+- [ ] The bundle's `register.jsonl` copy passes `scripts/register.py check` (one taxonomy with ai-sdlc-loop, DEC-002)
 
 ## 2. Brief for `ai-sdlc-loop` `/plan`
 
@@ -21,6 +22,7 @@
 - **Scope — Slice 1 Only (`HND-003`)**: `<list US-NNN, REQ-NNN, NFR-NNN>`
 - **Authoritative Spec Path**: `<path to 08-fsd.md>`
 - **Start command**: `/plan <bundle>/08-handoff-gate.md --register <bundle>/register.jsonl` (`register.jsonl` is a copy of `.po/register.jsonl` in the gate bundle, so locked decisions and open items carry over; never the product's own register)
+- **Way back**: ai-sdlc-loop writes its questions and blockers about the spec to the same copy; `po` merges them into the product with `python3 scripts/register.py merge --from <bundle>/register.jsonl --register .po/register.jsonl`
 
 ## 3. Locked Decisions (Do Not Override Downstream)
 

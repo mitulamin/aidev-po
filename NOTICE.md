@@ -13,6 +13,10 @@ The text is in [LICENSE](LICENSE). It covers:
 
 Do not replace or edit `LICENSE` without a deliberate decision.
 
+### Vendored from ai-sdlc-loop
+
+`tests/vendor/ai-sdlc-loop/` holds unchanged copies of two files from [ai-sdlc-loop](https://github.com/mitulamin/ai-sdlc-loop), which uses the same licence split: `scripts/register.py` (GPL-3.0) and `data/agent-contract.json` (CC BY-SA 4.0, as ai-sdlc-loop licenses its data files). Its README records the pin.
+
 ## CC BY-SA 4.0 (writing)
 
 The text is in [LICENSE-CONTENT](LICENSE-CONTENT). It covers markdown and other writing outside `templates/`:

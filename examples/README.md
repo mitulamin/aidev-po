@@ -23,7 +23,7 @@ examples/
     inputs/, workshops/         the source notes that Stated and Validated items cite
     .po/
       state.json                current stage, completed stages, last run
-      register.jsonl            questions, assumptions, decisions, feedback and attribution lines
+      register.jsonl            questions, assumptions, decisions, feedback and attribution lines (shared taxonomy, DEC-002)
       traces.jsonl              one line per item written or reviewed
       feedback.jsonl            FB-001 and FB-002
       attributions.jsonl        AT-001 (three lines: tracer, replay, user verdict)
@@ -91,7 +91,7 @@ python3 scripts/traces.py open-feedback --all --repo examples    # FB-002, untra
 
 ## Checks
 
-CI runs these on every pull request, and `tests/test_example.py` also validates every line against its schema:
+CI runs these on every pull request, `tests/test_example.py` also validates every line against its schema, and `tests/test_shared_register.py` checks the register with ai-sdlc-loop's checker too:
 
 ```bash
 python3 scripts/traces.py check --all --repo examples

@@ -34,6 +34,7 @@ Every file you write ends with a section headed `## Assumptions and open questio
 === REGISTER REQUESTS ===
 [ASSUMPTION: <one-line statement>]
 [QUESTION: <one-line statement, with your recommended answer>]
+[BLOCKER: <one-line statement>]
 === END REGISTER REQUESTS ===
 ```
 

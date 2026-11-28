@@ -66,7 +66,7 @@ The user is consulted at every stage gate. `po` never advances a stage on its ow
 - `python3 scripts/traces.py check --product <slug>` must pass before the gate. Errors go back to the producer; warnings are shown at the gate.
 - The user approves, answers, sends it back, or parks items.
 - Questions are asked in small batches (at most five), with a recommendation and a Park option.
-- Assumptions, open questions and decisions go into the shared register (see [schemas/](schemas/)).
+- Assumptions, open questions, blockers and decisions go into the shared register (see [schemas/](schemas/)). It is one taxonomy with ai-sdlc-loop's register (DEC-002 in [docs/decisions.md](docs/decisions.md)): the stage goes in `phase`, and decision, feedback and attribution entries are the optional aidev-po extension both checkers accept.
 
 ## Committing product changes
 
@@ -88,7 +88,7 @@ The products repo is the user's, and `po` treats it that way.
 | `templates/` | Copyable files (MIT): stage artefacts `01-idea.md` through `08-fsd.md`, `08-handoff-gate.md`, `gate-report.md`, `product-state.example.json`, `aidev-po.local.example.json`, and learning-loop formats in `templates/learning/`. |
 | `schemas/` | JSON Schemas, all draft: `register`, `trace`, `feedback`, `attribution`, `rerun`, `ledger`, `scorecard`, `product-state`. |
 | `scripts/` | `build-agents.py`, `products-dir.py`, `register.py`, `traces.py`, `scorecard.py`, `check-schemas.py`. |
-| `tests/` | Tests for the scripts, and a fictional fixture products repo at `tests/fixtures/products-repo/`. `python3 -m unittest discover -s tests -t tests` |
+| `tests/` | Tests for the scripts, a fictional fixture products repo at `tests/fixtures/products-repo/`, and ai-sdlc-loop's register checker vendored in `tests/vendor/ai-sdlc-loop/` for the shared-register test. `python3 -m unittest discover -s tests -t tests` |
 | `docs/` | Documentation site (Markdown, GitHub Pages from `/docs`): philosophy, how it fits, method, stages, learning loop, products repo, quick start, research. |
 | `examples/` | One worked example, laid out as a products repo: `examples/tool-library-loans/` and `examples/.po/` (ledger, scorecard, preferences, one retro). CI checks its traces, register and scorecard. Not live products. |
 | `LICENSE`, `LICENSE-CONTENT`, `templates/LICENSE`, `NOTICE.md` | GPL-3.0 for `scripts/`, `schemas/`, `tests/` and `.github/workflows/`; CC BY-SA 4.0 for writing, including generated `.cursor/` files; MIT for `templates/`. |

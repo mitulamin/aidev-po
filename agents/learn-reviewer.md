@@ -26,6 +26,7 @@ End with a section headed `## Assumptions and open questions` holding a register
 === REGISTER REQUESTS ===
 [ASSUMPTION: <one-line statement>]
 [QUESTION: <one-line statement, with your recommended answer>]
+[BLOCKER: <one-line statement>]
 === END REGISTER REQUESTS ===
 ```
 
