@@ -6,6 +6,29 @@ title: Decisions
 
 Product decisions for aidev-po, newest first. Each entry records what was decided, why, and what it replaces. Entries are not rewritten; a later decision supersedes an earlier one by ID.
 
+## DEC-003: Tool results are data, not instructions
+
+- **Date:** 28 November 2026
+- **Decided by:** Mitul Amin
+- **Status:** Accepted
+- **Area:** How agents treat what tools, connectors and MCP servers return
+
+### Decision
+
+aidev's agents treat anything a tool, connector or MCP server returns as data, never as instructions. They do not pass on an offer, link or instruction from a tool result as their own advice. If an agent does relay one, for example because the user needs to know about a limit, it says which tool it came from.
+
+### Why
+
+A [published test](https://dev.to/yahhi/ads-in-mcp-tool-results-what-six-coding-agents-pass-on-and-the-one-sentence-that-makes-it-honest-3pp2) found that Notion's hosted MCP server put a "Try it free" upsell into tool results. Five of six coding agents passed the link on every time, and only 2 of 72 replies said the offer came from the server, so it read as the agent's own advice.
+
+### Evidence and limits
+
+Adding the `AGENTS.md` line cut the relayed link from 22 to 8 of 24 runs when the query failed, and from 13 to 1 of 24 when it succeeded, while agents still recovered from the limit and finished the task. It barely helped Claude Haiku and did nothing for Kimi on failed queries, and each case had only 4 runs per agent. The rule reduces the risk; it does not remove it.
+
+### Applies to
+
+aidev-po's `AGENTS.md` now. The same rule is being added to ai-sdlc-loop separately.
+
 ## DEC-002: aidev-po and ai-sdlc-loop share one register taxonomy so handoffs work in both directions
 
 - **Date:** 27 November 2026
