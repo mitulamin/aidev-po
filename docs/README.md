@@ -25,6 +25,7 @@ The look is copied from the [ai-sdlc-loop site](https://github.com/mitulamin/ai-
 | [stages.md](stages.md) | Stage by stage: Idea to FSD, with techniques and artefacts |
 | [learning-loop.md](learning-loop.md) | Stable IDs, traces, feedback, `/po-feedback`, `/po-rerun-from`, `/po-retro`, `tracer`, `learn-producer`, `learn-reviewer`, scorecard |
 | [quick-start.md](quick-start.md) | Get going in a few minutes |
+| [bootstrap.md](bootstrap.md) | Install aidev-po into a project, next to ai-sdlc-loop or alone |
 | [products-repo.md](products-repo.md) | Where your product work lives |
 | [research.md](research.md) | What the design is based on, with sources |
 

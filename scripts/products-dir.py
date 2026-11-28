@@ -22,7 +22,7 @@ things on disk, so `po` runs them only after the user says yes. Nothing here add
 pushes: a remote is a separate question `po` asks afterwards (see docs/products-repo.md). The report
 includes `gh`, whether the GitHub CLI is ready (installed and signed in), for that question.
 
-A relative path is resolved from the aidev-po root; ~ is expanded. `--set` records the resolved
+A relative path is resolved from the aidev-po root (the project folder, when bootstrap installed it); ~ is expanded. `--set` records the resolved
 absolute path. It refuses any path inside the aidev-po checkout, including the checkout itself.
 When `--init` has to make the initial commit, it first checks that git user.name and user.email
 are set, and records nothing if either is missing.
@@ -45,9 +45,12 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# Installed by scripts/bootstrap.sh into a project, this script lives in <project>/.aidev-po/. The
+# "checkout" the products repo must stay out of is then the whole project, not just that folder.
+CHECKOUT = ROOT.parent if ROOT.name == ".aidev-po" else ROOT
 ENV_VAR = "AIDEV_PO_PRODUCTS_DIR"
 CONFIG = ROOT / "aidev-po.local.json"
-SUGGESTIONS = ["~/aidev-products", "~/Documents/aidev-products", str(ROOT.parent / "aidev-products")]
+SUGGESTIONS = ["~/aidev-products", "~/Documents/aidev-products", str(CHECKOUT.parent / "aidev-products")]
 
 README = """# Products
 
@@ -86,7 +89,7 @@ def resolve():
 
 def expand(raw):
     path = Path(raw).expanduser()
-    return path if path.is_absolute() else ROOT / path
+    return path if path.is_absolute() else CHECKOUT / path
 
 
 def git(path, *args):
@@ -99,7 +102,7 @@ def is_repo_root(path):
 
 
 def inside_checkout(path):
-    root = ROOT.resolve()
+    root = CHECKOUT.resolve()
     return path == root or root in path.parents
 
 
@@ -171,7 +174,7 @@ def initial_commit(path):
 def record(raw, init):
     path = expand(raw).resolve()
     if inside_checkout(path):
-        raise SystemExit(f"{path} is inside the aidev-po checkout ({ROOT.resolve()}); "
+        raise SystemExit(f"{path} is inside the aidev-po checkout or project ({CHECKOUT.resolve()}); "
                          "choose a folder outside it, such as ~/aidev-products")
     if path.exists() and not path.is_dir():
         raise SystemExit(f"{path} exists and is not a folder")

@@ -1,0 +1,14 @@
+---
+description: Bootstrap pointer. Read START-HERE.md and work through the project's coordinator for every step.
+alwaysApply: true
+---
+
+If this is the first time you are reading this project, here is a note for you: it was set up by Bootstrap from ai-sdlc-loop. Read `START-HERE.md`, then act as the project coordinator (see `.cursor/agents`) and follow the loop. If `AGENTS.md` is not filled in yet, start the interview; otherwise carry on from the current plan.
+
+This project was set up with the AI SDLC Loop. Before you do anything else in a session:
+
+1. Read `START-HERE.md` at the project root. It says what was set up and how to work with the person you are helping.
+2. Act as the project's coordinator, as `.cursor/agents/coordinator.md` describes. Every step of the software development life cycle (planning, design, build, verify, review, ship) goes through the coordinator and the producers and reviewers it starts, never around them.
+3. The person may not be a coder. Use plain language, explain choices in a sentence, and keep technical terms for when they ask.
+4. Keep this local. Do not create a GitHub repository, add a remote, push, or sign the person up for anything unless they ask.
+5. The git repository has no commits yet. If `git log` shows none, make the initial commit as your first step, or right after the first step the person approves, once you have shown them what will be committed and they agree.

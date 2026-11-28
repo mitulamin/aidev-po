@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "note": "Where scripts/install-harness.py puts aidev-po in a project, per coding harness. The same shape as ai-sdlc-loop's data/harnesses.json. Cursor is the only harness today (scripts/build-agents.py generates only .cursor/); another harness is another entry here plus its generator.",
+  "shared_dir": ".aidev-po",
+  "attribution": "aidev-po",
+  "repo_url": "https://github.com/mitulamin/aidev-po",
+  "harnesses": [
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "summary": "Cursor editor, CLI and Cloud Agents.",
+      "setup": "Install Cursor and sign in.",
+      "source": ".cursor",
+      "agents": {
+        "dir": ".cursor/agents",
+        "rename": {
+          "learn-producer": "po-learn-producer",
+          "learn-reviewer": "po-learn-reviewer"
+        },
+        "rename_note": "ai-sdlc-loop installs agents of the same two names. Renaming them on install, always, lets both tools sit side by side in either order without one overwriting the other."
+      },
+      "skills": {
+        "dir": ".cursor/skills"
+      },
+      "rules": {
+        "dir": ".cursor/rules",
+        "file": "aidev-po-bootstrap.mdc",
+        "template": "templates/bootstrap/aidev-po-bootstrap.mdc"
+      },
+      "runtime": {
+        "scripts": ["products-dir.py", "register.py", "scorecard.py", "traces.py"],
+        "schemas": "*",
+        "templates": "*",
+        "docs": ["products-repo.md", "decisions.md"]
+      },
+      "rewrite": {
+        "dirs": ["scripts", "schemas", "templates"],
+        "docs": ["products-repo.md", "decisions.md"]
+      },
+      "never_writes": ["MCP configuration", "hooks", "editor or Cursor settings", "AGENTS.md", ".ai-sdlc/"]
+    }
+  ]
+}
